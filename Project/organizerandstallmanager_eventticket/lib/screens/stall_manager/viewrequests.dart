@@ -82,7 +82,7 @@ class _MyRequestsState extends State<MyRequests> {
         padding: EdgeInsets.symmetric(vertical: 50, horizontal: 15),
         itemBuilder: (context, index) {
           final stall = eventList[index];
-          print(stall);
+          print(stall['tbl_event']['event_photo']);
           return Card(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(2),
@@ -100,11 +100,8 @@ class _MyRequestsState extends State<MyRequests> {
                       topLeft: Radius.circular(10),
                       bottomLeft: Radius.circular(10),
                     ),
-                    image: DecorationImage(
-                      image: NetworkImage('https://kwagmrhiuvqqvdlozppd.supabase.co/storage/v1/object/public/organisers/68578636-1c67-4746-8c0c-5655e9ef60cf-event-l2.jpg'),
-                      fit: BoxFit.cover,
-                    ),
                   ),
+                  child: Image.network(stall['tbl_event']['event_photo'], fit: BoxFit.cover,),
                 ),
                 Expanded(
                   child: Padding(
@@ -203,6 +200,7 @@ class _MyRequestsState extends State<MyRequests> {
                   ),
                 ),
                 Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Container(
                       width: 150,
