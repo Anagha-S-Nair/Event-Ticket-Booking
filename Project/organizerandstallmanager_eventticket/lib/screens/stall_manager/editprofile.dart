@@ -5,14 +5,14 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:organizerandstallmanager_eventticket/main.dart';
 
-class StallProfile extends StatefulWidget {
-  const StallProfile({super.key});
+class StallEditProfile extends StatefulWidget {
+  const StallEditProfile({super.key});
 
   @override
-  State<StallProfile> createState() => _StallProfileState();
+  State<StallEditProfile> createState() => _StallEditProfileState();
 }
 
-class _StallProfileState extends State<StallProfile> {
+class _StallEditProfileState extends State<StallEditProfile> {
   Map<String, dynamic> data = {};
   bool isLoading = true;
 
@@ -33,7 +33,7 @@ class _StallProfileState extends State<StallProfile> {
     try {
       String uid = supabase.auth.currentUser!.id;
       final response = await supabase
-          .from('tbl_stallmanagers')
+          .from('tbl_stallmanager')
           .select()
           .eq('id', uid)
           .single();
@@ -88,7 +88,7 @@ class _StallProfileState extends State<StallProfile> {
       String uid = supabase.auth.currentUser!.id;
       String? newPhotoUrl = await photoUpload(uid); // Upload new image if available
 
-      await supabase.from('tbl_stallmanagers').update({
+      await supabase.from('tbl_stallmanager').update({
         'stallmanager_name': nameController.text,
         'stallmanager_email': emailController.text,
         'stallmanager_contact': contactController.text,

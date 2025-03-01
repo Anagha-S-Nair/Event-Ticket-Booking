@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:admin_eventticket/screens/account.dart';
 import 'package:admin_eventticket/screens/dashboard.dart';
 import 'package:admin_eventticket/screens/district.dart';
@@ -5,7 +6,6 @@ import 'package:admin_eventticket/screens/eventorganiser.dart';
 import 'package:admin_eventticket/screens/eventtype.dart';
 import 'package:admin_eventticket/screens/place.dart';
 import 'package:admin_eventticket/screens/stalltype.dart';
-import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -16,19 +16,20 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int selectedIndex = 0;
-  List<String> pageName = [
-    'Dashbard',
+
+  final List<String> pageName = [
+    'Dashboard',
     'Account',
     'District',
     'Place',
-    'Eventtype',
-    'StallType',
-    'EventOrganiser',
-    'StallManager'
-    
+    'Event Type',
+    'Stall Type',
+    'Event Organiser',
+    'Stall Manager'
   ];
-  List<IconData> pageIcon = [
-    Icons.home,
+
+  final List<IconData> pageIcon = [
+    Icons.dashboard,
     Icons.supervised_user_circle,
     Icons.location_city,
     Icons.place,
@@ -36,10 +37,9 @@ class _HomePageState extends State<HomePage> {
     Icons.store,
     Icons.group,
     Icons.storefront,
-
   ];
 
-  List<Widget> pageContent = [
+  final List<Widget> pageContent = [
     Dashboard(),
     Account(),
     District(),
@@ -53,43 +53,88 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Admin Dashboard'),
+        title: const Text('Admin Dashboard'),
+        backgroundColor: Colors.blueGrey[900],
+        centerTitle: true,
       ),
       body: Row(
         children: [
-          Expanded(
-            flex: 1,
-            child: Container(
-              color: Colors.blue,
-              child: Column(
-                children: [
-                  ListView.builder(
-                    shrinkWrap: true,
+          // Sidebar Navigation
+          Container(
+            width: 250,
+            decoration: BoxDecoration(
+              color: Colors.blueGrey[800],
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black26,
+                  blurRadius: 5,
+                  offset: Offset(2, 0),
+                ),
+              ],
+            ),
+            child: Column(
+              children: [
+                const SizedBox(height: 20),
+                const CircleAvatar(
+                  radius: 40,
+                  backgroundColor: Colors.white,
+                  child: Icon(Icons.admin_panel_settings, size: 40, color: Colors.blueGrey),
+                ),
+                const SizedBox(height: 10),
+                const Text(
+                  "Admin Panel",
+                  style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                const Divider(color: Colors.white54, thickness: 1, indent: 20, endIndent: 20),
+                Expanded(
+                  child: ListView.builder(
                     itemCount: pageName.length,
                     itemBuilder: (context, index) {
+                      bool isSelected = selectedIndex == index;
                       return ListTile(
+                        leading: Icon(
+                          pageIcon[index],
+                          color: isSelected ? Colors.white : Colors.white70,
+                        ),
+                        title: Text(
+                          pageName[index],
+                          style: TextStyle(
+                            color: isSelected ? Colors.white : Colors.white70,
+                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                          ),
+                        ),
+                        selected: isSelected,
+                        selectedTileColor: Colors.blueGrey[600],
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                         onTap: () {
                           setState(() {
-                            print(index);
                             selectedIndex = index;
                           });
                         },
-                        leading: Icon(pageIcon[index]),
-                        title: Text(pageName[index]),
                       );
                     },
                   ),
-                ],
+                ),
+              ],
+            ),
+          ),
+          // Page Content
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.all(16.0),
+              color: Colors.grey[100],
+              child: Card(
+                elevation: 5,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: pageContent[selectedIndex],
+                ),
               ),
             ),
           ),
-          Expanded(
-            flex: 5,
-            child: Container(
-              color: Colors.white,
-              child: pageContent[selectedIndex],
-            ),
-          )
         ],
       ),
     );

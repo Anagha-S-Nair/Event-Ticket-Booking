@@ -1,41 +1,56 @@
 import 'package:flutter/material.dart';
+import 'package:organizerandstallmanager_eventticket/main.dart';
+import 'package:organizerandstallmanager_eventticket/screens/stall_manager/changepassword.dart';
+import 'package:organizerandstallmanager_eventticket/screens/stall_manager/editprofile.dart';
 
-class StallProfile extends StatelessWidget {
+class StallProfile extends StatefulWidget {
   const StallProfile({super.key});
 
+  @override
+  State<StallProfile> createState() => _StallProfileState();
+}
+
+class _StallProfileState extends State<StallProfile> {
+  Map<String, dynamic> data = {};
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUser();
+  }
+
+  Future<void> fetchUser() async {
+    try {
+      String uid = supabase.auth.currentUser!.id;
+      final response = await supabase.from('tbl_stallmanager').select().eq('id', uid).single();
+      setState(() {
+        data = response;
+        isLoading = false;
+      });
+    } catch (e) {
+      print("Error fetching user: $e");
+      
+    }
+  }
+  
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Color(0xFF212121), Color(0xFF424242), Color(0xFF000000)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
-          ),
           Center(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 40.0),
               child: Container(
-                height: 520,
+                height: 500,
                 width: 600,
                 decoration: BoxDecoration(
-                  color: Color(0xFF2C2C2C).withOpacity(0.95), // Dark slate grey with slight transparency
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.4),
-                      blurRadius: 15,
-                      spreadRadius: 5,
-                      offset: Offset(0, 6),
-                    ),
-                  ],
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
                 ),
-                padding: EdgeInsets.all(25),
+                padding: EdgeInsets.all(20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -47,50 +62,42 @@ class StallProfile extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              _profileField(Icons.person, "Jane Walters"),
-                              SizedBox(height: 25),
-                              _profileField(Icons.email, "j.walters@domain.com"),
-                              SizedBox(height: 25),
-                              _profileField(Icons.lock, "••••••••"),
-                              SizedBox(height: 25),
-                              _profileField(Icons.phone, "+1 012 345 678"),
+                              _profileField(Icons.person, data['stallmanager_name']),
+                              SizedBox(height: 30),
+                              _profileField(Icons.email, data['stallmanager_email']),
+                              SizedBox(height: 30),
+                              // _profileField(Icons.lock, "••••••••"),
+                              // SizedBox(height: 30),
+                              _profileField(Icons.phone, data['stallmanager_contact']),
                               SizedBox(height: 30),
                             ],
                           ),
                         ),
-                        SizedBox(width: 40),
+                        SizedBox(width: 50),
                         Column(
                           children: [
                             Stack(
                               alignment: Alignment.bottomRight,
                               children: [
                                 CircleAvatar(
-                                  radius: 60,
-                                  backgroundColor: Colors.grey[700],
+                                  radius: 100,
                                   backgroundImage: NetworkImage(
-                                    "https://your-image-url.com", // Replace with actual image URL
+                                    data['stallmanager_photo'], // Replace with actual image URL
                                   ),
                                 ),
                                 Positioned(
-                                  bottom: 8,
-                                  right: 8,
+                                  bottom: 15,
+                                  right: 15,
                                   child: Container(
                                     padding: EdgeInsets.all(6),
                                     decoration: BoxDecoration(
                                       color: Colors.white,
                                       shape: BoxShape.circle,
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black.withOpacity(0.2),
-                                          blurRadius: 4,
-                                          offset: Offset(0, 2),
-                                        ),
-                                      ],
                                     ),
                                     child: Icon(
                                       Icons.edit,
-                                      color: Colors.grey.shade400,
-                                      size: 22,
+                                      color: Colors.blue,
+                                      size: 24,
                                     ),
                                   ),
                                 ),
@@ -98,33 +105,78 @@ class StallProfile extends StatelessWidget {
                             ),
                           ],
                         ),
+                        SizedBox(
+                          width: 100,
+                          height: 200,
+                        )
                       ],
                     ),
                     SizedBox(height: 30),
-                    Align(
-                      alignment: Alignment.center,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          backgroundColor: Colors.redAccent,
-                          elevation: 5,
-                          shadowColor: Colors.red.withOpacity(0.3),
-                        ),
-                        onPressed: () {},
-                        child: Text(
-                          "Save",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
                   ],
+                ),
+              ),
+            ),
+          ),
+
+          Positioned(
+            top: 580,
+            left: 300,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                backgroundColor: Colors.pinkAccent,
+              ),
+              onPressed: () {
+                 Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => StallChangePassword(),
+                              ));
+
+              },
+              child: Text(
+                "Change Password",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+
+
+
+
+
+          Positioned(
+            top: 580,
+            left: 950,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                backgroundColor: Colors.pinkAccent,
+              ),
+              onPressed: () {
+                 Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => StallEditProfile(),
+                              ));
+
+              },
+              child: Text(
+                "Edit Profile",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
@@ -141,8 +193,8 @@ class StallProfile extends StatelessWidget {
         children: [
           Icon(
             icon,
-            color: Colors.grey.shade300,
-            size: 26,
+            color: Colors.grey[700],
+            size: 24,
           ),
           SizedBox(width: 15),
           Expanded(
@@ -150,8 +202,8 @@ class StallProfile extends StatelessWidget {
               decoration: BoxDecoration(
                 border: Border(
                   bottom: BorderSide(
-                    color: Colors.grey.shade500,
-                    width: 1.5,
+                    color: Colors.black,
+                    width: 1.0,
                   ),
                 ),
               ),
@@ -159,9 +211,8 @@ class StallProfile extends StatelessWidget {
               child: Text(
                 value,
                 style: TextStyle(
-                  fontSize: 17,
+                  fontSize: 16,
                   fontWeight: FontWeight.w500,
-                  color: Colors.white,
                 ),
               ),
             ),

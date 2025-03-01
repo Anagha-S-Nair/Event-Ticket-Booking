@@ -1,13 +1,39 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+
 
 class EventDetails extends StatelessWidget {
-  const EventDetails({super.key});
+  final Map<String, dynamic> data;
+
+  const EventDetails({super.key, required this.data});
+  
+ 
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
+
+    // Format date
+    String formattedDate = "Invalid Date";
+    try {
+      DateTime eventDate =
+          DateTime.parse(data['event_date']); // Assumes 'YYYY-MM-DD'
+      formattedDate = DateFormat('dd-MM-yy').format(eventDate);
+    } catch (e) {
+      print("Error parsing date: $e");
+    }
+
+    // Format time
+    String formattedTime = "Invalid Time";
+    try {
+      DateTime eventTime = DateTime.parse(
+          "1970-01-01 ${data['event_time']}"); // Assumes 'HH:mm:ss'
+      formattedTime = DateFormat('HH-mm-ss').format(eventTime);
+    } catch (e) {
+      print("Error parsing time: $e");
+    }
+
+
+    return  Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
           backgroundColor: Colors.transparent,
@@ -32,8 +58,7 @@ class EventDetails extends StatelessWidget {
                     color: Colors.black,
                     borderRadius: BorderRadius.circular(16),
                     image: DecorationImage(
-                      image: NetworkImage(
-                        'https://source.unsplash.com/600x400/?concert,music',
+                       image: NetworkImage(data['event_photo'],
                       ),
                       fit: BoxFit.cover,
                     ),
@@ -44,7 +69,7 @@ class EventDetails extends StatelessWidget {
 
                 // Event Title
                 Text(
-                  "National Music Festival",
+                  data['event_name'],
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
@@ -82,7 +107,7 @@ class EventDetails extends StatelessWidget {
                       child: Icon(Icons.access_time, color: Colors.blue),
                     ),
                     SizedBox(width: 16),
-                    Text("18:00 - 23:00 PM GMT -07:00"),
+                    Text("Time: ${formattedTime.toString()}"),
                   ],
                 ),
 
@@ -123,7 +148,7 @@ class EventDetails extends StatelessWidget {
                       child: Icon(Icons.attach_money, color: Colors.blue),
                     ),
                     SizedBox(width: 16),
-                    Text("Rs20.00 - Rs100.00"),
+                    Text( data['event_ticketprice'].toString()  ),
                   ],
                 ),
 
@@ -136,7 +161,7 @@ class EventDetails extends StatelessWidget {
                 ),
                 SizedBox(height: 8),
                 Text(
-                  "Experience an electrifying night at the RhythmWave Music Festival, where top artists and DJs will set the stage on fire with live performances, stunning visuals, and non-stop beats. Join us for an unforgettable celebration of music, food, and festival vibes under the open sky!",
+                   data['event_details'],
                   style: TextStyle(color: Colors.grey),
                 ),
 
@@ -230,7 +255,6 @@ class EventDetails extends StatelessWidget {
             ),
           ),
         ),
-      ),
-    );
+      );
   }
 }

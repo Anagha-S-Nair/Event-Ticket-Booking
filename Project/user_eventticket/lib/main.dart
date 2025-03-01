@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:user_eventticket/firebase_options.dart';
+import 'package:user_eventticket/screens/event.dart';
 import 'package:user_eventticket/screens/eventdetails.dart';
 import 'package:user_eventticket/screens/homepage.dart';
 import 'package:user_eventticket/screens/login.dart';

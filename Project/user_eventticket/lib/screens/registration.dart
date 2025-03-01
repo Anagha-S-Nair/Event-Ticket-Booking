@@ -1,6 +1,11 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
+import 'package:path/path.dart' as path;
 import 'package:user_eventticket/components/form_validation.dart';
 import 'package:user_eventticket/main.dart';
+import 'package:user_eventticket/screens/login.dart'; 
 
 class RegistrationPage extends StatefulWidget {
   const RegistrationPage({super.key});
@@ -10,15 +15,50 @@ class RegistrationPage extends StatefulWidget {
 }
 
 class _RegistrationPageState extends State<RegistrationPage> {
-  List<Map<String, dynamic>> registartionList = [];
+
+  List<Map<String, dynamic>> registrationList = [];
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _contactController = TextEditingController();
-  final TextEditingController _addressController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmpasswordController = TextEditingController();
-
+  final TextEditingController _confirmpasswordController =
+      TextEditingController();
   final formkey = GlobalKey<FormState>();
+File? _image;
+  final ImagePicker _picker = ImagePicker();
+
+  Future<void> _pickImage() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _image = File(pickedFile.path);
+      });
+    }
+  }
+
+  Future<String?> _uploadImage() async {
+    try {
+      // Get current date and time
+      String formattedDate =
+          DateFormat('dd-MM-yyyy-HH-mm').format(DateTime.now());
+
+      // Extract file extension from _image!
+      String fileExtension =
+          path.extension(_image!.path); // Example: .jpg, .png
+
+      // Generate filename with extension
+      String fileName = 'Recipe-$formattedDate$fileExtension';
+
+      await supabase.storage.from('reciepes').upload(fileName, _image!);
+
+      // Get public URL of the uploaded image
+      final imageUrl = supabase.storage.from('reciepes').getPublicUrl(fileName);
+      return imageUrl;
+    } catch (e) {
+      print('Image upload failed: $e');
+      return null;
+    }
+  }
 
   Future<void> register() async {
     try {
@@ -27,7 +67,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
       String uid = authentication.user!.id;
       insertUser(uid);
     } catch (e) {
-      print("Error Registration: $e");
+      print("Error registration: $e");
     }
   }
 
@@ -36,7 +76,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
       String name = _nameController.text;
       String email = _emailController.text;
       String contact = _contactController.text;
-      String address = _addressController.text;
       String password = _passwordController.text;
 
       await supabase.from('tbl_user').insert({
@@ -44,21 +83,22 @@ class _RegistrationPageState extends State<RegistrationPage> {
         'user_name': name,
         'user_email': email,
         'user_contact': contact,
-        'user_address': address,
         'user_password': password,
+
       });
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(
-          "Successfully Registered",
+          "REGISTRATED SUCCESSFULLY",
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: Colors.green,
       ));
       _nameController.clear();
       _emailController.clear();
-      _contactController.clear();
-      _addressController.clear();
-      _passwordController.clear();
+       _contactController.clear();
+        _passwordController.clear();
+         _confirmpasswordController.clear();
+
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(
@@ -67,214 +107,161 @@ class _RegistrationPageState extends State<RegistrationPage> {
         ),
         backgroundColor: Colors.red,
       ));
-      print("ERROR ADDING REGISTRATION: $e");
+      print("ERROR REGISTERING: $e");
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black87,
-      body: SingleChildScrollView(
-        child: Stack(
-          fit: StackFit.expand,
+      backgroundColor: Color.fromARGB(255, 251, 251, 251),
+      appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 251, 251, 251),
+        title: Center(child: Text(" REGISTRATION")),
+      ),
+      body: Form(
+        key: formkey,
+        child: ListView(
+          padding: EdgeInsets.symmetric(vertical: 20, horizontal: 30),
           children: [
-            Positioned(
-              top: 50,
-              left: 280,
-              child: Container(
-                height: 60,
-                width: 60,
-                decoration:
-                    BoxDecoration(color: Colors.pink, shape: BoxShape.circle),
+           GestureDetector(
+  onTap: _pickImage, // Your image picker function
+  child: CircleAvatar(
+    radius: 100, // Adjust size as needed
+    backgroundColor: Colors.grey[200],
+    // If an image is selected, show it as backgroundImage
+    backgroundImage: _image != null ? FileImage(_image!) : null,
+    // If no image is selected, show an icon in the center
+    child: _image == null
+        ? const Icon(
+            Icons.person, // or Icons.add_a_photo
+            color: Color.fromARGB(255, 58, 58, 58),
+            size: 50,
+          )
+        : null,
+  ),
+),
+
+
+            SizedBox(
+              height: 10,
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            TextFormField(
+              controller: _nameController,
+              validator: (value) => FormValidation.validateName(value),
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(
+                    borderSide: BorderSide.none,
+                    borderRadius: BorderRadius.all(Radius.circular(25))),
+                filled: true,
+                fillColor: Color.fromARGB(255, 236, 236, 236),
+                labelText: "Name",
+                prefixIcon: Icon(Icons.account_circle),
               ),
             ),
-            Positioned(
-              top: 80,
-              left: 50,
-              child: Container(
-                height: 40,
-                width: 40,
-                decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 19, 33, 111),
-                    shape: BoxShape.circle),
+            SizedBox(
+              height: 20,
+            ),
+            TextFormField(
+              controller: _emailController,
+              validator: (value) => FormValidation.validateEmail(value),
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(
+                    borderSide: BorderSide.none,
+                    borderRadius: BorderRadius.all(Radius.circular(25))),
+                filled: true,
+                fillColor: Color.fromARGB(255, 236, 236, 236),
+                labelText: "Email",
+                prefixIcon: Icon(Icons.email_outlined),
               ),
             ),
-            Positioned(
-              top: 150,
-              left: 30,
-              child: Container(
-                height: 800,
-                width: 800,
-                decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 19, 33, 111),
-                    shape: BoxShape.circle),
+            SizedBox(
+              height: 20,
+            ),
+            TextFormField(
+              controller: _contactController,
+              validator: (value) => FormValidation.validateContact(value),
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(
+                    borderSide: BorderSide.none,
+                    borderRadius: BorderRadius.all(Radius.circular(25))),
+                filled: true,
+                fillColor: Color.fromARGB(255, 236, 236, 236),
+                labelText: "Contact",
+                prefixIcon: Icon(Icons.phone),
               ),
             ),
-            SingleChildScrollView(
-              child: Form(
-                key: formkey,
-                child: Column(
-                  children: [
-                    SizedBox(
-                      height: 150,
-                    ),
-                    Container(
-                      // child: Icon(Icons.person_2_outlined, size: 100,),
-        
-                      height: 170,
-                      width: 170,
-                      decoration: BoxDecoration(
-                        color: Colors.pink[300],
-                        shape: BoxShape.circle,
-                      ),
-                      child: Image.asset(
-                        'assets/bg3.png',
-                        width: 300, // Set desired width
-                        height: 300, // Set desired height
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    // Text("Registration",),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 100.0, top: 40),
-                      child: Column(
-                        children: [
-                          TextFormField(
-                            style: TextStyle(color: Colors.white),
-                            controller: _nameController,
-                            validator: (value) =>
-                                FormValidation.validateName(value),
-                            decoration: const InputDecoration(
-                                labelText: "Name",
-                                prefixIcon: Icon(Icons.account_circle),
-                                enabledBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.pink)),
-                                focusedBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(
-                                        color: Color.fromARGB(255, 112, 36, 61),
-                                        width: 2))),
-                          ),
-                          SizedBox(
-                            height: 15,
-                          ),
-                          TextFormField(
-                            style: TextStyle(color: Colors.white),
-                            controller: _emailController,
-                            validator: (value) =>
-                                FormValidation.validateEmail(value),
-                            decoration: const InputDecoration(
-                                labelText: "Email",
-                                prefixIcon: Icon(Icons.email_outlined),
-                                enabledBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(
-                                  color: Colors.pink,
-                                )),
-                                focusedBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(
-                                        color: Color.fromARGB(255, 112, 36, 61),
-                                        width: 2))),
-                          ),
-                          SizedBox(
-                            height: 15,
-                          ),
-                          TextFormField(
-                            style: TextStyle(color: Colors.white),
-                            controller: _addressController,
-                            validator: (value) =>
-                                FormValidation.validateAddress(value),
-                            decoration: const InputDecoration(
-                                labelText: "Address",
-                                prefixIcon: Icon(Icons.home),
-                                enabledBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(
-                                  color: Colors.pink,
-                                )),
-                                focusedBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(
-                                        color: Color.fromARGB(255, 112, 36, 61),
-                                        width: 2))),
-                          ),
-                          SizedBox(
-                            height: 15,
-                          ),
-                          TextFormField(
-                            style: TextStyle(color: Colors.white),
-                            controller: _contactController,
-                            validator: (value) =>
-                                FormValidation.validateContact(value),
-                            decoration: const InputDecoration(
-                                labelText: "Contact",
-                                prefixIcon: Icon(Icons.phone_android_rounded),
-                                enabledBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(
-                                  color: Colors.pink,
-                                )),
-                                focusedBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(
-                                        color: Color.fromARGB(255, 112, 36, 61),
-                                        width: 2))),
-                          ),
-                          SizedBox(
-                            height: 15,
-                          ),
-                          TextFormField(
-                            style: TextStyle(color: Colors.white),
-                            controller: _passwordController,
-                            validator: (value) =>
-                                FormValidation.validatePassword(value),
-                            decoration: const InputDecoration(
-                                labelText: "Password",
-                                prefixIcon: Icon(Icons.lock),
-                                enabledBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.pink)),
-                                focusedBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(
-                                        color: Color.fromARGB(255, 112, 36, 61),
-                                        width: 2))),
-                          ),
-                          SizedBox(
-                            height: 15,
-                          ),
-                          TextFormField(
-                            style: TextStyle(color: Colors.white),
-                            controller: _confirmpasswordController,
-                            //  validator: (value) => FormValidation.validateConfirmPassword(value),
-                            decoration: const InputDecoration(
-                                labelText: "Confirm Password",
-                                prefixIcon: Icon(Icons.lock_reset_outlined),
-                                enabledBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.pink)),
-                                focusedBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(
-                                        color: Color.fromARGB(255, 112, 36, 61),
-                                        width: 2))),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Align(
-                        alignment: Alignment.centerRight,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.pink),
-                          onPressed: () {
-                            if (formkey.currentState!.validate()) {
-                              register();
-                            }
-                          },
-                          child: const Text(
-                            "REGISTER",
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+            SizedBox(
+              height: 20,
+            ),
+            TextFormField(
+              obscureText: true,
+              controller: _passwordController,
+              validator: (value) => FormValidation.validatePassword(value),
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(
+                    borderSide: BorderSide.none,
+                    borderRadius: BorderRadius.all(Radius.circular(25))),
+                filled: true,
+                fillColor: Color.fromARGB(255, 236, 236, 236),
+                labelText: "Password",
+                prefixIcon: Icon(Icons.lock),
+                suffixIcon: Icon(Icons.visibility),
+              ),
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            TextFormField(
+              obscureText: true,
+              controller: _confirmpasswordController,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(
+                    borderSide: BorderSide.none,
+                    borderRadius: BorderRadius.all(Radius.circular(25))),
+                filled: true,
+                fillColor: Color.fromARGB(255, 236, 236, 236),
+                labelText: "Confirm Password",
+                prefixIcon: Icon(Icons.lock_reset),
+                suffixIcon: Icon(Icons.visibility),
+              ),
+            ),
+            SizedBox(
+              height: 30,
+            ),
+            ElevatedButton(
+              onPressed: () {
+                register();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor:
+                    Color.fromRGBO(62, 125, 235, 1), // Custom color
+                foregroundColor: Colors.black, // Text color
+              ),
+              child: const Text("REGISTER"),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text("Have an account?"),
+                TextButton(
+                  onPressed: () {
+                 
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage(),));
+                     
+                    // Navigate to sign-in screen
+                  },
+                  child: const Text("Sign In",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Color.fromRGBO(255, 213, 85, 1),
+                      )),
                 ),
-              ),
+              ],
             ),
           ],
         ),

@@ -1,7 +1,70 @@
 import 'package:flutter/material.dart';
+import 'package:user_eventticket/main.dart';
+import 'package:user_eventticket/screens/eventdetails.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  List<Map<String, dynamic>> eventList = [];
+
+  String name = '';
+  String image = '';
+
+  Future<void> fetchUser() async {
+    try {
+      final response = await supabase
+          .from('tbl_user')
+          .select()
+          .eq('id', supabase.auth.currentUser!.id)
+          .single();
+      print(response);
+      setState(() {
+        name = response['user_name'];
+        image = response['user_photo'];
+      });
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+  Future<void> fetchevent() async {
+    try {
+      String uid = supabase.auth.currentUser!.id;
+      final response = await supabase.from("tbl_event").select();
+      print(response);
+      setState(() {
+        eventList = response;
+      });
+    } catch (e) {
+      print("Error: $e");
+    }
+  }
+
+  List<Map<String, dynamic>> eventTypeList = [];
+  Future<void> fetchType() async {
+    try {
+      final response = await supabase.from('tbl_eventtype').select();
+      setState(() {
+        eventTypeList = response;
+      });
+    } catch (e) {
+      print("Error: $e");
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    fetchevent();
+    fetchUser();
+    fetchType();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -12,16 +75,16 @@ class HomePage extends StatelessWidget {
         elevation: 0,
         title: Row(
           children: [
-            const CircleAvatar(
-              backgroundImage: AssetImage("assets/profile.jpg"),
+            CircleAvatar(
+              backgroundImage: NetworkImage(image),
             ),
             const SizedBox(width: 10),
-            const Column(
+            Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text("Hellooo ",
                     style: TextStyle(color: Colors.grey, fontSize: 12)),
-                Text("Meeee",
+                Text(name,
                     style:
                         TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
               ],
@@ -65,7 +128,7 @@ class HomePage extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text("Featured",
+                const Text("New Events",
                     style:
                         TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 TextButton(
@@ -84,8 +147,9 @@ class HomePage extends StatelessWidget {
               height: 180,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                itemCount: 5,
+                itemCount: eventList.length,
                 itemBuilder: (context, index) {
+                  final data = eventList[index];
                   return Padding(
                     padding: const EdgeInsets.only(right: 10),
                     child: Container(
@@ -104,9 +168,20 @@ class HomePage extends StatelessWidget {
                               Colors.transparent
                             ],
                           ),
+                          image: DecorationImage(
+                            image: NetworkImage(data['event_photo']),
+                            fit: BoxFit.cover,
+                          ),
                         ),
                         padding: const EdgeInsets.all(12),
                         alignment: Alignment.bottomLeft,
+                        child: Text(
+                          data['event_name'],
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold),
+                        ),
                       ),
                     ),
                   );
@@ -136,29 +211,25 @@ class HomePage extends StatelessWidget {
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
-                children: [
-                  "🎨 Art",
-                  "🎵 Music",
-                  "📚 Workshop",
-                  "🏋️‍♂️ Fitness"
-                ]
-                    .map((category) => Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 5),
-                          child: Chip(
-                              label: Text(category),
-                              backgroundColor:
-                                  Color.fromARGB(255, 231, 128, 60)),
-                        ))
-                    .toList(),
+                children: eventTypeList.map((eventType) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 5),
+                    child: Chip(
+                      label: Text(eventType['eventtype_name'] ?? 'Unknown'),
+                      backgroundColor: Color.fromARGB(255, 231, 128, 60),
+                    ),
+                  );
+                }).toList(),
               ),
             ),
+
             const SizedBox(height: 10),
 
             // Popular Events Grid
             GridView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              itemCount: 6,
+              itemCount: eventList.length,
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 crossAxisSpacing: 10,
@@ -166,28 +237,34 @@ class HomePage extends StatelessWidget {
                 childAspectRatio: 0.75,
               ),
               itemBuilder: (context, index) {
-                return Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    image: const DecorationImage(
-                      image: AssetImage("assets/event_sample.jpg"),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
+                final data = eventList[index];
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => EventDetails(data: data),));
+                  },
                   child: Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12),
-                      gradient: LinearGradient(
-                        begin: Alignment.bottomCenter,
-                        end: Alignment.topCenter,
-                        colors: [
-                          Colors.black.withOpacity(0.7),
-                          Colors.transparent
-                        ],
+                      image: DecorationImage(
+                        image: NetworkImage(data['event_photo']),
+                        fit: BoxFit.cover,
                       ),
                     ),
-                    padding: const EdgeInsets.all(8),
-                    alignment: Alignment.bottomLeft,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        gradient: LinearGradient(
+                          begin: Alignment.bottomCenter,
+                          end: Alignment.topCenter,
+                          colors: [
+                            Colors.black.withOpacity(0.7),
+                            Colors.transparent
+                          ],
+                        ),
+                      ),
+                      padding: const EdgeInsets.all(8),
+                      alignment: Alignment.bottomLeft,
+                    ),
                   ),
                 );
               },
