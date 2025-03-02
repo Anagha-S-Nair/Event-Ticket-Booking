@@ -11,130 +11,153 @@ class Landingpage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/l6.jpg'),
-            fit: BoxFit.cover,
+      body: Stack(
+        children: [
+          // Background Image
+          Positioned.fill(
+            child: Image.asset(
+              'assets/l6.jpg',
+              fit: BoxFit.cover,
+            ),
           ),
-        ),
-        child: ListView(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          // Semi-transparent Overlay
+          Positioned.fill(
+            child: Container(
+              color: Colors.black.withOpacity(0.5),
+            ),
+          ),
+          // Content
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(15.0),
-                  child: Text(
-                    "EVENT",
-                    style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w900,
-                        color: Colors.white),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(15.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.push(
+                // Header Row
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "EVENT",
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        letterSpacing: 1.5,
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => Stallregistration(),
-                              ));
-                        },
-                        child: Text(
-                          "SIGNUP",
-                          style: TextStyle(
-                            decorationColor: Colors.white,
-                            fontSize: 18,
-                            color: Colors.white,
-                            decoration: TextDecoration.underline,
+                              ),
+                            );
+                          },
+                          child: Text(
+                            "SIGNUP",
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              decoration: TextDecoration.underline,
+                            ),
                           ),
                         ),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.push(
+                        SizedBox(width: 10),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => LoginPage(),
-                              ));
+                              ),
+                            );
+                          },
+                          child: Text(
+                            "LOGIN",
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+                Spacer(),
+                // Main Text
+                Center(
+                  child: Column(
+                    children: [
+                      Text(
+                        "Book Smart. Experience More.",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 40,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          letterSpacing: 1.2,
+                          shadows: [
+                            Shadow(
+                              offset: Offset(2, 2),
+                              blurRadius: 4,
+                              color: Colors.black38,
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 15),
+                      Text(
+                        "Book today, experience tomorrow.",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white70,
+                        ),
+                      ),
+                      SizedBox(height: 40),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => OrganiserHomePage(),
+                            ),
+                          );
                         },
+                        style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 30, vertical: 15),
+                          backgroundColor: Colors.white,
+                          foregroundColor: Colors.black,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          elevation: 5,
+                        ),
                         child: Text(
-                          "LOGIN",
+                          "GET STARTED",
                           style: TextStyle(
-                            decorationColor: Colors.white,
                             fontSize: 18,
-                            color: Colors.white,
-                            decoration: TextDecoration.underline,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
                     ],
                   ),
-                )
+                ),
+                Spacer(),
               ],
             ),
-            SizedBox(
-              height: 220,
-            ),
-            Center(
-              child: Text(
-                "Book Smart. Experience More.",
-                style: TextStyle(
-                  fontSize: 45,
-                  fontWeight: FontWeight.w900,
-                  color: Colors.white,
-                  shadows: [
-                    Shadow(
-                      offset: Offset(3.0, 3.0), // Position of the shadow
-                      blurRadius: 2.0, // Softness of the shadow
-                      color: const Color.fromARGB(255, 66, 66, 66)
-                          .withOpacity(0.8), // Shadow color with opacity
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            SizedBox(
-              height: 30,
-            ),
-            Center(
-              child: Text(
-                "Book today, experience tomorrow.",
-                style: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.white),
-              ),
-            ),
-            SizedBox(
-              height: 30,
-            ),
-            Center(
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => OrganiserHomePage(),
-                      ));
-                },
-                child: Text(
-                  "GET STARTED",
-                  style: TextStyle(
-                    fontSize: 15,
-                    color: const Color.fromARGB(255, 43, 40, 40),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

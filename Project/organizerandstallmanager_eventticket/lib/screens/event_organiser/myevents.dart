@@ -36,37 +36,37 @@ class _EventsPageState extends State<EventsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF1E1E2E),
+      backgroundColor: Color(0xFF121212),
       appBar: AppBar(
-        title: Text("Events"),
-        backgroundColor: Colors.blue,
+        title: Text("My Events",
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+        backgroundColor: Colors.blueAccent,
+        elevation: 4,
         actions: [
-          TextButton(
+          TextButton.icon(
             onPressed: () {
               Navigator.push(context,
                   MaterialPageRoute(builder: (context) => Createevent()));
             },
-            child: Row(
-              children: [
-                Text(
-                  "Create",
-                  style: TextStyle(color: Colors.black),
-                ),
-                SizedBox(width: 3),
-                Icon(Icons.add, color: Colors.black),
-              ],
+            icon: Icon(Icons.add, color: Colors.white),
+            label: Text(
+              "Create",
+              style: TextStyle(color: Colors.white, fontSize: 16),
             ),
+            style: ButtonStyle(
+                overlayColor:
+                    MaterialStateProperty.all(Colors.white.withOpacity(0.1))),
           ),
         ],
       ),
       body: Padding(
-        padding: EdgeInsets.all(8.0),
+        padding: EdgeInsets.all(12.0),
         child: GridView.builder(
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 4,
-            crossAxisSpacing: 8,
-            mainAxisSpacing: 8,
-            childAspectRatio: 1.2,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+            childAspectRatio: 0.85,
           ),
           itemCount: eventList.length,
           itemBuilder: (context, index) {
@@ -76,55 +76,58 @@ class _EventsPageState extends State<EventsPage> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => EventDetails(
-                        data: data,
-                      ),
+                      builder: (context) => EventDetails(data: data),
                     ));
               },
               child: Card(
-                color: Colors.white.withOpacity(1), // Sheer white background
+                color: Colors.grey[900],
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(16),
                 ),
-                elevation: 6, // Increased elevation for better pop-up effect
-                shadowColor: Colors.white, // White shadow effect
+                elevation: 6,
+                shadowColor: Colors.blueAccent.withOpacity(0.5),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     ClipRRect(
                       borderRadius:
-                          BorderRadius.vertical(top: Radius.circular(12)),
+                          BorderRadius.vertical(top: Radius.circular(16)),
                       child: Image.network(
                         data['event_photo'] ?? "",
-                        height: 220,
+                        height: 180,
                         width: double.infinity,
                         fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => Container(
+                          height: 180,
+                          color: Colors.grey[800],
+                          child: Center(
+                            child: Icon(Icons.image_not_supported,
+                                color: Colors.white70, size: 50),
+                          ),
+                        ),
                       ),
                     ),
                     Padding(
-                      padding: EdgeInsets.all(8.0),
+                      padding: EdgeInsets.all(12.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(data['event_name'] ?? "",
+                          Text(data['event_name'] ?? "No Name",
                               style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black)),
-                          SizedBox(height: 4),
-                          Padding(
-                            padding: EdgeInsets.symmetric(vertical: 4.0),
-                            child: Divider(color: Colors.black54),
-                          ),
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white)),
+                          SizedBox(height: 6),
+                          Divider(color: Colors.white24),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text("Type",
+                              Text(data['event_type'] ?? "Type",
                                   style: TextStyle(
-                                      fontSize: 12, color: Colors.black)),
-                              Text("City",
+                                      fontSize: 13, color: Colors.white70)),
+                              Text(data['event_city'] ?? "City",
                                   style: TextStyle(
-                                      fontSize: 12, color: Colors.grey[700])),
+                                      fontSize: 13, color: Colors.white38)),
                             ],
                           ),
                         ],

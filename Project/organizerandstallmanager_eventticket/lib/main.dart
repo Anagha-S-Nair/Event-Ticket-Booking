@@ -4,7 +4,6 @@ import 'package:organizerandstallmanager_eventticket/landingpage.dart';
 import 'package:organizerandstallmanager_eventticket/login.dart';
 import 'package:organizerandstallmanager_eventticket/organsierRegistration.dart';
 import 'package:organizerandstallmanager_eventticket/screens/event_organiser/createevent.dart';
-import 'package:organizerandstallmanager_eventticket/screens/event_organiser/events.dart';
 import 'package:organizerandstallmanager_eventticket/screens/event_organiser/myprofile.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 

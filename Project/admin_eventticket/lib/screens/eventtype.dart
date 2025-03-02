@@ -13,6 +13,7 @@ class _EventypeState extends State<Eventtype> {
   final TextEditingController _nameController = TextEditingController();
   int editID = 0;
   final formKey = GlobalKey<FormState>();
+
   Future<void> inserteventtype() async {
     try {
       String name = _nameController.text;
@@ -21,7 +22,7 @@ class _EventypeState extends State<Eventtype> {
       });
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(
-          "Event Inserted",
+          "Event Inserted Successfully",
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: Colors.green,
@@ -31,7 +32,7 @@ class _EventypeState extends State<Eventtype> {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(
-          "Failed. Please Try Again!!",
+          "Insertion Failed. Please Try Again!",
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: Colors.red,
@@ -52,11 +53,18 @@ class _EventypeState extends State<Eventtype> {
   Future<void> deleteeventtype(String did) async {
     try {
       await supabase.from("tbl_eventtype").delete().eq("id", did);
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text("Deleted ")));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            "Event Type Deleted Successfully",
+            style: TextStyle(color: Colors.white),
+          ),
+          backgroundColor: Colors.red,
+        ),
+      );
       fetcheventtype();
     } catch (e) {
-      print("Error:$e");
+      print("Error: $e");
     }
   }
 
@@ -77,81 +85,144 @@ class _EventypeState extends State<Eventtype> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     fetcheventtype();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      
-      child: Form(
-        key: formKey,
-        child: ListView(
-          children: [
-            TextFormField(
-                controller: _nameController,
-                keyboardType: TextInputType.name,
-                style: TextStyle(color: Colors.black),
-                validator: (value) {
-                  if (value == "" || value!.isEmpty) {
-                    return "Please enter eventtype";
-                  }
-                  if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(value)) {
-                    return 'Name must contain only alphabets';
-                  }
-                  return null;
-                },
-                decoration: InputDecoration(
-                  hintText: "Enter eventtype",
-                  hintStyle:
-                      TextStyle(color: const Color.fromARGB(112, 91, 74, 74)),
-                  border: OutlineInputBorder(),
-                )),
-            ElevatedButton(
-                onPressed: () {
-                  if (formKey.currentState!.validate()) {
-                    if (editID == 0) {
-                      inserteventtype();
-                    } else {
-                      editeventtype();
-                    }
-                  }
-                },
-                child: Text("Submit")),
-            ListView.builder(
-              physics: NeverScrollableScrollPhysics(),
-              itemCount: eventtypeList.length,
-              shrinkWrap: true,
-              itemBuilder: (context, index) {
-                final data = eventtypeList[index];
-                return ListTile(
-                  title: Text(data['eventtype_name']),
-                  trailing: SizedBox(
-                    width: 80,
-                    child: Row(
-                      children: [
-                        IconButton(
-                            onPressed: () {
-                              deleteeventtype(data['id'].toString());
-                            },
-                            icon: Icon(Icons.delete)),
-                        IconButton(
-                            onPressed: () {
-                              setState(() {
-                                editID = data['id'];
-                                _nameController.text = data['eventtype_name'];
-                              });
-                            },
-                            icon: Icon(Icons.edit))
-                      ],
-                    ),
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Card(
+          color: Colors.white,
+
+          elevation: 4,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  editID == 0 ? "Add Event Type" : "Edit Event Type",
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blueGrey,
                   ),
-                );
-              },
-            )
-          ],
+                ),
+                SizedBox(height: 20),
+                Form(
+                  key: formKey,
+                  child: Column(
+                    
+                    children: [
+                      TextFormField(
+                        controller: _nameController,
+                        keyboardType: TextInputType.name,
+                        style: TextStyle(color: Colors.black),
+                        validator: (value) {
+                          if (value == "" || value!.isEmpty) {
+                            return "Please enter event type";
+                          }
+                          if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(value)) {
+                            return 'Name must contain only alphabets';
+                          }
+                          return null;
+                        },
+                        decoration: InputDecoration(
+                          labelText: "Enter Event Type",
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 16),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blueGrey,
+                            padding: EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          onPressed: () {
+                            if (formKey.currentState!.validate()) {
+                              if (editID == 0) {
+                                inserteventtype();
+                              } else {
+                                editeventtype();
+                              }
+                            }
+                          },
+                          child: Text(
+                            editID == 0 ? "Add Event Type" : "Update Event Type",
+                            style: TextStyle(fontSize: 16, color: Colors.white),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 24),
+                Text(
+                  "Added Event Types",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blueGrey,
+                  ),
+                ),
+                SizedBox(height: 10),
+                
+                /// 📌 **Styled List**
+                ListView.builder(
+                  physics: NeverScrollableScrollPhysics(),
+                  itemCount: eventtypeList.length,
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) {
+                    final data = eventtypeList[index];
+                    return Card(         
+                       color: Colors.white,
+
+                      margin: EdgeInsets.symmetric(vertical: 8),
+                      elevation: 2,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      child: ListTile(
+                        title: Text(
+                          data['eventtype_name'],
+                          style: TextStyle(fontWeight: FontWeight.w500),
+                        ),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  editID = data['id'];
+                                  _nameController.text = data['eventtype_name'];
+                                });
+                              },
+                              icon: Icon(Icons.edit, color: Colors.blue),
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                deleteeventtype(data['id'].toString());
+                              },
+                              icon: Icon(Icons.delete, color: Colors.red),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

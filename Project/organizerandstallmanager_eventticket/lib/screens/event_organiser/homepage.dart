@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:organizerandstallmanager_eventticket/screens/event_organiser/createevent.dart';
-import 'package:organizerandstallmanager_eventticket/screens/event_organiser/events.dart';
+import 'package:organizerandstallmanager_eventticket/screens/event_organiser/myevents.dart';
 import 'package:organizerandstallmanager_eventticket/screens/event_organiser/myprofile.dart';
 
 class OrganiserHomePage extends StatelessWidget {
