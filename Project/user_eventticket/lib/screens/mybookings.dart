@@ -122,17 +122,11 @@ class _MyBookingsState extends State<MyBookings> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
+    return Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.black),
-            onPressed: () => Navigator.pop(context),
-          ),
           title:
               const Text("My Bookings", style: TextStyle(color: Colors.black)),
         ),
@@ -267,7 +261,6 @@ class _MyBookingsState extends State<MyBookings> {
                       );
                     },
                   ),
-      ),
-    );
+      );
   }
 }
