@@ -1,15 +1,6 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:user_eventticket/firebase_options.dart';
-import 'package:user_eventticket/screens/event.dart';
-import 'package:user_eventticket/screens/eventdetails.dart';
-import 'package:user_eventticket/screens/homepage.dart';
 import 'package:user_eventticket/screens/login.dart';
-import 'package:user_eventticket/screens/mybookings.dart';
-import 'package:user_eventticket/screens/myprofile.dart';
-import 'package:user_eventticket/screens/registration.dart';
-import 'package:user_eventticket/screens/search.dart';
 
 Future<void> main() async {
   await Supabase.initialize(

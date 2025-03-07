@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:user_eventticket/main.dart';
 import 'package:user_eventticket/screens/eventdetails.dart';
+import 'package:user_eventticket/screens/mybookings.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -10,10 +11,18 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  int selectedIndex = 0;
   List<Map<String, dynamic>> eventList = [];
-
+  List<Map<String, dynamic>> filteredEvents = [];
+  List<Map<String, dynamic>> eventTypeList = [];
+  
   String name = '';
   String image = '';
+  String selectedCategory = '';
+  String searchQuery = '';
+  final TextEditingController _searchController = TextEditingController();
+  FocusNode _searchFocusNode = FocusNode();
+  bool _showSuggestions = false;
 
   Future<void> fetchUser() async {
     try {
@@ -34,18 +43,17 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> fetchevent() async {
     try {
-      String uid = supabase.auth.currentUser!.id;
-      final response = await supabase.from("tbl_event").select();
+      final response = await supabase.from("tbl_event").select("*, tbl_eventtype(*),tbl_place(*, tbl_district(*))");
       print(response);
       setState(() {
-        eventList = response;
+        eventList = List<Map<String, dynamic>>.from(response);
+        filteredEvents = eventList;
       });
     } catch (e) {
       print("Error: $e");
     }
   }
 
-  List<Map<String, dynamic>> eventTypeList = [];
   Future<void> fetchType() async {
     try {
       final response = await supabase.from('tbl_eventtype').select();
@@ -59,11 +67,52 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     fetchevent();
     fetchUser();
     fetchType();
+    _searchController.addListener(_onSearchChanged);
+  }
+
+  @override
+  void dispose() {
+    _searchController.removeListener(_onSearchChanged);
+    _searchController.dispose();
+    _searchFocusNode.dispose();
+    super.dispose();
+  }
+
+  void _onSearchChanged() {
+    setState(() {
+      searchQuery = _searchController.text;
+      _showSuggestions = searchQuery.isNotEmpty;
+      filterEvents();
+    });
+  }
+
+  void filterEvents() {
+    setState(() {
+      filteredEvents = eventList.where((event) {
+        print(event);
+        final matchesSearch = event['event_name']
+            .toString()
+            .toLowerCase()
+            .contains(searchQuery.toLowerCase());
+        final matchesCategory = selectedCategory.isEmpty ||
+            event['eventtype_id'].toString() == selectedCategory;
+        return matchesSearch && matchesCategory;
+      }).toList();
+    });
+  }
+
+  List<String> getSuggestions() {
+    return eventList
+        .where((event) => event['event_name']
+            .toString()
+            .toLowerCase()
+            .contains(searchQuery.toLowerCase()))
+        .map((event) => event['event_name'].toString())
+        .toList();
   }
 
   @override
@@ -103,28 +152,59 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Search Bar with Filter Icon
-            TextField(
-              decoration: InputDecoration(
-                hintText: "Search events",
-                prefixIcon: const Icon(Icons.search),
-                suffixIcon: IconButton(
-                  icon: const Icon(Icons.filter_list),
-                  onPressed: () {
-                    // TODO: Implement filter functionality
-                  },
+            Stack(
+              children: [
+                TextField(
+                  controller: _searchController,
+                  focusNode: _searchFocusNode,
+                  decoration: InputDecoration(
+                    hintText: "Search events",
+                    prefixIcon: const Icon(Icons.search),
+                    suffixIcon: IconButton(
+                      icon: const Icon(Icons.filter_list),
+                      onPressed: () {},
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
+                    filled: true,
+                    fillColor: Colors.grey[200],
+                  ),
                 ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
-                filled: true,
-                fillColor: Colors.grey[200],
-              ),
+                if (_showSuggestions)
+                  Positioned(
+                    top: 60,
+                    left: 0,
+                    right: 0,
+                    child: Material(
+                      elevation: 4,
+                      borderRadius: BorderRadius.circular(8),
+                      child: Container(
+                        constraints: const BoxConstraints(maxHeight: 200),
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: getSuggestions().length,
+                          itemBuilder: (context, index) {
+                            final suggestion = getSuggestions()[index];
+                            return ListTile(
+                              title: Text(suggestion),
+                              onTap: () {
+                                _searchController.text = suggestion;
+                                _showSuggestions = false;
+                                _searchFocusNode.unfocus();
+                                filterEvents();
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
             ),
             const SizedBox(height: 20),
 
-            // Featured Events
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -190,11 +270,10 @@ class _HomePageState extends State<HomePage> {
             ),
             const SizedBox(height: 20),
 
-            // Category Filters
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text("Popular Events ",
+                const Text("Popular Events",
                     style:
                         TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 TextButton(
@@ -211,25 +290,58 @@ class _HomePageState extends State<HomePage> {
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
-                children: eventTypeList.map((eventType) {
-                  return Padding(
+                children: [
+                  Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 5),
-                    child: Chip(
-                      label: Text(eventType['eventtype_name'] ?? 'Unknown'),
-                      backgroundColor: Color.fromARGB(255, 231, 128, 60),
+                    child: ActionChip(
+                      label: const Text('All'),
+                      backgroundColor: selectedCategory.isEmpty
+                          ? Color.fromARGB(255, 231, 128, 60)
+                          : Colors.grey[300],
+                      labelStyle: TextStyle(
+                        color: selectedCategory.isEmpty 
+                          ? Colors.white 
+                          : Colors.black,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          selectedCategory = '';
+                          filterEvents();
+                        });
+                      },
                     ),
-                  );
-                }).toList(),
+                  ),
+                  ...eventTypeList.map((eventType) {
+                    final isSelected = selectedCategory == eventType['id'].toString();
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 5),
+                      child: ActionChip(
+                        label: Text(eventType['eventtype_name'] ?? 'Unknown'),
+                        backgroundColor: isSelected
+                            ? Color.fromARGB(255, 231, 128, 60)
+                            : Colors.grey[300],
+                        labelStyle: TextStyle(
+                          color: isSelected ? Colors.white : Colors.black,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            selectedCategory = eventType['id'].toString();
+                            filterEvents();
+                          });
+                        },
+                      ),
+                    );
+                  }).toList(),
+                ],
               ),
             ),
 
             const SizedBox(height: 10),
 
-            // Popular Events Grid
             GridView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              itemCount: eventList.length,
+              itemCount: filteredEvents.length,
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 crossAxisSpacing: 10,
@@ -237,10 +349,15 @@ class _HomePageState extends State<HomePage> {
                 childAspectRatio: 0.75,
               ),
               itemBuilder: (context, index) {
-                final data = eventList[index];
+                final data = filteredEvents[index];
                 return GestureDetector(
                   onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => EventDetails(data: data),));
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => EventDetails(data: data),
+                      ),
+                    );
                   },
                   child: Container(
                     decoration: BoxDecoration(
@@ -264,6 +381,14 @@ class _HomePageState extends State<HomePage> {
                       ),
                       padding: const EdgeInsets.all(8),
                       alignment: Alignment.bottomLeft,
+                      child: Text(
+                        data['event_name'],
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   ),
                 );
@@ -273,6 +398,20 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
+        currentIndex: selectedIndex,
+        onTap: (index) {
+          if(index==3){
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => MyBookings(),
+              ),
+            );
+          }
+          setState(() {
+            selectedIndex = index;
+          });
+        },
         selectedItemColor: Color.fromARGB(255, 231, 128, 60),
         unselectedItemColor: Colors.grey,
         items: const [

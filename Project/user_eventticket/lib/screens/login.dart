@@ -53,16 +53,18 @@ class _LoginPageState extends State<LoginPage> {
           padding: EdgeInsets.symmetric(vertical: 20, horizontal: 30),
           children: [
             Container(
-              width: 200,
-              height: 200,
+              width: 130,
+              height: 130,
               decoration: BoxDecoration(
                 color: Colors.pink,
                 shape: BoxShape.circle,
               ),
-              child: Image.asset(
-                'assets/bg5.png',
-                height: 180,
-                width: 100,
+              child: Center(
+                child: Image.asset(
+                  'assets/bg5.png',
+                  height: 80,
+                  width: 80,
+                ),
               ),
             ),
             SizedBox(height: 10),

@@ -1,0 +1,1 @@
+C:\Event-Ticket-Booking\Project\user_eventticket\build\app\intermediates\cxx\Debug\2j6i6f17\obj\arm64-v8a

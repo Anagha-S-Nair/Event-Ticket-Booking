@@ -5,7 +5,6 @@ import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
 import 'package:user_eventticket/components/form_validation.dart';
 import 'package:user_eventticket/main.dart';
-import 'package:user_eventticket/screens/login.dart';
 
 class RegistrationPage extends StatefulWidget {
   const RegistrationPage({super.key});

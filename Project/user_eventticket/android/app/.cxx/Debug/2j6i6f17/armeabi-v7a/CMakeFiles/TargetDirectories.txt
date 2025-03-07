@@ -1,0 +1,2 @@
+C:/Event-Ticket-Booking/Project/user_eventticket/android/app/.cxx/Debug/2j6i6f17/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/Event-Ticket-Booking/Project/user_eventticket/android/app/.cxx/Debug/2j6i6f17/armeabi-v7a/CMakeFiles/rebuild_cache.dir
