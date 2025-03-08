@@ -15,29 +15,48 @@ class EventDetails extends StatefulWidget {
 class _EventDetailsState extends State<EventDetails> {
   String btn = "Book Event";
   int? remTocket;
+  Future<void> insertFavorite() async {
+    try {
+      await supabase.from('tbl_favorite').insert({
+        'event_id': widget.data['id'],
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Event added to favorites!'),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error adding to favorites: $e'),
+        ),
+      );
+    }
+  }
 
   Future<void> checkTicket() async {
     try {
       int availableTickets = widget.data['event_count'] ?? 0;
-       final ticketSum = await supabase
-        .from('tbl_eventbooking')
-        .select('eventbooking_ticket')
-        .eq('event_id', widget.data['id']).eq('eventbooking_status', 1);
+      final ticketSum = await supabase
+          .from('tbl_eventbooking')
+          .select('eventbooking_ticket')
+          .eq('event_id', widget.data['id'])
+          .eq('eventbooking_status', 1);
 
-    final totalTickets = ticketSum.fold<int>(
-        0, (sum, row) => sum + (row['eventbooking_ticket'] as int));
+      final totalTickets = ticketSum.fold<int>(
+          0, (sum, row) => sum + (row['eventbooking_ticket'] as int));
 
-    setState(() {
-      remTocket = availableTickets - totalTickets; // Safe subtraction
-    });
-
-    if (totalTickets >= availableTickets) {
       setState(() {
-        btn = "Sold Out";
+        remTocket = availableTickets - totalTickets; // Safe subtraction
       });
-    }
 
-    print('Total tickets booked: $totalTickets');
+      if (totalTickets >= availableTickets) {
+        setState(() {
+          btn = "Sold Out";
+        });
+      }
+
+      print('Total tickets booked: $totalTickets');
     } catch (e) {
       print("Error checking tickets: $e");
     }
@@ -51,7 +70,8 @@ class _EventDetailsState extends State<EventDetails> {
 
   void _showTicketBookingDialog() {
     int ticketCount = 0;
-    double ticketPrice = double.parse(widget.data['event_ticketprice'].toString());
+    double ticketPrice =
+        double.parse(widget.data['event_ticketprice'].toString());
     double totalAmount = 0.0;
 
     showDialog(
@@ -87,13 +107,14 @@ class _EventDetailsState extends State<EventDetails> {
                       ),
                       IconButton(
                         icon: Icon(Icons.add),
-                        onPressed: ticketCount < remTocket! ? () {
-                          
-                          setStateDialog(() {
-                            ticketCount++;
-                            totalAmount = ticketCount * ticketPrice;
-                          });
-                        } : null,
+                        onPressed: ticketCount < remTocket!
+                            ? () {
+                                setStateDialog(() {
+                                  ticketCount++;
+                                  totalAmount = ticketCount * ticketPrice;
+                                });
+                              }
+                            : null,
                       ),
                     ],
                   ),
@@ -119,25 +140,34 @@ class _EventDetailsState extends State<EventDetails> {
                       ? () async {
                           try {
                             // Here you would typically add the booking to your database
-                            final data = await supabase.from('tbl_eventbooking').insert({
-                              'event_id': widget.data['id'],
-                              'eventbooking_ticket': ticketCount,
-                              'eventbooking_amount': totalAmount,
-                            }).select('id').single();
-                            
+                            final data = await supabase
+                                .from('tbl_eventbooking')
+                                .insert({
+                                  'event_id': widget.data['id'],
+                                  'eventbooking_ticket': ticketCount,
+                                  'eventbooking_amount': totalAmount,
+                                })
+                                .select('id')
+                                .single();
+
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Tickets booked successfully!')),
+                              SnackBar(
+                                  content:
+                                      Text('Tickets booked successfully!')),
                             );
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => PaymentPage(id: widget.data['id'],),
+                                builder: (context) => PaymentPage(
+                                  id: data['id'],
+                                ),
                               ),
                             );
                             checkTicket(); // Update button state
                           } catch (e) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Error booking tickets: $e')),
+                              SnackBar(
+                                  content: Text('Error booking tickets: $e')),
                             );
                           }
                         }
@@ -164,7 +194,8 @@ class _EventDetailsState extends State<EventDetails> {
 
     String formattedTime = "Invalid Time";
     try {
-      DateTime eventTime = DateTime.parse("1970-01-01 ${widget.data['event_time']}");
+      DateTime eventTime =
+          DateTime.parse("1970-01-01 ${widget.data['event_time']}");
       formattedTime = DateFormat('HH:mm:ss').format(eventTime);
     } catch (e) {
       print("Error parsing time: $e");
@@ -176,7 +207,10 @@ class _EventDetailsState extends State<EventDetails> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
-          Icon(Icons.favorite_border, color: Colors.black),
+          IconButton(
+            icon: Icon(Icons.favorite_border, color: Colors.black),
+            onPressed: insertFavorite,
+          ),
           SizedBox(width: 16),
         ],
       ),

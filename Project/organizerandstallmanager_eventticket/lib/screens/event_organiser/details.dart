@@ -1,11 +1,48 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:organizerandstallmanager_eventticket/main.dart';
 import 'package:organizerandstallmanager_eventticket/screens/event_organiser/stallrequests.dart';
 
-class EventDetails extends StatelessWidget {
+class EventDetails extends StatefulWidget {
   final Map<String, dynamic> data;
 
   const EventDetails({super.key, required this.data});
+
+  @override
+  State<EventDetails> createState() => _EventDetailsState();
+}
+
+class _EventDetailsState extends State<EventDetails> {
+
+  int tickets = 0;
+
+  Future <void> getTicketCount() async {
+    try {
+      int availableTickets = widget.data['event_count'] ?? 0;
+      final ticketSum = await supabase
+          .from('tbl_eventbooking')
+          .select('eventbooking_ticket')
+          .eq('event_id', widget.data['id'])
+          .eq('eventbooking_status', 1);
+
+      final totalTickets = ticketSum.fold<int>(
+          0, (sum, row) => sum + (row['eventbooking_ticket'] as int));
+    setState(() {
+      tickets = availableTickets - totalTickets;
+    });
+    } catch (e) {
+      print("Error: $e");
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getTicketCount();
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +50,7 @@ class EventDetails extends StatelessWidget {
     String formattedDate = "Invalid Date";
     try {
       DateTime eventDate =
-          DateTime.parse(data['event_date']); // Assumes 'YYYY-MM-DD'
+          DateTime.parse(widget.data['event_date']); // Assumes 'YYYY-MM-DD'
       formattedDate = DateFormat('dd-MM-yy').format(eventDate);
     } catch (e) {
       print("Error parsing date: $e");
@@ -23,7 +60,7 @@ class EventDetails extends StatelessWidget {
     String formattedTime = "Invalid Time";
     try {
       DateTime eventTime = DateTime.parse(
-          "1970-01-01 ${data['event_time']}"); // Assumes 'HH:mm:ss'
+          "1970-01-01 ${widget.data['event_time']}"); // Assumes 'HH:mm:ss'
       formattedTime = DateFormat('HH-mm-ss').format(eventTime);
     } catch (e) {
       print("Error parsing time: $e");
@@ -40,7 +77,7 @@ class EventDetails extends StatelessWidget {
                   height: 350,
                   decoration: BoxDecoration(
                     image: DecorationImage(
-                      image: NetworkImage(data['event_photo']),
+                      image: NetworkImage(widget.data['event_photo']),
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -53,7 +90,7 @@ class EventDetails extends StatelessWidget {
                   top: 200,
                   left: 20,
                   child: Text(
-                    data['event_name'],
+                    widget.data['event_name'],
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 28,
@@ -84,7 +121,7 @@ class EventDetails extends StatelessWidget {
                         SizedBox(height: 10),
                         Text('Time: $formattedTime'), // Formatted time
                         SizedBox(height: 10),
-                        Text('Duration: ${data['event_duration']}'),
+                        Text('Duration: ${widget.data['event_duration']}'),
                       ],
                     ),
                   ),
@@ -108,7 +145,7 @@ class EventDetails extends StatelessWidget {
                         ),
                         SizedBox(height: 10),
                         Text(
-                          data['event_details'],
+                          widget.data['event_details'],
                           style: TextStyle(fontSize: 18),
                         ),
                         SizedBox(height: 20),
@@ -138,6 +175,7 @@ class EventDetails extends StatelessWidget {
                     ),
                   ),
                   Image.asset('assets/l8.jpg', height: 250, fit: BoxFit.cover),
+                  tickets == 0 ? Text('No tickets available') : Text('Available Tickets: $tickets'),
                 ],
               ),
             ),

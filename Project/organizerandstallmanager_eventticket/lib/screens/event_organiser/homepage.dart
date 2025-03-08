@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:organizerandstallmanager_eventticket/screens/event_organiser/booking.dart';
 import 'package:organizerandstallmanager_eventticket/screens/event_organiser/createevent.dart';
 import 'package:organizerandstallmanager_eventticket/screens/event_organiser/myevents.dart';
 import 'package:organizerandstallmanager_eventticket/screens/event_organiser/myprofile.dart';
@@ -74,7 +75,7 @@ class OrganiserHomePage extends StatelessWidget {
                       ),
                       TextButton(
                         onPressed: () {
-                          // Navigator.push(context, MaterialPageRoute(builder: (context) => (),));
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => BookingPage(),));
                         },
                         child: Text(
                           "Booking",
