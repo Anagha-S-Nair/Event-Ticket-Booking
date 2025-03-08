@@ -99,7 +99,7 @@ class _EventDetailsState extends State<EventDetails> {
                   ),
                   SizedBox(height: 16),
                   Text(
-                    'Total Amount: \$${totalAmount.toStringAsFixed(2)}',
+                    'Total Amount: ₹ ${totalAmount.toStringAsFixed(2)}',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
@@ -268,7 +268,7 @@ class _EventDetailsState extends State<EventDetails> {
                     child: Icon(Icons.attach_money, color: Colors.blue),
                   ),
                   SizedBox(width: 16),
-                  Text("\$${widget.data['event_ticketprice'].toString()}"),
+                  Text("\₹ ${widget.data['event_ticketprice'].toString()}"),
                 ],
               ),
               SizedBox(height: 16),

@@ -18,30 +18,30 @@ class _HomePageState extends State<HomePage> {
   int selectedIndex = 0;
 
   final List<String> pageName = [
-    'Dashboard',
-    'Account',
+    // 'Dashboard',
+    // 'Account',
     'District',
     'Place',
     'Event Type',
     'Stall Type',
     'Event Organiser',
-    'Stall Manager'
+    // 'Stall Manager'
   ];
 
   final List<IconData> pageIcon = [
-    Icons.dashboard,
-    Icons.supervised_user_circle,
+    // Icons.dashboard,
+    // Icons.supervised_user_circle,
     Icons.location_city,
     Icons.place,
     Icons.event,
     Icons.store,
     Icons.group,
-    Icons.storefront,
+    // Icons.storefront,
   ];
 
   final List<Widget> pageContent = [
-    Dashboard(),
-    Account(),
+    // Dashboard(),
+    // Account(),
     District(),
     Place(),
     Eventtype(),

@@ -17,6 +17,13 @@ class _PaymentPageState extends State<PaymentPage> {
   final TextEditingController _expiryDateController = TextEditingController();
   final TextEditingController _cvvController = TextEditingController();
 
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    fetchPaymentdata(); 
+     }
+
   Future<void> _processPayment() async {
     try {
       if (!_formKey.currentState!.validate()) {
@@ -45,6 +52,15 @@ class _PaymentPageState extends State<PaymentPage> {
       print('Error during payment: $e');
       
     }
+  }
+
+  String amount = "";
+
+  Future<void> fetchPaymentdata() async {
+    final response = await supabase.from('tbl_eventbooking').select("eventbooking_amount").eq('id', widget.id).single();
+    setState(() {
+      amount=response['eventbooking_amount'].toString();
+    });
   }
 
   String? validateCardNumber(String? value) {
@@ -198,10 +214,10 @@ class _PaymentPageState extends State<PaymentPage> {
                             Text(
                               'Total Amount',
                               style: TextStyle(fontSize: 16),
-                            ),
+                            ),  
                             SizedBox(height: 5),
                             Text(
-                              '\$99.99',
+                              amount,
                               style: TextStyle(
                                 fontSize: 28,
                                 fontWeight: FontWeight.bold,

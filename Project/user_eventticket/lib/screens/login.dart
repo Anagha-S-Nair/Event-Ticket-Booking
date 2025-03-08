@@ -59,13 +59,13 @@ class _LoginPageState extends State<LoginPage> {
                 color: Colors.pink,
                 shape: BoxShape.circle,
               ),
-              child: Center(
-                child: Image.asset(
-                  'assets/bg5.png',
-                  height: 80,
-                  width: 80,
-                ),
-              ),
+              // child: Center(
+              //   child: Image.asset(
+              //     'assets/bg5.png',
+              //     height: 80,
+              //     width: 80,
+              //   ),
+              // ),
             ),
             SizedBox(height: 10),
             TextFormField(
