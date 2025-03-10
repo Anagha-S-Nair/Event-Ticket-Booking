@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
 import 'package:user_eventticket/components/form_validation.dart';
 import 'package:user_eventticket/main.dart';
+import 'package:user_eventticket/screens/login.dart';
 
 class RegistrationPage extends StatefulWidget {
   const RegistrationPage({super.key});
@@ -24,9 +25,13 @@ class _RegistrationPageState extends State<RegistrationPage> {
       TextEditingController();
 
   final formkey = GlobalKey<FormState>();
-  
+
   File? _image;
   final ImagePicker _picker = ImagePicker();
+
+  // Add boolean variables for password visibility
+  bool _isPasswordVisible = false;
+  bool _isConfirmPasswordVisible = false;
 
   Future<void> _pickImage() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
@@ -47,7 +52,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
       String fileName = 'organisers-$formattedDate$fileExtension';
 
       await supabase.storage.from('organisers').upload(fileName, _image!);
-      final imageUrl = supabase.storage.from('organisers').getPublicUrl(fileName);
+      final imageUrl =
+          supabase.storage.from('organisers').getPublicUrl(fileName);
       return imageUrl;
     } catch (e) {
       print('Image upload failed: $e');
@@ -122,9 +128,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 251, 251, 251),
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 251, 251, 251),
+        backgroundColor: Colors.white,
         title: Center(child: Text(" REGISTRATION")),
       ),
       body: Form(
@@ -135,24 +141,26 @@ class _RegistrationPageState extends State<RegistrationPage> {
             GestureDetector(
               onTap: _pickImage,
               child: CircleAvatar(
-                radius: 100,
-                backgroundColor: Colors.grey[200],
+                radius: 80,
+                backgroundColor: Colors.white,
                 backgroundImage: _image != null ? FileImage(_image!) : null,
                 child: _image == null
                     ? const Icon(
-                        Icons.person,
+                        Icons.add_a_photo,
                         color: Color.fromARGB(255, 58, 58, 58),
                         size: 50,
                       )
                     : null,
               ),
             ),
-            SizedBox(height: 10),
+            SizedBox(height: 20),
             TextFormField(
               controller: _nameController,
               validator: (value) => FormValidation.validateName(value),
               decoration: const InputDecoration(
-                border: OutlineInputBorder(borderSide: BorderSide.none, borderRadius: BorderRadius.all(Radius.circular(25))),
+                border: OutlineInputBorder(
+                    borderSide: BorderSide.none,
+                    borderRadius: BorderRadius.all(Radius.circular(25))),
                 filled: true,
                 fillColor: Color.fromARGB(255, 236, 236, 236),
                 labelText: "Name",
@@ -164,7 +172,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
               controller: _emailController,
               validator: (value) => FormValidation.validateEmail(value),
               decoration: const InputDecoration(
-                border: OutlineInputBorder(borderSide: BorderSide.none, borderRadius: BorderRadius.all(Radius.circular(25))),
+                border: OutlineInputBorder(
+                    borderSide: BorderSide.none,
+                    borderRadius: BorderRadius.all(Radius.circular(25))),
                 filled: true,
                 fillColor: Color.fromARGB(255, 236, 236, 236),
                 labelText: "Email",
@@ -176,7 +186,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
               controller: _addressController,
               validator: (value) => FormValidation.validateAddress(value),
               decoration: const InputDecoration(
-                border: OutlineInputBorder(borderSide: BorderSide.none, borderRadius: BorderRadius.all(Radius.circular(25))),
+                border: OutlineInputBorder(
+                    borderSide: BorderSide.none,
+                    borderRadius: BorderRadius.all(Radius.circular(25))),
                 filled: true,
                 fillColor: Color.fromARGB(255, 236, 236, 236),
                 labelText: "Address",
@@ -188,7 +200,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
               controller: _contactController,
               validator: (value) => FormValidation.validateContact(value),
               decoration: const InputDecoration(
-                border: OutlineInputBorder(borderSide: BorderSide.none, borderRadius: BorderRadius.all(Radius.circular(25))),
+                border: OutlineInputBorder(
+                    borderSide: BorderSide.none,
+                    borderRadius: BorderRadius.all(Radius.circular(25))),
                 filled: true,
                 fillColor: Color.fromARGB(255, 236, 236, 236),
                 labelText: "Contact",
@@ -197,39 +211,107 @@ class _RegistrationPageState extends State<RegistrationPage> {
             ),
             SizedBox(height: 20),
             TextFormField(
-              obscureText: true,
+              obscureText: !_isPasswordVisible,  // Toggle visibility using the variable
               controller: _passwordController,
               validator: (value) => FormValidation.validatePassword(value),
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(borderSide: BorderSide.none, borderRadius: BorderRadius.all(Radius.circular(25))),
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderSide: BorderSide.none,
+                  borderRadius: BorderRadius.all(Radius.circular(25)),
+                ),
                 filled: true,
                 fillColor: Color.fromARGB(255, 236, 236, 236),
                 labelText: "Password",
                 prefixIcon: Icon(Icons.lock),
-                suffixIcon: Icon(Icons.visibility),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _isPasswordVisible
+                        ? Icons.visibility
+                        : Icons.visibility_off,
+                    // color: Colors.grey,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _isPasswordVisible = !_isPasswordVisible; // Toggle the visibility
+                    });
+                  },
+                ),
               ),
             ),
             SizedBox(height: 20),
             TextFormField(
-              obscureText: true,
+              obscureText: !_isConfirmPasswordVisible,  // Toggle visibility for confirm password
               controller: _confirmpasswordController,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(borderSide: BorderSide.none, borderRadius: BorderRadius.all(Radius.circular(25))),
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderSide: BorderSide.none,
+                  borderRadius: BorderRadius.all(Radius.circular(25)),
+                ),
                 filled: true,
                 fillColor: Color.fromARGB(255, 236, 236, 236),
                 labelText: "Confirm Password",
                 prefixIcon: Icon(Icons.lock_reset),
-                suffixIcon: Icon(Icons.visibility),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _isConfirmPasswordVisible
+                        ? Icons.visibility
+                        : Icons.visibility_off,
+                    // color: Colors.grey,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _isConfirmPasswordVisible = !_isConfirmPasswordVisible; // Toggle the visibility
+                    });
+                  },
+                ),
               ),
             ),
             SizedBox(height: 30),
             ElevatedButton(
               onPressed: register,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Color.fromRGBO(62, 125, 235, 1),
-                foregroundColor: Colors.black,
+                backgroundColor:
+                    Color.fromARGB(255, 2, 0, 108), // Dark blue background
+                foregroundColor: Colors.white, // White text color
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(25), // Rounded corners
+                ),
+                padding: EdgeInsets.symmetric(
+                    vertical: 16, horizontal: 32), // Custom padding
+                elevation: 5, // Shadow effect
+                shadowColor: Colors.black.withOpacity(0.3), // Soft shadow color
+                textStyle: TextStyle(
+                  fontSize: 16, // Text size
+                  fontWeight: FontWeight.bold, // Bold text
+                ),
               ),
-              child: const Text("REGISTER"),
+              child: Text('REGISTER'),
+            ),
+            SizedBox(height: 20), // Add some space between the button and the text
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text("Have an account? "),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => LoginPage(),
+                    ),
+                  );
+                    // Add your navigation logic here to the Sign In page
+                    // For example, Navigator.pushNamed(context, '/login');
+                  },
+                  child: Text(
+                    "Sign In",
+                    style: TextStyle(
+                      color: Colors.blue,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),

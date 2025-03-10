@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:intl/intl.dart';
 
 class MyBookings extends StatefulWidget {
   const MyBookings({super.key});
@@ -43,7 +44,7 @@ class _MyBookingsState extends State<MyBookings> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  "${event['event_date']} · ${event['event_time']} (${event['event_duration']})",
+                  "${formatDate(event['event_date'])} · ${formatTime(event['event_time'])} (${event['event_duration']})",
                   style: const TextStyle(fontSize: 14, color: Colors.grey),
                 ),
                 const SizedBox(height: 8),
@@ -123,135 +124,151 @@ class _MyBookingsState extends State<MyBookings> {
   @override
   Widget build(BuildContext context) {
     return isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : bookings.isEmpty
-                ? const Center(child: Text("No Bookings Found"))
-                : ListView.builder(
-                    padding: const EdgeInsets.all(10),
-                    itemCount: bookings.length,
-                    itemBuilder: (context, index) {
-                      final booking = bookings[index];
-                      final event = booking['tbl_event'];
-                      final place = booking['tbl_event']['tbl_place'];
-                      print(booking);
-                      return GestureDetector(
-                        onTap: booking['eventbooking_status'] == 1 ? () {
-                          showTicketDialog(context, booking);
-                        } : null,
-                        child: Container(
-                          margin: const EdgeInsets.only(bottom: 10),
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.2),
-                                spreadRadius: 2,
-                                blurRadius: 5,
-                              ),
-                            ],
+        ? const Center(child: CircularProgressIndicator())
+        : bookings.isEmpty
+            ? const Center(child: Text("No Bookings Found"))
+            : ListView.builder(
+                padding: const EdgeInsets.all(10),
+                itemCount: bookings.length,
+                itemBuilder: (context, index) {
+                  final booking = bookings[index];
+                  final event = booking['tbl_event'];
+                  final place = booking['tbl_event']['tbl_place'];
+                  print(booking);
+                  return GestureDetector(
+                    onTap: booking['eventbooking_status'] == 1
+                        ? () {
+                            showTicketDialog(context, booking);
+                          }
+                        : null,
+                    child: Container(
+                      margin: const EdgeInsets.only(bottom: 10),
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.2),
+                            spreadRadius: 2,
+                            blurRadius: 5,
                           ),
-                          child: Row(
-                            children: [
-                              // Event Image
-                              Container(
-                                width: 70,
-                                height: 70,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(12),
-                                  image: DecorationImage(
-                                    image: NetworkImage(event['event_photo']),
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
+                        ],
+                      ),
+                      child: Row(
+                        children: [
+                          // Event Image
+                          Container(
+                            width: 70,
+                            height: 70,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              image: DecorationImage(
+                                image: NetworkImage(event['event_photo']),
+                                fit: BoxFit.cover,
                               ),
-                              const SizedBox(width: 12),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
 
-                              // Event Details
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                          // Event Details
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  event['event_name'],
+                                  style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  "${formatDate(event['event_date'])} · ${formatTime(event['event_time'])} (${event['event_duration']})",
+                                  style: const TextStyle(
+                                      fontSize: 12, color: Colors.grey),
+                                ),
+                                const SizedBox(height: 4),
+                                Row(
                                   children: [
-                                    Text(
-                                      event['event_name'],
-                                      style: const TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      "${event['event_date']} · ${event['event_time']} (${event['event_duration']})",
-                                      style: const TextStyle(
-                                          fontSize: 12, color: Colors.grey),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Row(
-                                      children: [
-                                        const Icon(Icons.location_on,
-                                            size: 14, color: Colors.grey),
-                                        const SizedBox(width: 4),
-                                        Expanded(
-                                          child: Text(
-                                            place['place_name'] ??
-                                                "Unknown Venue",
-                                            style: const TextStyle(
-                                                fontSize: 12,
-                                                color: Colors.grey),
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 8),
-
-                                    // Ticket Info & Status
-                                    Row(
-                                      children: [
-                                        Text(
-                                          "${booking['eventbooking_ticket']} Tickets",
-                                          style: const TextStyle(
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                        const Spacer(),
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 8, vertical: 2),
-                                          decoration: BoxDecoration(
-                                            color: booking[
-                                                        'eventbooking_status'] ==
-                                                    1
-                                                ? Colors.green.withOpacity(0.1)
-                                                : Colors.red.withOpacity(0.1),
-                                            borderRadius:
-                                                BorderRadius.circular(12),
-                                          ),
-                                          child: Text(
-                                            booking['eventbooking_status'] == 1
-                                                ? "Confirmed"
-                                                : "Pending",
-                                            style: TextStyle(
-                                              color:
-                                                  booking['eventbooking_status'] ==
-                                                          1
-                                                      ? Colors.green
-                                                      : Colors.red,
-                                              fontSize: 10,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
+                                    const Icon(Icons.location_on,
+                                        size: 14, color: Colors.grey),
+                                    const SizedBox(width: 4),
+                                    Expanded(
+                                      child: Text(
+                                        place['place_name'] ?? "Unknown Venue",
+                                        style: const TextStyle(
+                                            fontSize: 12, color: Colors.grey),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
                                     ),
                                   ],
                                 ),
-                              ),
-                            ],
+                                const SizedBox(height: 8),
+
+                                // Ticket Info & Status
+                                Row(
+                                  children: [
+                                    Text(
+                                      "${booking['eventbooking_ticket']} Tickets",
+                                      style: const TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    const Spacer(),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 2),
+                                      decoration: BoxDecoration(
+                                        color:
+                                            booking['eventbooking_status'] == 1
+                                                ? Colors.green.withOpacity(0.1)
+                                                : Colors.red.withOpacity(0.1),
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: Text(
+                                        booking['eventbooking_status'] == 1
+                                            ? "Confirmed"
+                                            : "Pending",
+                                        style: TextStyle(
+                                          color:
+                                              booking['eventbooking_status'] ==
+                                                      1
+                                                  ? Colors.green
+                                                  : Colors.red,
+                                          fontSize: 10,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                      );
-                    },
+                        ],
+                      ),
+                    ),
                   );
+                },
+              );
+  }
+
+  String formatDate(String date) {
+    try {
+      final DateTime parsedDate = DateTime.parse(date);
+      return DateFormat('yy-MM-dd').format(parsedDate);
+    } catch (e) {
+      return date; // Return original if parsing fails
+    }
+  }
+
+  String formatTime(String time) {
+    try {
+      final DateTime parsedTime = DateFormat('HH:mm:ss').parse(time);
+      return DateFormat('HH-mm-ss').format(parsedTime);
+    } catch (e) {
+      return time;
+    }
   }
 }

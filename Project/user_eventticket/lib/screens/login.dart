@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:user_eventticket/main.dart';
 import 'package:user_eventticket/screens/homepage.dart';
 import 'package:user_eventticket/screens/registration.dart';
+import 'package:user_eventticket/components/form_validation.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -14,7 +15,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-
+  void signin() {}
   Future<void> signIn() async {
     try {
       String email = _emailController.text;
@@ -23,119 +24,117 @@ class _LoginPageState extends State<LoginPage> {
         email: email,
         password: password,
       );
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => HomePage(),
-        ),
-      );
-      print("SignIn Successful");
+      final User? user = res.user;
+      if (user != null) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomePage()),
+        );
+      }
+      print('SignIn Successful');
     } catch (e) {
-      print("Error During SignIn: $e");
+      print('Error During SignIn: $e');
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 26, 15, 78),
+      backgroundColor: Color.fromARGB(255, 251, 251, 251),
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 26, 15, 78),
-        title: Center(
-          child: Text(
-            " LOGIN",
-            style: TextStyle(color: Colors.white),
-          ),
-        ),
+        backgroundColor: const Color.fromARGB(255, 251, 251, 251),
+        title: Center(child: Text(" LOGIN")),
       ),
       body: Form(
         child: ListView(
           padding: EdgeInsets.symmetric(vertical: 20, horizontal: 30),
           children: [
-            Container(
-              width: 130,
-              height: 130,
-              decoration: BoxDecoration(
-                color: Colors.pink,
-                shape: BoxShape.circle,
-              ),
-              // child: Center(
-              //   child: Image.asset(
-              //     'assets/bg5.png',
-              //     height: 80,
-              //     width: 80,
-              //   ),
-              // ),
+            Image.asset(
+              'assets/bg2.png',
+              height: 180,
             ),
-            SizedBox(height: 10),
+            SizedBox(
+              height: 10,
+            ),
+            SizedBox(
+              height: 10,
+            ),
             TextFormField(
               controller: _emailController,
-              style: TextStyle(color: Colors.white),
+              validator: (value) => FormValidation.validateEmail(value),
               decoration: const InputDecoration(
+                border: OutlineInputBorder(
+                    borderSide: BorderSide.none,
+                    borderRadius: BorderRadius.all(Radius.circular(25))),
+                filled: true,
+                fillColor: Color.fromARGB(255, 236, 236, 236),
                 labelText: "Email",
-                prefixIcon: Icon(Icons.email),
-                enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.pink),
-                ),
-                focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Color.fromARGB(255, 112, 36, 61),
-                    width: 2,
-                  ),
-                ),
+                prefixIcon: Icon(Icons.email_outlined),
               ),
             ),
-            SizedBox(height: 15),
+            SizedBox(
+              height: 30,
+            ),
             TextFormField(
               controller: _passwordController,
-              style: TextStyle(color: Colors.white),
+              validator: (value) => FormValidation.validatePassword(value),
               decoration: const InputDecoration(
+                border: OutlineInputBorder(
+                    borderSide: BorderSide.none,
+                    borderRadius: BorderRadius.all(Radius.circular(25))),
+                filled: true,
+                fillColor: Color.fromARGB(255, 236, 236, 236),
                 labelText: "Password",
                 prefixIcon: Icon(Icons.lock),
-                enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.pink),
-                ),
-                focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Color.fromARGB(255, 112, 36, 61),
-                    width: 2,
-                  ),
-                ),
               ),
             ),
-            SizedBox(height: 15),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ElevatedButton(
-                onPressed: () {
-                  signIn();
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.pink, // Custom color
-                  foregroundColor: Colors.black, // Text color
-                ),
-                child: const Text("LOG IN"),
-              ),
+            SizedBox(
+              height: 30,
             ),
-            SizedBox(height: 10),
-            Center(
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => RegistrationPage(),
-                    ),
-                  );
-                },
-                child: Text(
-                  "Don't have an account? Sign Up",
-                  style: TextStyle(
-                    color: Colors.pink,
-                    fontWeight: FontWeight.bold,
-                  ),
+            ElevatedButton(
+              onPressed: () {
+                signIn();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor:
+                    Color.fromARGB(255, 2, 0, 108), // Dark blue background
+                foregroundColor: Colors.white, // White text color
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(25), // Rounded corners
+                ),
+                padding: EdgeInsets.symmetric(
+                    vertical: 16, horizontal: 32), // Custom padding
+                elevation: 5, // Shadow effect
+                shadowColor: Colors.black.withOpacity(0.3), // Soft shadow color
+                textStyle: TextStyle(
+                  fontSize: 16, // Text size
+                  fontWeight: FontWeight.bold, // Bold text
                 ),
               ),
+              child: const Text("LOG IN"),
+            ),
+            const SizedBox(height: 50),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text("Don't have an account?"),
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => RegistrationPage(),
+                        ));
+
+                    // Navigate to sign-in screen
+                  },
+                  child: const Text("Register",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blue,
+                      )),
+                ),
+              ],
             ),
           ],
         ),

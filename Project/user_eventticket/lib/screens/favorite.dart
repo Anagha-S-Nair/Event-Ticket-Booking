@@ -4,7 +4,7 @@ import 'package:user_eventticket/screens/eventdetails.dart';
 
 class Favorties extends StatefulWidget {
   const Favorties({super.key});
-  
+
   @override
   State<Favorties> createState() => _FavortiesState();
 }
@@ -32,10 +32,7 @@ class _FavortiesState extends State<Favorties> {
 
   Future<void> deleteFavorite(int id) async {
     try {
-      await supabase
-          .from('tbl_favorite')
-          .delete()
-          .eq('id', id); // Corrected line
+      await supabase.from('tbl_favorite').delete().eq('id', id);
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -61,73 +58,79 @@ class _FavortiesState extends State<Favorties> {
 
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
-        childAspectRatio: 0.8,
-      ),
-      shrinkWrap: true,
-      itemCount: favorites.length, // Placeholder for now
-      itemBuilder: (context, index) {
-        final event = favorites[index]['tbl_event'];
-        int id = favorites[index]['id'];
-        return GestureDetector(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => EventDetails(data: event)),
-            );
-          },
-          child: Card(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            elevation: 4,
-            child: Stack(
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ClipRRect(
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(12),
-                        topRight: Radius.circular(12),
-                      ),
-                      child: Image.network(
-                        event['event_photo'] ?? "",
-                        height: 120,
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        event['event_name'] ?? "Event Name",
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ),
-                  ],
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: GridView.builder(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: 10,
+          mainAxisSpacing: 10,
+          childAspectRatio: 0.90, // Adjust this value
+        ),
+        shrinkWrap: true,
+        itemCount: favorites.length,
+        itemBuilder: (context, index) {
+          final event = favorites[index]['tbl_event'];
+          int id = favorites[index]['id'];
+          return GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => EventDetails(data: event)),
+              );
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                image: DecorationImage(
+                  image: NetworkImage(event['event_photo'] ?? ""),
+                  fit: BoxFit.cover,
                 ),
-                Positioned(
-                  child: IconButton(
-                    icon: const Icon(Icons.favorite, color: Colors.red),
-                    onPressed: () {
-                      deleteFavorite(id);
-                    },
+              ),
+              child: Stack(
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      gradient: LinearGradient(
+                        begin: Alignment.bottomCenter,
+                        end: Alignment.topCenter,
+                        colors: [
+                          Colors.black.withOpacity(0.7),
+                          Colors.transparent
+                        ],
+                      ),
+                    ),
                   ),
-                ),
-              ],
+                  Positioned(
+                    top: 8,
+                    right: 8,
+                    child: IconButton(
+                      icon: const Icon(Icons.favorite, color: Colors.red),
+                      onPressed: () {
+                        deleteFavorite(id);
+                      },
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 10,
+                    left: 10,
+                    child: Text(
+                      event['event_name'] ?? "Event Name",
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }
