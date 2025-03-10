@@ -13,7 +13,10 @@ class EventDetails extends StatefulWidget {
 }
 
 class _EventDetailsState extends State<EventDetails> {
-  String btn = "Book Event";
+  String btn = "Book Event"
+
+  ;
+  
   int? remTocket;
   Future<void> insertFavorite() async {
     try {
@@ -249,7 +252,7 @@ class _EventDetailsState extends State<EventDetails> {
                       color: Colors.grey[300],
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(Icons.calendar_today, color: Colors.blue),
+                    child: Icon(Icons.calendar_today, color: const Color.fromARGB(255, 2, 0, 108)),
                   ),
                   SizedBox(width: 16),
                   Text(formattedDate),
@@ -264,7 +267,7 @@ class _EventDetailsState extends State<EventDetails> {
                       color: Colors.grey[300],
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(Icons.access_time, color: Colors.blue),
+                    child: Icon(Icons.access_time, color: const Color.fromARGB(255, 2, 0, 108)),
                   ),
                   SizedBox(width: 16),
                   Text("Time: $formattedTime"),
@@ -279,7 +282,7 @@ class _EventDetailsState extends State<EventDetails> {
                       color: Colors.grey[300],
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(Icons.location_on, color: Colors.blue),
+                    child: Icon(Icons.location_on, color:  const Color.fromARGB(255, 2, 0, 108)),
                   ),
                   SizedBox(width: 16),
                   Expanded(
@@ -299,7 +302,7 @@ class _EventDetailsState extends State<EventDetails> {
                       color: Colors.grey[300],
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(Icons.attach_money, color: Colors.blue),
+                    child: Icon(Icons.attach_money, color: const Color.fromARGB(255, 2, 0, 108)),
                   ),
                   SizedBox(width: 16),
                   Text("\₹ ${widget.data['event_ticketprice'].toString()}"),
@@ -332,7 +335,8 @@ class _EventDetailsState extends State<EventDetails> {
                     _showTicketBookingDialog();
                   },
             style: ElevatedButton.styleFrom(
-              backgroundColor: btn == "Sold Out" ? Colors.grey : Colors.blue,
+              backgroundColor: btn == "Sold Out" ? Colors.grey : const Color.fromARGB(255, 2, 0, 108)
+,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(30),
               ),

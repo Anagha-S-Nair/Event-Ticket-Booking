@@ -122,15 +122,7 @@ class _MyBookingsState extends State<MyBookings> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          title:
-              const Text("My Bookings", style: TextStyle(color: Colors.black)),
-        ),
-        body: isLoading
+    return isLoading
             ? const Center(child: CircularProgressIndicator())
             : bookings.isEmpty
                 ? const Center(child: Text("No Bookings Found"))
@@ -260,7 +252,6 @@ class _MyBookingsState extends State<MyBookings> {
                         ),
                       );
                     },
-                  ),
-      );
+                  );
   }
 }

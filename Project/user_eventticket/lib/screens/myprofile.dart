@@ -39,16 +39,7 @@ class _MyProfileState extends State<MyProfile> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-          title: Center(
-              child: Text(
-        "My Profile",
-        style: TextStyle(fontWeight: FontWeight.bold),
-      ))),
-      body: Padding(
+    return  Padding(
         padding: const EdgeInsets.all(16.0),
         child: isLoading
             ? Center(child: CircularProgressIndicator())
@@ -59,7 +50,7 @@ class _MyProfileState extends State<MyProfile> {
                       children: [
                         CircleAvatar(
                           radius: 50,
-                          backgroundImage: AssetImage('assets/Profileicon2.png') as ImageProvider,
+                          backgroundImage: data["user_photo"] == "" ? AssetImage('assets/Profileicon2.png') as ImageProvider : NetworkImage(data["user_photo"]),
                         ),
                         Positioned(
                           bottom: 0,
@@ -110,7 +101,6 @@ class _MyProfileState extends State<MyProfile> {
                   ),
                 ],
               ),
-      ),
     );
   }
 
