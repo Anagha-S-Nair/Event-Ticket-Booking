@@ -68,7 +68,8 @@ class _RatingPageState extends State<RatingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Rate & Review')),
+      backgroundColor: Colors.white,
+      appBar: AppBar(title: const Text('Rate & Review',),backgroundColor: Colors.white,),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -114,32 +115,47 @@ class _RatingPageState extends State<RatingPage> {
 
             SizedBox(height: 20), // Add some space between the button and the text
             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text("Have any Complaints? "),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ComplaintPage(
-                          eventId: widget.eventId,
-                        ),
-                      ),
-                    );
-                    // Add your navigation logic here to the Sign In page
-                    // For example, Navigator.pushNamed(context, '/login');
-                  },
-                  child: Text(
-                    "Report Here",
-                    style: TextStyle(
-                      color: Colors.blue,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
+  mainAxisAlignment: MainAxisAlignment.center,
+  children: [
+    const Text("Have any Complaints? "),
+    GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ComplaintPage(
+              eventId: widget.eventId,
             ),
+          ),
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border.all(color: const Color.fromARGB(255, 2, 0, 108)),
+          borderRadius: BorderRadius.circular(5),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.2),
+              blurRadius: 5,
+              spreadRadius: 1,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: const Text(
+          "Report Here",
+          style: TextStyle(
+            color: Color.fromARGB(255, 2, 0, 108),
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    ),
+  ],
+)
+
           ],
         ),
       ),

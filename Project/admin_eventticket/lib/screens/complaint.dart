@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:user_eventticket/main.dart';
+import 'package:admin_eventticket/main.dart';
 
 class ComplaintPage extends StatefulWidget {
   final int eventId;
@@ -63,8 +63,7 @@ class _ComplaintPageState extends State<ComplaintPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(title: const Text('Complaints'),backgroundColor: Colors.white,),
+      appBar: AppBar(title: const Text('Complaints')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

@@ -16,7 +16,7 @@ class _EditProfileState extends State<EditProfile> {
   bool isLoading = true;
 
   final TextEditingController nameController = TextEditingController();
-  final TextEditingController emailController = TextEditingController();
+
   final TextEditingController contactController = TextEditingController();
   final TextEditingController addressController = TextEditingController();
   final TextEditingController locationController = TextEditingController();
@@ -39,7 +39,7 @@ class _EditProfileState extends State<EditProfile> {
       setState(() {
         data = response;
         nameController.text = data['user_name'] ?? '';
-        emailController.text = data['user_email'] ?? '';
+
         contactController.text = data['user_contact'] ?? '';
         addressController.text = data['user_address'] ?? '';
         locationController.text = data['location'] ?? '';
@@ -94,7 +94,7 @@ class _EditProfileState extends State<EditProfile> {
 
       await supabase.from('tbl_user').update({
         'user_name': nameController.text,
-        'user_email': emailController.text,
+
         'user_contact': contactController.text,
         'user_address': addressController.text,
 
@@ -167,8 +167,6 @@ class _EditProfileState extends State<EditProfile> {
                     SizedBox(height: 25),
                     buildEditableField(
                         Icons.person, "Full Name", nameController),
-                    buildEditableField(
-                        Icons.email_outlined, "Email", emailController),
                     buildEditableField(
                         Icons.phone_android, "Contact", contactController),
                     buildEditableField(

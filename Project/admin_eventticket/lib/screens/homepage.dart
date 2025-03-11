@@ -1,3 +1,4 @@
+
 import 'package:admin_eventticket/screens/stallmanager.dart';
 import 'package:flutter/material.dart';
 import 'package:admin_eventticket/screens/account.dart';
@@ -7,6 +8,8 @@ import 'package:admin_eventticket/screens/eventorganiser.dart';
 import 'package:admin_eventticket/screens/eventtype.dart';
 import 'package:admin_eventticket/screens/place.dart';
 import 'package:admin_eventticket/screens/stalltype.dart';
+import 'package:admin_eventticket/screens/complaint.dart';
+
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -26,7 +29,8 @@ class _HomePageState extends State<HomePage> {
     'Event Type',
     'Stall Type',
     'Event Organiser',
-    'Stall Manager'
+    'Stall Manager',
+    'Complaint',
   ];
 
   final List<IconData> pageIcon = [
@@ -38,6 +42,7 @@ class _HomePageState extends State<HomePage> {
     Icons.store,
     Icons.group,
     Icons.storefront,
+    Icons.report,
   ];
 
   final List<Widget> pageContent = [
@@ -49,6 +54,7 @@ class _HomePageState extends State<HomePage> {
     Stalltype(),
     ManageOrganizers(),
     ManageStall(),
+    ComplaintPage(eventId: 0),
   ];
 
   @override
