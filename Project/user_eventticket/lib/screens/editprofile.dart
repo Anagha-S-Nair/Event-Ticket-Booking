@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:user_eventticket/main.dart';
 import 'package:file_picker/file_picker.dart';
@@ -51,9 +53,11 @@ class _EditProfileState extends State<EditProfile> {
 
   Future<void> handleImagePick() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.image, // Restrict to images
+      type: FileType.image,
       allowMultiple: false,
+      withData: true, // Ensures `pickedImage!.bytes` is populated
     );
+
     if (result != null) {
       setState(() {
         pickedImage = result.files.first;
@@ -135,11 +139,13 @@ class _EditProfileState extends State<EditProfile> {
                           CircleAvatar(
                             radius: 50,
                             backgroundImage: pickedImage != null
-                                ? MemoryImage(pickedImage!.bytes!)
+                                ? FileImage(File(pickedImage!
+                                    .path!)) // Correctly loads from file
                                 : (profileImageUrl != null &&
                                             profileImageUrl!.isNotEmpty
                                         ? NetworkImage(profileImageUrl!)
-                                        : AssetImage('assets/Profileicon2.png'))
+                                        : const AssetImage(
+                                            'assets/Profileicon2.png'))
                                     as ImageProvider,
                           ),
                           Positioned(

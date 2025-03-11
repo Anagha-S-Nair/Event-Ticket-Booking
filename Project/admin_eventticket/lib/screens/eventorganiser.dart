@@ -90,7 +90,7 @@ class _ManageOrganizersState extends State<ManageOrganizers> {
                     columns: [
                       DataColumn(label: Text('Name')),
                       DataColumn(label: Text('Email')),
-                      // DataColumn(label: Text('District')),
+                      DataColumn(label: Text('District')),
                       DataColumn(label: Text('Address')),
                       DataColumn(label: Text('Contact')),
                       DataColumn(label: Text('Photo')),
@@ -101,7 +101,7 @@ class _ManageOrganizersState extends State<ManageOrganizers> {
                       return DataRow(cells: [
                         DataCell(Text(organizer["organisers_name"] ?? 'N/A')),
                         DataCell(Text(organizer["organisers_email"] ?? 'N/A')),
-                        // DataCell(Text(organizer["organisers_district"] ?? 'N/A')),
+                        DataCell(Text(organizer["organisers_district"] ?? 'N/A')),
                         DataCell(Text(organizer["organisers_address"] ?? 'N/A')),
                         DataCell(Text(organizer["organisers_contact"] ?? 'N/A')),
 
