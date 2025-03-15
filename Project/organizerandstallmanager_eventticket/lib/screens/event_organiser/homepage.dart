@@ -3,6 +3,7 @@ import 'package:organizerandstallmanager_eventticket/screens/event_organiser/boo
 import 'package:organizerandstallmanager_eventticket/screens/event_organiser/createevent.dart';
 import 'package:organizerandstallmanager_eventticket/screens/event_organiser/myevents.dart';
 import 'package:organizerandstallmanager_eventticket/screens/event_organiser/myprofile.dart';
+import 'package:organizerandstallmanager_eventticket/screens/event_organiser/rating.dart';
 
 class OrganiserHomePage extends StatelessWidget {
   const OrganiserHomePage({super.key});
@@ -89,10 +90,12 @@ class OrganiserHomePage extends StatelessWidget {
                       ),
                       TextButton(
                         onPressed: () {
-                          // Navigator.push(context, MaterialPageRoute(builder: (context) => (),));
+                          // Navigator.push(context, MaterialPageRoute(builder: (context) => OrganizerRatingsPage(
+                          //             organizerId: widget.data['organiser_id']
+                          // ),));
                         },
                         child: Text(
-                          "StallRequests",
+                          "Rating",
                           style: TextStyle(
                             decorationColor: Colors.white,
                             fontSize: 18,

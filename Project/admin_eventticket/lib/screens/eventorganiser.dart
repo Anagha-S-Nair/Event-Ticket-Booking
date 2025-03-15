@@ -19,7 +19,8 @@ class _ManageOrganizersState extends State<ManageOrganizers> {
   // Fetch Organizers from Supabase
   Future<void> fetchOrganizers() async {
     try {
-      final response = await supabase.from("tbl_eventorganisers").select("*");
+      final response =
+          await supabase.from("tbl_eventorganisers").select("*,tbl_place(*)");
 
       print("Fetched Organizers Data: $response"); // Debugging output
 
@@ -36,9 +37,11 @@ class _ManageOrganizersState extends State<ManageOrganizers> {
   }
 
   // Approve Organizer
-  Future<void> approveOrganizer(int id) async {
+  Future<void> approveOrganizer(int rid) async {
     try {
-      await supabase.from('tbl_eventorganisers').update({'status': 1}).eq('id', id);
+      await supabase
+          .from('tbl_eventorganisers')
+          .update({'status': 1}).eq('id', rid);
       fetchOrganizers();
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -53,9 +56,11 @@ class _ManageOrganizersState extends State<ManageOrganizers> {
   }
 
   // Reject Organizer
-  Future<void> rejectOrganizer(int id) async {
+  Future<void> rejectOrganizer(int rid) async {
     try {
-      await supabase.from('tbl_eventorganisers').update({'status': 2}).eq('id', id);
+      await supabase
+          .from('tbl_eventorganisers')
+          .update({'status': 2}).eq('id', rid);
       fetchOrganizers();
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -101,27 +106,33 @@ class _ManageOrganizersState extends State<ManageOrganizers> {
                       return DataRow(cells: [
                         DataCell(Text(organizer["organisers_name"] ?? 'N/A')),
                         DataCell(Text(organizer["organisers_email"] ?? 'N/A')),
-                        DataCell(Text(organizer["organisers_district"] ?? 'N/A')),
-                        DataCell(Text(organizer["organisers_address"] ?? 'N/A')),
-                        DataCell(Text(organizer["organisers_contact"] ?? 'N/A')),
+                        DataCell(
+                            Text(organizer["organisers_district"] ?? 'N/A')),
+                        DataCell(
+                            Text(organizer["organisers_address"] ?? 'N/A')),
+                        DataCell(
+                            Text(organizer["organisers_contact"] ?? 'N/A')),
 
                         // Display Image for Photo
-                        DataCell(organizer["organisers_photo"] != null && organizer["organisers_photo"].isNotEmpty
-                            ? Image.network(
-                                organizer["organisers_photo"],
-                                width: 50,
-                                height: 50,
+                        DataCell(organizer["organisers_photo"] != null &&
+                                organizer["organisers_photo"].isNotEmpty
+                            ? Image.network(organizer["organisers_photo"],
+                                width: 50, height: 50,
                                 errorBuilder: (context, error, stackTrace) {
-                                  return Icon(Icons.image_not_supported, color: Colors.grey);
-                                })
+                                return Icon(Icons.image_not_supported,
+                                    color: Colors.grey);
+                              })
                             : Icon(Icons.image, color: Colors.grey)),
 
                         // Display Proof (Assuming it's a URL to a document)
-                        DataCell(organizer["organisers_proof"] != null && organizer["organisers_proof"].isNotEmpty
+                        DataCell(organizer["organisers_proof"] != null &&
+                                organizer["organisers_proof"].isNotEmpty
                             ? IconButton(
-                                icon: Icon(Icons.file_present, color: Colors.blue),
+                                icon: Icon(Icons.file_present,
+                                    color: Colors.blue),
                                 onPressed: () {
-                                  print("Opening Proof: ${organizer["organisers_proof"]}");
+                                  print(
+                                      "Opening Proof: ${organizer["organisers_proof"]}");
                                 },
                               )
                             : Icon(Icons.file_present, color: Colors.grey)),
@@ -131,14 +142,19 @@ class _ManageOrganizersState extends State<ManageOrganizers> {
                           organizer["status"] == 1
                               ? Container(
                                   color: Colors.green,
-                                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                  child: Text("Approved", style: TextStyle(color: Colors.white)),
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 4),
+                                  child: Text("Approved",
+                                      style: TextStyle(color: Colors.white)),
                                 )
                               : organizer["status"] == 2
                                   ? Container(
                                       color: Colors.red,
-                                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                      child: Text("Rejected", style: TextStyle(color: Colors.white)),
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 4),
+                                      child: Text("Rejected",
+                                          style:
+                                              TextStyle(color: Colors.white)),
                                     )
                                   : Row(
                                       children: [

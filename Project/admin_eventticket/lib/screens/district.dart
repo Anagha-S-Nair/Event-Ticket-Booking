@@ -87,6 +87,9 @@ class _DistrictState extends State<District> {
     return Center(
       
       child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white
+        ),
         width: 500,
         child: Form(
           key: formKey,

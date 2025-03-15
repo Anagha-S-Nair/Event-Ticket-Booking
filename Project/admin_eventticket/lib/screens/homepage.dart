@@ -54,15 +54,16 @@ class _HomePageState extends State<HomePage> {
     Stalltype(),
     ManageOrganizers(),
     ManageStall(),
-    ComplaintPage(eventId: 0),
+    ComplaintPage( eventId: 0),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Admin Dashboard'),
-        backgroundColor: Colors.blueGrey[900],
+        // title: const Text('Admin Dashboard'),
+        backgroundColor: Colors.white,
         centerTitle: true,
       ),
       body: Row(
@@ -132,7 +133,7 @@ class _HomePageState extends State<HomePage> {
           Expanded(
             child: Container(
               padding: const EdgeInsets.all(16.0),
-              color: Colors.grey[100],
+              color: Colors.white,
               child: Card(
                 elevation: 5,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),

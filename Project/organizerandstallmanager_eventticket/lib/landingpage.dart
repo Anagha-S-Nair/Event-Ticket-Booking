@@ -47,15 +47,34 @@ class Landingpage extends StatelessWidget {
                     ),
                     Row(
                       children: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => Stallregistration(),
-                              ),
-                            );
+                        PopupMenuButton<String>(
+                          onSelected: (value) {
+                            if (value == 'Organiser Registration') {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => Organsierregistration(),
+                                ),
+                              );
+                            } else if (value == 'Stall Manager Registration') {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => Stallregistration(),
+                                ),
+                              );
+                            }
                           },
+                          itemBuilder: (context) => [
+                            PopupMenuItem(
+                              value: 'Organiser Registration',
+                              child: Text('Organiser Registration'),
+                            ),
+                            PopupMenuItem(
+                              value: 'Stall Manager Registration',
+                              child: Text('Stall Manager Registration'),
+                            ),
+                          ],
                           child: Text(
                             "SIGNUP",
                             style: TextStyle(

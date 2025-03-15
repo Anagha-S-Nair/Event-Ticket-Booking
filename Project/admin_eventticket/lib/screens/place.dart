@@ -109,8 +109,10 @@ class _PlaceState extends State<Place> {
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Card(
+          color: Colors.white,
           elevation: 4,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
