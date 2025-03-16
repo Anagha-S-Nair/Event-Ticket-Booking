@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:organizerandstallmanager_eventticket/main.dart';
+import 'package:organizerandstallmanager_eventticket/screens/event_organiser/complaint.dart';
 import 'package:organizerandstallmanager_eventticket/screens/event_organiser/rating.dart';
 import 'package:organizerandstallmanager_eventticket/screens/event_organiser/stallrequests.dart';
 
@@ -190,6 +191,30 @@ class _EventDetailsState extends State<EventDetails> {
                           ),
                           child: Text(
                             "Rating",
+                            style: TextStyle(
+                              fontSize: 15,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 20),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ComplaintsPage(id: widget.data['id'],)
+                              ),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                const Color.fromARGB(255, 19, 37, 82),
+                            padding: EdgeInsets.symmetric(
+                                vertical: 12, horizontal: 20),
+                          ),
+                          child: Text(
+                            "Complaints",
                             style: TextStyle(
                               fontSize: 15,
                               color: Colors.white,

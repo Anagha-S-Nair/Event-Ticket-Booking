@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:user_eventticket/main.dart';
 import 'package:user_eventticket/screens/changepassword.dart';
 import 'package:user_eventticket/screens/editprofile.dart';
+import 'package:user_eventticket/screens/mycomplaints.dart';
 
 class MyProfile extends StatefulWidget {
   const MyProfile({super.key});
@@ -97,6 +98,21 @@ class _MyProfileState extends State<MyProfile> {
                         backgroundColor: Color.fromARGB(255, 21, 96, 236),
                         minimumSize: Size(double.infinity, 50)),
                     child: Text("CHANGE PASSWORD",
+                        style: TextStyle(color: Colors.black)),
+                  ),
+                  SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MyComplaintsPage(),
+                          ));
+                    },
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Color.fromARGB(255, 234, 146, 88),
+                        minimumSize: Size(double.infinity, 50)),
+                    child: Text("MY COMPLAINTS",
                         style: TextStyle(color: Colors.black)),
                   ),
                 ],

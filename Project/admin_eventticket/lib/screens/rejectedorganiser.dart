@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:admin_eventticket/main.dart';
 
-class ManageOrganizers extends StatefulWidget {
+class RejectedOrganizers extends StatefulWidget {
   @override
-  State<ManageOrganizers> createState() => _ManageOrganizersState();
+  State<RejectedOrganizers> createState() => _RejectedOrganizersState();
 }
 
-class _ManageOrganizersState extends State<ManageOrganizers> {
+class _RejectedOrganizersState extends State<RejectedOrganizers> {
   List<Map<String, dynamic>> organizerList = [];
   bool isLoading = true;
 
@@ -21,7 +21,7 @@ class _ManageOrganizersState extends State<ManageOrganizers> {
     try {
       final response =
           await supabase.from("tbl_eventorganisers").select("*,tbl_place(*,tbl_district(*))")
-          .eq('organisers_status', 0);
+          .eq('organisers_status', 2);
 
       print("Fetched Organizers Data: $response"); // Debugging output
 
@@ -56,30 +56,13 @@ class _ManageOrganizersState extends State<ManageOrganizers> {
     }
   }
 
-  // Reject Organizer
-  Future<void> rejectOrganizer(String rid) async {
-    try {
-      await supabase
-          .from('tbl_eventorganisers')
-          .update({'organisers_status': 2}).eq('id', rid);
-      fetchOrganizers();
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Organizer rejected.")),
-      );
-    } catch (e) {
-      print("Error rejecting organizer: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Failed to reject organizer.")),
-      );
-    }
-  }
+ 
+  
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(title: Text("Manage Event Organizers")),
+      appBar: AppBar(title: Text("Rejected Event Organizers")),
       body: isLoading
           ? Center(child: CircularProgressIndicator())
           : Padding(
@@ -149,15 +132,7 @@ class _ManageOrganizersState extends State<ManageOrganizers> {
                                   child: Text("Approved",
                                       style: TextStyle(color: Colors.white)),
                                 )
-                              : organizer["status"] == 2
-                                  ? Container(
-                                      color: Colors.red,
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 8, vertical: 4),
-                                      child: Text("Rejected",
-                                          style:
-                                              TextStyle(color: Colors.white)),
-                                    )
+                              
                                   : Row(
                                       children: [
                                         ElevatedButton(
@@ -170,15 +145,7 @@ class _ManageOrganizersState extends State<ManageOrganizers> {
                                           child: Text("Approve"),
                                         ),
                                         SizedBox(width: 5),
-                                        ElevatedButton(
-                                          onPressed: () {
-                                            rejectOrganizer(organizer['id']);
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: Colors.red,
-                                          ),
-                                          child: Text("Reject"),
-                                        ),
+                                        
                                       ],
                                     ),
                         ),

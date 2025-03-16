@@ -7,28 +7,29 @@ class ManageStall extends StatefulWidget {
 }
 
 class _ManageStallState extends State<ManageStall> {
-  List<Map<String, dynamic>> organizerList = [];
+  List<Map<String, dynamic>> stallList = [];
   bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    fetchOrganizers();
+    fetchStall();
   }
 
   // Fetch Organizers from Supabase
-  Future<void> fetchOrganizers() async {
+  Future<void> fetchStall() async {
     try {
-      final response = await supabase.from("tbl_eventorganisers").select("*");
+      final response = await supabase.from("tbl_stallmanager").select("*,tbl_place(*,tbl_district(*))")
+          .eq('stallmanager_status', 0);
 
-      print("Fetched Organizers Data: $response"); // Debugging output
+      print("Fetched Stall Data: $response"); // Debugging output
 
       setState(() {
-        organizerList = List<Map<String, dynamic>>.from(response);
+        stallList = List<Map<String, dynamic>>.from(response);
         isLoading = false;
       });
     } catch (e) {
-      print("Error fetching organizers: $e");
+      print("Error fetching stall: $e");
       setState(() {
         isLoading = false;
       });
@@ -36,35 +37,35 @@ class _ManageStallState extends State<ManageStall> {
   }
 
   // Approve Organizer
-  Future<void> approveOrganizer(int id) async {
+  Future<void> approveStall(String rid) async {
     try {
-      await supabase.from('tbl_eventorganisers').update({'status': 1}).eq('id', id);
-      fetchOrganizers();
+      await supabase.from('tbl_stallmanager').update({'stallmanager_status': 1}).eq('id', rid);
+      fetchStall();
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Organizer approved.")),
+        SnackBar(content: Text("Stallmanager approved.")),
       );
     } catch (e) {
-      print("Error approving organizer: $e");
+      print("Error approving stall: $e");
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Failed to approve organizer.")),
+        SnackBar(content: Text("Failed to approve stall.")),
       );
     }
   }
 
   // Reject Organizer
-  Future<void> rejectOrganizer(int id) async {
+  Future<void> rejectStall(String rid) async {
     try {
-      await supabase.from('tbl_eventorganisers').update({'status': 2}).eq('id', id);
-      fetchOrganizers();
+      await supabase.from('tbl_stallmanager').update({'stallmanager_status': 2}).eq('id', rid);
+      fetchStall();
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Organizer rejected.")),
+        SnackBar(content: Text("Stallmanager rejected.")),
       );
     } catch (e) {
-      print("Error rejecting organizer: $e");
+      print("Error rejecting stall: $e");
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Failed to reject organizer.")),
+        SnackBar(content: Text("Failed to reject stall.")),
       );
     }
   }
@@ -72,7 +73,7 @@ class _ManageStallState extends State<ManageStall> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Manage Event Organizers")),
+      appBar: AppBar(title: Text("Manage Stall Organizers")),
       body: isLoading
           ? Center(child: CircularProgressIndicator())
           : Padding(
@@ -97,18 +98,18 @@ class _ManageStallState extends State<ManageStall> {
                       DataColumn(label: Text('Proof')),
                       DataColumn(label: Text('Action')),
                     ],
-                    rows: organizerList.map((organizer) {
+                    rows: stallList.map((stall) {
                       return DataRow(cells: [
-                        DataCell(Text(organizer["organisers_name"] ?? 'N/A')),
-                        DataCell(Text(organizer["organisers_email"] ?? 'N/A')),
-                        DataCell(Text(organizer["organisers_district"] ?? 'N/A')),
-                        DataCell(Text(organizer["organisers_address"] ?? 'N/A')),
-                        DataCell(Text(organizer["organisers_contact"] ?? 'N/A')),
+                        DataCell(Text(stall["stallmanager_name"] ?? 'N/A')),
+                        DataCell(Text(stall["stallmanager_email"] ?? 'N/A')),
+                        DataCell(Text(stall['tbl_place']['tbl_district']["district_name"] ?? 'N/A')),
+                        DataCell(Text(stall["stallmanager_address"] ?? 'N/A')),
+                        DataCell(Text(stall["stallmanager_contact"] ?? 'N/A')),
 
                         // Display Image for Photo
-                        DataCell(organizer["organisers_photo"] != null && organizer["organisers_photo"].isNotEmpty
+                        DataCell(stall["stallmanager_photo"] != null && stall["stallmanager_photo"].isNotEmpty
                             ? Image.network(
-                                organizer["organisers_photo"],
+                                stall["stallmanager_photo"],
                                 width: 50,
                                 height: 50,
                                 errorBuilder: (context, error, stackTrace) {
@@ -117,24 +118,24 @@ class _ManageStallState extends State<ManageStall> {
                             : Icon(Icons.image, color: Colors.grey)),
 
                         // Display Proof (Assuming it's a URL to a document)
-                        DataCell(organizer["organisers_proof"] != null && organizer["organisers_proof"].isNotEmpty
+                        DataCell(stall["stallmanager_proof"] != null && stall["stallmanager_proof"].isNotEmpty
                             ? IconButton(
                                 icon: Icon(Icons.file_present, color: Colors.blue),
                                 onPressed: () {
-                                  print("Opening Proof: ${organizer["organisers_proof"]}");
+                                  print("Opening Proof: ${stall["stallmanager_proof"]}");
                                 },
                               )
                             : Icon(Icons.file_present, color: Colors.grey)),
 
                         // Action Buttons
                         DataCell(
-                          organizer["status"] == 1
+                          stall["status"] == 1
                               ? Container(
                                   color: Colors.green,
                                   padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                   child: Text("Approved", style: TextStyle(color: Colors.white)),
                                 )
-                              : organizer["status"] == 2
+                              : stall["status"] == 2
                                   ? Container(
                                       color: Colors.red,
                                       padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -144,7 +145,7 @@ class _ManageStallState extends State<ManageStall> {
                                       children: [
                                         ElevatedButton(
                                           onPressed: () {
-                                            approveOrganizer(organizer['id']);
+                                            approveStall(stall['id']);
                                           },
                                           style: ElevatedButton.styleFrom(
                                             backgroundColor: Colors.green,
@@ -154,7 +155,7 @@ class _ManageStallState extends State<ManageStall> {
                                         SizedBox(width: 5),
                                         ElevatedButton(
                                           onPressed: () {
-                                            rejectOrganizer(organizer['id']);
+                                            rejectStall(stall['id']);
                                           },
                                           style: ElevatedButton.styleFrom(
                                             backgroundColor: Colors.red,

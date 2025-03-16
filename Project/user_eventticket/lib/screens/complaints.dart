@@ -4,8 +4,7 @@ import 'package:user_eventticket/main.dart';
 class ComplaintPage extends StatefulWidget {
   final int eventId;
 
-  const ComplaintPage(
-      {super.key, required this.eventId});
+  const ComplaintPage({super.key, required this.eventId});
 
   @override
   State<ComplaintPage> createState() => _ComplaintPageState();
@@ -64,7 +63,10 @@ class _ComplaintPageState extends State<ComplaintPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(title: const Text('Complaints'),backgroundColor: Colors.white,),
+      appBar: AppBar(
+        title: const Text('Complaints'),
+        backgroundColor: Colors.white,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

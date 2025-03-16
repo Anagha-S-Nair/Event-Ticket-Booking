@@ -1,5 +1,9 @@
 
+import 'package:admin_eventticket/screens/rejectedorganiser.dart';
+import 'package:admin_eventticket/screens/rejectedstall.dart';
 import 'package:admin_eventticket/screens/stallmanager.dart';
+import 'package:admin_eventticket/screens/verifiedorganiser.dart';
+import 'package:admin_eventticket/screens/verifiedstall.dart';
 import 'package:flutter/material.dart';
 import 'package:admin_eventticket/screens/account.dart';
 import 'package:admin_eventticket/screens/dashboard.dart';
@@ -29,7 +33,11 @@ class _HomePageState extends State<HomePage> {
     'Event Type',
     'Stall Type',
     'Event Organiser',
+    'Verified Organiser',
+    'Rejectied Organiser',
     'Stall Manager',
+    'Verified Stall',
+    'Rejected Stall',
     'Complaint',
   ];
 
@@ -41,7 +49,11 @@ class _HomePageState extends State<HomePage> {
     Icons.event,
     Icons.store,
     Icons.group,
+    Icons.verified_user,
+    Icons.report_off,
     Icons.storefront,
+    Icons.verified,
+    Icons.report_off_rounded,
     Icons.report,
   ];
 
@@ -53,7 +65,11 @@ class _HomePageState extends State<HomePage> {
     Eventtype(),
     Stalltype(),
     ManageOrganizers(),
+    VerifiedOrganiser(),
+    RejectedOrganizers(),
     ManageStall(),
+    VerifiedStall(),
+    RejectedStall(),
     ComplaintPage( eventId: 0),
   ];
 

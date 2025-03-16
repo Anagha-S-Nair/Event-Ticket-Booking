@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:admin_eventticket/main.dart';
 
-class ManageOrganizers extends StatefulWidget {
+class VerifiedOrganiser extends StatefulWidget {
   @override
-  State<ManageOrganizers> createState() => _ManageOrganizersState();
+  State<VerifiedOrganiser> createState() => _VerifiedOrganiserState();
 }
 
-class _ManageOrganizersState extends State<ManageOrganizers> {
-  List<Map<String, dynamic>> organizerList = [];
+class _VerifiedOrganiserState extends State<VerifiedOrganiser> {
+  List<Map<String, dynamic>> verifiedList = [];
   bool isLoading = true;
 
   @override
@@ -21,12 +21,12 @@ class _ManageOrganizersState extends State<ManageOrganizers> {
     try {
       final response =
           await supabase.from("tbl_eventorganisers").select("*,tbl_place(*,tbl_district(*))")
-          .eq('organisers_status', 0);
+          .eq('organisers_status', 1);
 
       print("Fetched Organizers Data: $response"); // Debugging output
 
       setState(() {
-        organizerList = List<Map<String, dynamic>>.from(response);
+        verifiedList = List<Map<String, dynamic>>.from(response);
         isLoading = false;
       });
     } catch (e) {
@@ -38,23 +38,7 @@ class _ManageOrganizersState extends State<ManageOrganizers> {
   }
 
   // Approve Organizer
-  Future<void> approveOrganizer(String rid) async {
-    try {
-      await supabase
-          .from('tbl_eventorganisers')
-          .update({'organisers_status': 1}).eq('id', rid);
-      fetchOrganizers();
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Organizer approved.")),
-      );
-    } catch (e) {
-      print("Error approving organizer: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Failed to approve organizer.")),
-      );
-    }
-  }
+  
 
   // Reject Organizer
   Future<void> rejectOrganizer(String rid) async {
@@ -78,8 +62,7 @@ class _ManageOrganizersState extends State<ManageOrganizers> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(title: Text("Manage Event Organizers")),
+      appBar: AppBar(title: Text("Verified Event Organizers")),
       body: isLoading
           ? Center(child: CircularProgressIndicator())
           : Padding(
@@ -104,7 +87,7 @@ class _ManageOrganizersState extends State<ManageOrganizers> {
                       DataColumn(label: Text('Proof')),
                       DataColumn(label: Text('Action')),
                     ],
-                    rows: organizerList.map((organizer) {
+                    rows: verifiedList.map((organizer) {
                       return DataRow(cells: [
                         DataCell(Text(organizer["organisers_name"] ?? 'N/A')),
                         DataCell(Text(organizer["organisers_email"] ?? 'N/A')),
@@ -141,15 +124,7 @@ class _ManageOrganizersState extends State<ManageOrganizers> {
 
                         // Action Buttons
                         DataCell(
-                          organizer["status"] == 1
-                              ? Container(
-                                  color: Colors.green,
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 8, vertical: 4),
-                                  child: Text("Approved",
-                                      style: TextStyle(color: Colors.white)),
-                                )
-                              : organizer["status"] == 2
+                           organizer["status"] == 2
                                   ? Container(
                                       color: Colors.red,
                                       padding: EdgeInsets.symmetric(
@@ -160,16 +135,6 @@ class _ManageOrganizersState extends State<ManageOrganizers> {
                                     )
                                   : Row(
                                       children: [
-                                        ElevatedButton(
-                                          onPressed: () {
-                                            approveOrganizer(organizer['id']);
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: Colors.green,
-                                          ),
-                                          child: Text("Approve"),
-                                        ),
-                                        SizedBox(width: 5),
                                         ElevatedButton(
                                           onPressed: () {
                                             rejectOrganizer(organizer['id']);
