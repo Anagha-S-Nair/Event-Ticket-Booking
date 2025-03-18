@@ -40,18 +40,21 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 251, 251, 251),
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 251, 251, 251),
+        backgroundColor:  Colors.white,
         title: Center(child: Text(" LOGIN")),
       ),
       body: Form(
         child: ListView(
           padding: EdgeInsets.symmetric(vertical: 20, horizontal: 30),
           children: [
+            SizedBox(
+              height: 100,
+            ),
             Image.asset(
-              'assets/bg2.png',
-              height: 180,
+              'assets/log1.jpeg',
+              height: 200,
             ),
             SizedBox(
               height: 10,
@@ -113,7 +116,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               child: const Text("LOG IN"),
             ),
-            const SizedBox(height: 50),
+            const SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
