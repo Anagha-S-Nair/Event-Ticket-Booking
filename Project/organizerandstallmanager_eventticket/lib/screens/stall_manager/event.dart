@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:organizerandstallmanager_eventticket/main.dart';
 import 'package:organizerandstallmanager_eventticket/screens/event_organiser/createevent.dart';
-import 'package:organizerandstallmanager_eventticket/screens/event_organiser/details.dart';
 import 'package:organizerandstallmanager_eventticket/screens/stall_manager/eventdetails.dart';
 
 class StallEvents extends StatefulWidget {
@@ -28,7 +27,6 @@ class _StallEventsState extends State<StallEvents> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     fetchevent();
   }
@@ -36,36 +34,40 @@ class _StallEventsState extends State<StallEvents> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text("Events"),
-        backgroundColor: Colors.blue,
+        title: Text(
+          "Events",
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+        ),
+        backgroundColor: Colors.white,
+        elevation: 4,
         actions: [
-          TextButton(
+          TextButton.icon(
             onPressed: () {
               Navigator.push(context,
                   MaterialPageRoute(builder: (context) => Createevent()));
             },
-            child: Row(
-              children: [
-                Text(
-                  "Create",
-                  style: TextStyle(color: Colors.black),
-                ),
-                SizedBox(width: 3),
-                Icon(Icons.add, color: Colors.black),
-              ],
+            icon: Icon(Icons.add, color: Colors.black),
+            label: Text(
+              "Create",
+              style: TextStyle(color: Colors.black, fontSize: 16),
+            ),
+            style: ButtonStyle(
+              overlayColor:
+                  MaterialStateProperty.all(Colors.white.withOpacity(0.1)),
             ),
           ),
         ],
       ),
       body: Padding(
-        padding: EdgeInsets.all(8.0),
+        padding: EdgeInsets.all(12.0),
         child: GridView.builder(
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 4,
             crossAxisSpacing: 8,
             mainAxisSpacing: 8,
-            childAspectRatio: 1.2,
+            childAspectRatio: 1.15,
           ),
           itemCount: eventList.length,
           itemBuilder: (context, index) {
@@ -75,53 +77,39 @@ class _StallEventsState extends State<StallEvents> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => StallEventDetails(data: data,),
+                      builder: (context) => StallEventDetails(data: data),
                     ));
               },
-              child: Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  image: DecorationImage(
+                    image: NetworkImage(data['event_photo'] ?? ""),
+                    fit: BoxFit.cover,
+                  ),
                 ),
-                elevation: 4,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ClipRRect(
-                      borderRadius:
-                          BorderRadius.vertical(top: Radius.circular(12)),
-                      child: Image.network(
-                        data['event_photo'] ?? "",
-                        height: 220,
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                      ),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                    gradient: LinearGradient(
+                      begin: Alignment.bottomCenter,
+                      end: Alignment.topCenter,
+                      colors: [
+                        Colors.black.withOpacity(0.7),
+                        Colors.transparent
+                      ],
                     ),
-                    Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(data['event_name'] ?? "",
-                              style: TextStyle(
-                                  fontSize: 14, fontWeight: FontWeight.bold)),
-                          SizedBox(height: 4),
-                          Padding(
-                            padding: EdgeInsets.symmetric(vertical: 4.0),
-                            child: Divider(),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text("Type", style: TextStyle(fontSize: 12)),
-                              Text("City",
-                                  style: TextStyle(
-                                      fontSize: 12, color: Colors.grey[600])),
-                            ],
-                          ),
-                        ],
-                      ),
+                  ),
+                  padding: const EdgeInsets.all(12),
+                  alignment: Alignment.bottomLeft,
+                  child: Text(
+                    data['event_name'] ?? "No Name",
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
                     ),
-                  ],
+                  ),
                 ),
               ),
             );

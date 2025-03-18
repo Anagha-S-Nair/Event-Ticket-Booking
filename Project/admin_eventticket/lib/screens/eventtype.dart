@@ -20,7 +20,7 @@ class _EventypeState extends State<Eventtype> {
       await supabase.from('tbl_eventtype').insert({
         'eventtype_name': name,
       });
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text(
           "Event Inserted Successfully",
           style: TextStyle(color: Colors.white),
@@ -30,7 +30,7 @@ class _EventypeState extends State<Eventtype> {
       _nameController.clear();
       fetcheventtype();
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text(
           "Insertion Failed. Please Try Again!",
           style: TextStyle(color: Colors.white),
@@ -53,15 +53,13 @@ class _EventypeState extends State<Eventtype> {
   Future<void> deleteeventtype(String did) async {
     try {
       await supabase.from("tbl_eventtype").delete().eq("id", did);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            "Event Type Deleted Successfully",
-            style: TextStyle(color: Colors.white),
-          ),
-          backgroundColor: Colors.red,
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text(
+          "Event Type Deleted Successfully",
+          style: TextStyle(color: Colors.white),
         ),
-      );
+        backgroundColor: Colors.red,
+      ));
       fetcheventtype();
     } catch (e) {
       print("Error: $e");
@@ -96,7 +94,6 @@ class _EventypeState extends State<Eventtype> {
         padding: const EdgeInsets.all(16.0),
         child: Card(
           color: Colors.white,
-
           elevation: 4,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           child: Padding(
@@ -106,22 +103,21 @@ class _EventypeState extends State<Eventtype> {
               children: [
                 Text(
                   editID == 0 ? "Add Event Type" : "Edit Event Type",
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
                     color: Colors.blueGrey,
                   ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 Form(
                   key: formKey,
                   child: Column(
-                    
                     children: [
                       TextFormField(
                         controller: _nameController,
                         keyboardType: TextInputType.name,
-                        style: TextStyle(color: Colors.black),
+                        style: const TextStyle(color: Colors.black),
                         validator: (value) {
                           if (value == "" || value!.isEmpty) {
                             return "Please enter event type";
@@ -138,13 +134,13 @@ class _EventypeState extends State<Eventtype> {
                           ),
                         ),
                       ),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.blueGrey,
-                            padding: EdgeInsets.symmetric(vertical: 14),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
@@ -160,15 +156,15 @@ class _EventypeState extends State<Eventtype> {
                           },
                           child: Text(
                             editID == 0 ? "Add Event Type" : "Update Event Type",
-                            style: TextStyle(fontSize: 16, color: Colors.white),
+                            style: const TextStyle(fontSize: 16, color: Colors.white),
                           ),
                         ),
                       ),
                     ],
                   ),
                 ),
-                SizedBox(height: 24),
-                Text(
+                const SizedBox(height: 24),
+                const Text(
                   "Added Event Types",
                   style: TextStyle(
                     fontSize: 20,
@@ -176,25 +172,32 @@ class _EventypeState extends State<Eventtype> {
                     color: Colors.blueGrey,
                   ),
                 ),
-                SizedBox(height: 10),
-                
-                /// 📌 **Styled List**
+                const SizedBox(height: 10),
+
+                /// 📌 Styled List with Numbering
                 ListView.builder(
-                  physics: NeverScrollableScrollPhysics(),
+                  physics: const NeverScrollableScrollPhysics(),
                   itemCount: eventtypeList.length,
                   shrinkWrap: true,
                   itemBuilder: (context, index) {
                     final data = eventtypeList[index];
-                    return Card(         
-                       color: Colors.white,
-
-                      margin: EdgeInsets.symmetric(vertical: 8),
+                    return Card(
+                      color: Colors.white,
+                      margin: const EdgeInsets.symmetric(vertical: 8),
                       elevation: 2,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                       child: ListTile(
+                        leading: CircleAvatar(
+                          backgroundColor: Colors.blueGrey,
+                          foregroundColor: Colors.white,
+                          child: Text(
+                            (index + 1).toString(), // Display numbering
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ),
                         title: Text(
                           data['eventtype_name'],
-                          style: TextStyle(fontWeight: FontWeight.w500),
+                          style: const TextStyle(fontWeight: FontWeight.w500),
                         ),
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -206,13 +209,13 @@ class _EventypeState extends State<Eventtype> {
                                   _nameController.text = data['eventtype_name'];
                                 });
                               },
-                              icon: Icon(Icons.edit, color: Colors.blue),
+                              icon: const Icon(Icons.edit, color: Colors.blue),
                             ),
                             IconButton(
                               onPressed: () {
                                 deleteeventtype(data['id'].toString());
                               },
-                              icon: Icon(Icons.delete, color: Colors.red),
+                              icon: const Icon(Icons.delete, color: Colors.red),
                             ),
                           ],
                         ),

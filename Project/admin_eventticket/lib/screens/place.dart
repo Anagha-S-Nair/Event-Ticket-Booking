@@ -23,7 +23,7 @@ class _PlaceState extends State<Place> {
         'place_name': name,
         'district_id': selectedDistrict,
       });
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text(
           "Place Inserted Successfully",
           style: TextStyle(color: Colors.white),
@@ -33,7 +33,7 @@ class _PlaceState extends State<Place> {
       _nameController.clear();
       fetchplace();
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text(
           "Insertion Failed. Please Try Again!",
           style: TextStyle(color: Colors.white),
@@ -66,15 +66,13 @@ class _PlaceState extends State<Place> {
   Future<void> deletedplace(String did) async {
     try {
       await supabase.from("tbl_place").delete().eq("id", did);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            "Place Deleted Successfully",
-            style: TextStyle(color: Colors.white),
-          ),
-          backgroundColor: Colors.red,
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text(
+          "Place Deleted Successfully",
+          style: TextStyle(color: Colors.white),
         ),
-      );
+        backgroundColor: Colors.red,
+      ));
       fetchplace();
     } catch (e) {
       print("Error: $e");
@@ -111,8 +109,7 @@ class _PlaceState extends State<Place> {
         child: Card(
           color: Colors.white,
           elevation: 4,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
@@ -120,13 +117,13 @@ class _PlaceState extends State<Place> {
               children: [
                 Text(
                   editID == 0 ? "Add Place" : "Edit Place",
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
                     color: Colors.blueGrey,
                   ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 Form(
                   key: formKey,
                   child: Column(
@@ -151,11 +148,11 @@ class _PlaceState extends State<Place> {
                           ),
                         ),
                       ),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       TextFormField(
                         controller: _nameController,
                         keyboardType: TextInputType.name,
-                        style: TextStyle(color: Colors.black),
+                        style: const TextStyle(color: Colors.black),
                         validator: (value) {
                           if (value == "" || value!.isEmpty) {
                             return "Please enter a place";
@@ -172,13 +169,13 @@ class _PlaceState extends State<Place> {
                           ),
                         ),
                       ),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.blueGrey,
-                            padding: EdgeInsets.symmetric(vertical: 14),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
@@ -194,15 +191,15 @@ class _PlaceState extends State<Place> {
                           },
                           child: Text(
                             editID == 0 ? "Add Place" : "Update Place",
-                            style: TextStyle(fontSize: 16, color: Colors.white),
+                            style: const TextStyle(fontSize: 16, color: Colors.white),
                           ),
                         ),
                       ),
                     ],
                   ),
                 ),
-                SizedBox(height: 24),
-                Text(
+                const SizedBox(height: 24),
+                const Text(
                   "Added Places",
                   style: TextStyle(
                     fontSize: 20,
@@ -210,17 +207,17 @@ class _PlaceState extends State<Place> {
                     color: Colors.blueGrey,
                   ),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
 
-                /// 📌 **Fixed-width DataTable**
+                /// 📌 **Numbers Inside CircleAvatar in Place Name Column**
                 SizedBox(
-                  width: double.infinity, // Fixes table width
+                  width: double.infinity,
                   child: DataTable(
                     columnSpacing: 20,
                     headingRowColor: MaterialStateColor.resolveWith(
                         (states) => Colors.blueGrey.shade100),
                     border: TableBorder.all(color: Colors.grey.shade300),
-                    columns: [
+                    columns: const [
                       DataColumn(
                         label: Text(
                           "Place Name",
@@ -240,15 +237,33 @@ class _PlaceState extends State<Place> {
                         ),
                       ),
                     ],
-                    rows: placeList.map((data) {
+                    rows: placeList.asMap().entries.map((entry) {
+                      int index = entry.key;
+                      var data = entry.value;
                       return DataRow(cells: [
-                        DataCell(Text(data['place_name'])),
+                        DataCell(
+                          Row(
+                            children: [
+                              CircleAvatar(
+                                backgroundColor: Colors.blueGrey,
+                                foregroundColor: Colors.white,
+                                radius: 12,
+                                child: Text(
+                                  (index + 1).toString(),
+                                  style: const TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Text(data['place_name']),
+                            ],
+                          ),
+                        ),
                         DataCell(Text(data['tbl_district']['district_name'])),
                         DataCell(
                           Row(
                             children: [
                               IconButton(
-                                icon: Icon(Icons.edit, color: Colors.blue),
+                                icon: const Icon(Icons.edit, color: Colors.blue),
                                 onPressed: () {
                                   setState(() {
                                     editID = data['id'];
@@ -257,7 +272,7 @@ class _PlaceState extends State<Place> {
                                 },
                               ),
                               IconButton(
-                                icon: Icon(Icons.delete, color: Colors.red),
+                                icon: const Icon(Icons.delete, color: Colors.red),
                                 onPressed: () {
                                   deletedplace(data['id'].toString());
                                 },

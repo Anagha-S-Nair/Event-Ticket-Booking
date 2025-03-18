@@ -13,15 +13,16 @@ class _StalltypeState extends State<Stalltype> {
   final TextEditingController _nameController = TextEditingController();
   int editID = 0;
   final formKey = GlobalKey<FormState>();
+
   Future<void> insertstalltype() async {
     try {
       String name = _nameController.text;
       await supabase.from('tbl_stalltype').insert({
         'stalltype_name': name,
       });
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text(
-          "StallType Inserted",
+          "Stall Type Inserted",
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: Colors.green,
@@ -29,7 +30,7 @@ class _StalltypeState extends State<Stalltype> {
       _nameController.clear();
       fetchstalltype();
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text(
           "Failed. Please Try Again!!",
           style: TextStyle(color: Colors.white),
@@ -52,8 +53,10 @@ class _StalltypeState extends State<Stalltype> {
   Future<void> deletestalltype(String did) async {
     try {
       await supabase.from("tbl_stalltype").delete().eq("id", did);
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text("Deleted ")));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text("Stall Type Deleted Successfully"),
+        backgroundColor: Colors.red,
+      ));
       fetchstalltype();
     } catch (e) {
       print("Error:$e");
@@ -77,81 +80,149 @@ class _StalltypeState extends State<Stalltype> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     fetchstalltype();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      
-      child: Form(
-        key: formKey,
-        child: ListView(
-          children: [
-            TextFormField(
-                controller: _nameController,
-                keyboardType: TextInputType.name,
-                style: TextStyle(color: Colors.black),
-                validator: (value) {
-                  if (value == "" || value!.isEmpty) {
-                    return "Please enter Stalltype";
-                  }
-                  if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(value)) {
-                    return 'Name must contain only alphabets';
-                  }
-                  return null;
-                },
-                decoration: InputDecoration(
-                  hintText: "Enter StallType",
-                  hintStyle:
-                      TextStyle(color: const Color.fromARGB(112, 91, 74, 74)),
-                  border: OutlineInputBorder(),
-                )),
-            ElevatedButton(
-                onPressed: () {
-                  if (formKey.currentState!.validate()) {
-                    if (editID == 0) {
-                      insertstalltype();
-                    } else {
-                      editstalltype();
-                    }
-                  }
-                },
-                child: Text("Submit")),
-            ListView.builder(
-              physics: NeverScrollableScrollPhysics(),
-              itemCount: stalltypeList.length,
-              shrinkWrap: true,
-              itemBuilder: (context, index) {
-                final data = stalltypeList[index];
-                return ListTile(
-                  title: Text(data['stalltype_name']),
-                  trailing: SizedBox(
-                    width: 80,
-                    child: Row(
-                      children: [
-                        IconButton(
-                            onPressed: () {
-                              deletestalltype(data['id'].toString());
-                            },
-                            icon: Icon(Icons.delete)),
-                        IconButton(
-                            onPressed: () {
-                              setState(() {
-                                editID = data['id'];
-                                _nameController.text = data['stalltype_name'];
-                              });
-                            },
-                            icon: Icon(Icons.edit))
-                      ],
-                    ),
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Card(
+          color: Colors.white,
+          elevation: 4,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  editID == 0 ? "Add Stall Type" : "Edit Stall Type",
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blueGrey,
                   ),
-                );
-              },
-            )
-          ],
+                ),
+                const SizedBox(height: 20),
+                Form(
+                  key: formKey,
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        controller: _nameController,
+                        keyboardType: TextInputType.name,
+                        style: const TextStyle(color: Colors.black),
+                        validator: (value) {
+                          if (value == "" || value!.isEmpty) {
+                            return "Please enter Stall Type";
+                          }
+                          if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(value)) {
+                            return 'Name must contain only alphabets';
+                          }
+                          return null;
+                        },
+                        decoration: InputDecoration(
+                          labelText: "Enter Stall Type",
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blueGrey,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          onPressed: () {
+                            if (formKey.currentState!.validate()) {
+                              if (editID == 0) {
+                                insertstalltype();
+                              } else {
+                                editstalltype();
+                              }
+                            }
+                          },
+                          child: Text(
+                            editID == 0 ? "Add Stall Type" : "Update Stall Type",
+                            style: const TextStyle(fontSize: 16, color: Colors.white),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
+                const Text(
+                  "Added Stall Types",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blueGrey,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                ListView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: stalltypeList.length,
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) {
+                    final data = stalltypeList[index];
+                    return Card(
+                      color: Colors.white,
+                      margin: const EdgeInsets.symmetric(vertical: 8),
+                      elevation: 2,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      child: ListTile(
+                        leading: CircleAvatar(
+                          backgroundColor: Colors.blueGrey,
+                          foregroundColor: Colors.white,
+                          child: Text(
+                            (index + 1).toString(), // Numbering logic
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        title: Text(
+                          data['stalltype_name'],
+                          style: const TextStyle(fontWeight: FontWeight.w500),
+                        ),
+                        trailing: SizedBox(
+                          width: 80,
+                          child: Row(
+                            children: [
+                              IconButton(
+                                onPressed: () {
+                                  deletestalltype(data['id'].toString());
+                                },
+                                icon: const Icon(Icons.delete, color: Colors.red),
+                              ),
+                              IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    editID = data['id'];
+                                    _nameController.text = data['stalltype_name'];
+                                  });
+                                },
+                                icon: const Icon(Icons.edit, color: Colors.blue),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

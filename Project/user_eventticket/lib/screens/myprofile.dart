@@ -40,83 +40,47 @@ class _MyProfileState extends State<MyProfile> {
 
   @override
   Widget build(BuildContext context) {
-    return  Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: isLoading
-            ? Center(child: CircularProgressIndicator())
-            : Column(
-                children: [
-                  Center(
-                    child: Stack(
-                      children: [
-                        CircleAvatar(
-                          radius: 50,
-                          backgroundImage: data["user_photo"] == "" ? AssetImage('assets/Profileicon2.png') as ImageProvider : NetworkImage(data["user_photo"]),
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: isLoading
+          ? Center(child: CircularProgressIndicator())
+          : Column(
+              children: [
+                Center(
+                  child: Stack(
+                    children: [
+                      CircleAvatar(
+                        radius: 50,
+                        backgroundImage: data["user_photo"] == null ||
+                                data["user_photo"].isEmpty
+                            ? const AssetImage('assets/Profileicon2.png')
+                                as ImageProvider
+                            : NetworkImage(data["user_photo"]),
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: CircleAvatar(
+                          radius: 15,
+                          backgroundColor: Colors.white,
+                          child:
+                              Icon(Icons.edit, size: 18, color: Colors.black),
                         ),
-                        Positioned(
-                          bottom: 0,
-                          right: 0,
-                          child: CircleAvatar(
-                            radius: 15,
-                            backgroundColor: Colors.white,
-                            child: Icon(Icons.edit, size: 18, color: Colors.black),
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                  SizedBox(height: 20),
-                  buildProfileBox(Icons.person, data["user_name"] ?? ""),
-                  buildProfileBox(Icons.email_outlined, data["user_email"] ?? ""),
-                  buildProfileBox(Icons.phone_android, data["user_contact"] ?? ""),
-                  buildProfileBox(Icons.home, data["user_address"] ?? ""),
-                  buildProfileBox(Icons.location_on, data["location"] ?? ""),
-                  SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => EditProfile(),
-                          ));
-                    },
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: Color.fromARGB(255, 234, 146, 88),
-                        minimumSize: Size(double.infinity, 50)),
-                    child: Text("EDIT PROFILE", style: TextStyle(color: Colors.black)),
-                  ),
-                  SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ChangePassword(),
-                          ));
-                    },
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: Color.fromARGB(255, 21, 96, 236),
-                        minimumSize: Size(double.infinity, 50)),
-                    child: Text("CHANGE PASSWORD",
-                        style: TextStyle(color: Colors.black)),
-                  ),
-                  SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => MyComplaintsPage(),
-                          ));
-                    },
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: Color.fromARGB(255, 234, 146, 88),
-                        minimumSize: Size(double.infinity, 50)),
-                    child: Text("MY COMPLAINTS",
-                        style: TextStyle(color: Colors.black)),
-                  ),
-                ],
-              ),
+                ),
+                SizedBox(height: 20),
+                buildProfileBox(Icons.person, data["user_name"] ?? ""),
+                buildProfileBox(Icons.email_outlined, data["user_email"] ?? ""),
+                buildProfileBox(
+                    Icons.phone_android, data["user_contact"] ?? ""),
+                buildProfileBox(Icons.home, data["user_address"] ?? ""),
+                buildProfileBox(Icons.location_on, data["location"] ?? ""),
+                SizedBox(height: 20),
+                
+              ],
+            ),
     );
   }
 

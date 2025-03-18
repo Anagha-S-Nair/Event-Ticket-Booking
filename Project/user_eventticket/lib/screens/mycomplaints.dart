@@ -58,10 +58,11 @@ class _MyComplaintsPageState extends State<MyComplaintsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text("My Complaints"),
-        backgroundColor: const Color.fromARGB(255, 2, 0, 108),
-        foregroundColor: Colors.white,
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -78,6 +79,7 @@ class _MyComplaintsPageState extends State<MyComplaintsPage> {
                   itemBuilder: (context, index) {
                     final complaint = complaints[index];
                     return Card(
+                      color: Colors.white,
                       margin: const EdgeInsets.symmetric(vertical: 8),
                       elevation: 3,
                       shape: RoundedRectangleBorder(

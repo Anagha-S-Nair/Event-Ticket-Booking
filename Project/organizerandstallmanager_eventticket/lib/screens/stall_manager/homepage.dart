@@ -75,20 +75,6 @@ class StallHomePage extends StatelessWidget {
                       ),
                       TextButton(
                         onPressed: () {
-                          // Navigator.push(context, MaterialPageRoute(builder: (context) => (),));
-                        },
-                        child: Text(
-                          "Booking",
-                          style: TextStyle(
-                            decorationColor: Colors.white,
-                            fontSize: 18,
-                            color: Colors.white,
-                            decoration: TextDecoration.underline,
-                          ),
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -139,24 +125,6 @@ class StallHomePage extends StatelessWidget {
             ),
             SizedBox(
               height: 30,
-            ),
-            Center(
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => Createevent(),
-                      ));
-                },
-                child: Text(
-                  "CREATE EVENT",
-                  style: TextStyle(
-                    fontSize: 15,
-                    color: const Color.fromARGB(255, 43, 40, 40),
-                  ),
-                ),
-              ),
             ),
           ],
         ),

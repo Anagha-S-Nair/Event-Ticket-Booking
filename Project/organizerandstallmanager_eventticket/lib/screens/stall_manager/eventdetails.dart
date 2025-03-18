@@ -17,7 +17,7 @@ class _StallEventDetailsState extends State<StallEventDetails> {
   @override
   void initState() {
     super.initState();
-    fetchstalltype(); // Fetch stall types when the page loads
+    fetchstalltype();
   }
 
   Future<void> fetchstalltype() async {
@@ -33,166 +33,182 @@ class _StallEventDetailsState extends State<StallEventDetails> {
 
   @override
   Widget build(BuildContext context) {
-    // Format date
     String formattedDate = "Invalid Date";
     try {
       DateTime eventDate =
-          DateTime.parse(widget.data['event_date']); // Assumes 'YYYY-MM-DD'
+          DateTime.parse(widget.data['event_date']);
       formattedDate = DateFormat('dd-MM-yy').format(eventDate);
     } catch (e) {
       print("Error parsing date: $e");
     }
 
-    // Format time
     String formattedTime = "Invalid Time";
     try {
       DateTime eventTime = DateTime.parse(
-          "1970-01-01 ${widget.data['event_time']}"); // Assumes 'HH:mm:ss'
+          "1970-01-01 ${widget.data['event_time']}");
       formattedTime = DateFormat('HH:mm:ss').format(eventTime);
     } catch (e) {
       print("Error parsing time: $e");
     }
 
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Stack(
-              children: [
-                Container(
-                  height: 350,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: NetworkImage(widget.data['event_photo']),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-                Container(
-                  height: 300,
-                  color: Colors.black.withOpacity(0.5),
-                ),
-                Positioned(
-                  left: 20,
-                  top: 100,
-                  child: Container(
-                    padding: EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Icon(Icons.calendar_today, size: 18),
-                            SizedBox(width: 8),
-                            Text(
-                              "Date: $formattedDate",
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 10),
-                        Row(
-                          children: [
-                            Icon(Icons.access_time, size: 18),
-                            SizedBox(width: 8),
-                            Text("Time: $formattedTime"),
-                          ],
-                        ),
-                        SizedBox(height: 10),
-                        Row(
-                          children: [
-                            Icon(Icons.timer, size: 18),
-                            SizedBox(width: 8),
-                            Text("Duration: ${widget.data['event_duration']}"),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Positioned(
-                  right: 20,
-                  top: 250,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      _showRequestDialog(context, widget.data['id']);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white, // Purple shade
-                      padding:
-                          EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.send, color: Colors.black),
-                        SizedBox(width: 8),
-                        Text(
-                          "Apply Request",
-                          style: TextStyle(
-                            fontSize: 15,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            Padding(
-              padding: EdgeInsets.all(16),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(height: 10),
-                      SizedBox(
-                        width: 300,
-                        height: 250,
-                        child: Image.asset(
-                          'assets/l8.jpg',
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Container(
-                    width: 300,
-                    child: Column(
-                      children: [
-                        Text(
-                          "Event Overview",
-                          style: TextStyle(
-                              fontSize: 22, fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(height: 10),
-                        Text(
-                          widget.data['event_details'],
-                          style: TextStyle(fontSize: 18),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: const Text(
+          "Event Details",
+          style: TextStyle(fontWeight: FontWeight.bold),
         ),
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+        elevation: 5,
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              Container(
+                height: 250,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                  image: DecorationImage(
+                    image: NetworkImage(widget.data['event_photo']),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                    color: Colors.black.withOpacity(0.4),
+                  ),
+                  alignment: Alignment.bottomLeft,
+                  padding: const EdgeInsets.all(20),
+                  child: Text(
+                    widget.data['event_name'],
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 10,
+                      spreadRadius: 2,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    _buildInfoRow(Icons.calendar_today, "Date", formattedDate),
+                    _buildInfoRow(Icons.access_time, "Time", formattedTime),
+                    _buildInfoRow(Icons.timer, "Duration",
+                        widget.data['event_duration']),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.08),
+                      blurRadius: 8,
+                      spreadRadius: 2,
+                    )
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Event Overview",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Color.fromARGB(255, 19, 37, 82),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      widget.data['event_details'],
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+  onPressed: () {
+    _showRequestDialog(context, widget.data['id']);
+  },
+  style: ElevatedButton.styleFrom(
+    backgroundColor: const Color.fromARGB(255, 19, 37, 82), // Dark blue color
+    foregroundColor: Colors.white,
+    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(30),
+    ),
+  ),
+  child: const Row(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      Icon(Icons.send, color: Colors.white),
+      SizedBox(width: 8),
+      Text(
+        "Apply Request",
+        style: TextStyle(
+          fontSize: 15,
+          color: Colors.white,
+        ),
+      ),
+    ],
+  ),
+)
+
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoRow(IconData icon, String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        children: [
+          Icon(icon, color: const Color.fromARGB(255, 19, 37, 82)),
+          const SizedBox(width: 10),
+          Text(
+            "$label: ",
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+              color: Colors.black87,
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: const TextStyle(fontSize: 16),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -203,9 +219,6 @@ class _StallEventDetailsState extends State<StallEventDetails> {
 
     Future<void> sendReq() async {
       try {
-        print("Sending request for $selectedStall");
-        print("Notes: ${notesController.text}");
-        print("Event ID: $id");
         await supabase.from("tbl_stallrequest").insert([
           {
             'stallmanager_id': supabase.auth.currentUser!.id,
@@ -228,12 +241,12 @@ class _StallEventDetailsState extends State<StallEventDetails> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Send Request"),
+          title: const Text("Send Request"),
           content: FutureBuilder(
             future: fetchstalltype(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(child: CircularProgressIndicator());
+                return const Center(child: CircularProgressIndicator());
               }
               return StatefulBuilder(
                 builder: (context, setState) {
@@ -254,48 +267,28 @@ class _StallEventDetailsState extends State<StallEventDetails> {
                           });
                         },
                       ),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       TextFormField(
                         controller: notesController,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           hintText: "Additional Notes",
                           border: OutlineInputBorder(),
                         ),
                         maxLines: 3,
                       ),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       ElevatedButton(
                         onPressed: () {
                           if (selectedStall != null) {
                             sendReq();
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text("Please select a stall!")),
+                              const SnackBar(
+                                  content: Text("Please select a stall!")),
                             );
                           }
                         },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xFF673AB7), // Purple color
-                          padding: EdgeInsets.symmetric(
-                              vertical: 12, horizontal: 20),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.send, color: Colors.white),
-                            SizedBox(width: 8),
-                            Text(
-                              "Apply Request",
-                              style: TextStyle(
-                                fontSize: 15,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
-                        ),
+                        child: const Text("Submit Request"),
                       ),
                     ],
                   );

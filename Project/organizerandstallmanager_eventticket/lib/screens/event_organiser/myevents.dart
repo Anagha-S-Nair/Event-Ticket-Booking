@@ -36,11 +36,11 @@ class _EventsPageState extends State<EventsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF121212),
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text("My Events",
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
-        backgroundColor: Colors.blueAccent,
+        backgroundColor: Colors.white,
         elevation: 4,
         actions: [
           TextButton.icon(
@@ -48,10 +48,10 @@ class _EventsPageState extends State<EventsPage> {
               Navigator.push(context,
                   MaterialPageRoute(builder: (context) => Createevent()));
             },
-            icon: Icon(Icons.add, color: Colors.white),
+            icon: Icon(Icons.add, color: Colors.black),
             label: Text(
               "Create",
-              style: TextStyle(color: Colors.white, fontSize: 16),
+              style: TextStyle(color: Colors.black, fontSize: 16),
             ),
             style: ButtonStyle(
                 overlayColor:
@@ -64,9 +64,9 @@ class _EventsPageState extends State<EventsPage> {
         child: GridView.builder(
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 4,
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
-            childAspectRatio: 0.85,
+            crossAxisSpacing: 8,
+            mainAxisSpacing: 8,
+            childAspectRatio: 1.15,
           ),
           itemCount: eventList.length,
           itemBuilder: (context, index) {
@@ -79,61 +79,36 @@ class _EventsPageState extends State<EventsPage> {
                       builder: (context) => EventDetails(data: data),
                     ));
               },
-              child: Card(
-                color: Colors.grey[900],
-                shape: RoundedRectangleBorder(
+              child: Container(
+                decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(16),
+                  image: DecorationImage(
+                    image: NetworkImage(data['event_photo'] ?? ""),
+                    fit: BoxFit.cover,
+                  ),
                 ),
-                elevation: 6,
-                shadowColor: Colors.blueAccent.withOpacity(0.5),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ClipRRect(
-                      borderRadius:
-                          BorderRadius.vertical(top: Radius.circular(16)),
-                      child: Image.network(
-                        data['event_photo'] ?? "",
-                        height: 180,
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) => Container(
-                          height: 180,
-                          color: Colors.grey[800],
-                          child: Center(
-                            child: Icon(Icons.image_not_supported,
-                                color: Colors.white70, size: 50),
-                          ),
-                        ),
-                      ),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                    gradient: LinearGradient(
+                      begin: Alignment.bottomCenter,
+                      end: Alignment.topCenter,
+                      colors: [
+                        Colors.black.withOpacity(0.7),
+                        Colors.transparent
+                      ],
                     ),
-                    Padding(
-                      padding: EdgeInsets.all(12.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(data['event_name'] ?? "No Name",
-                              style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.white)),
-                          SizedBox(height: 6),
-                          Divider(color: Colors.white24),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(data['event_type'] ?? "Type",
-                                  style: TextStyle(
-                                      fontSize: 13, color: Colors.white70)),
-                              Text(data['event_city'] ?? "City",
-                                  style: TextStyle(
-                                      fontSize: 13, color: Colors.white38)),
-                            ],
-                          ),
-                        ],
-                      ),
+                  ),
+                  padding: const EdgeInsets.all(12),
+                  alignment: Alignment.bottomLeft,
+                  child: Text(
+                    data['event_name'] ?? "No Name",
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
                     ),
-                  ],
+                  ),
                 ),
               ),
             );

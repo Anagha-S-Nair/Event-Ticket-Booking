@@ -1,122 +1,115 @@
 import 'package:flutter/material.dart';
 import 'package:admin_eventticket/main.dart';
 
-class ComplaintPage extends StatefulWidget {
-  final int eventId;
-
-  const ComplaintPage(
-      {super.key, required this.eventId});
-
+class ManageComplaints extends StatefulWidget {
   @override
-  State<ComplaintPage> createState() => _ComplaintPageState();
+  State<ManageComplaints> createState() => _ManageComplaintsState();
 }
 
-class _ComplaintPageState extends State<ComplaintPage> {
-  int _rating = 0;
-  final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _complaintController = TextEditingController();
+class _ManageComplaintsState extends State<ManageComplaints> {
+  List<Map<String, dynamic>> complaintList = [];
+  bool isLoading = true;
 
-  Future<void> submitReviewAndComplaint() async {
-    final userId = supabase.auth.currentUser?.id;
+  @override
+  void initState() {
+    super.initState();
+    fetchComplaints();
+  }
 
-    if (userId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please log in to submit a  complaint.')),
-      );
-      return;
-    }
-
-    if ((_titleController.text.isEmpty && _complaintController.text.isEmpty)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please provide a  complaint.')),
-      );
-      return;
-    }
-
+  // Fetch Complaints from Supabase
+  Future<void> fetchComplaints() async {
     try {
-      // Insert review if provided
-      if (_titleController.text.isNotEmpty) {
-        await supabase.from('tbl_complaint').insert({
-          'complaint_title': _titleController.text,
-          'complaint_content': _complaintController.text,
-          'user_id': userId,
-          'event_id': widget.eventId,
-        });
-      }
+      final response = await supabase.from("tbl_complaint").select("*,tbl_user(*),tbl_event(*,tbl_eventorganisers(*))");
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Your complaint has been submitted!')),
-      );
+      print("Fetched Complaints Data: $response"); // Debugging output
 
-      // Clear the fields
-      _titleController.clear();
-      _complaintController.clear();
-      setState(() => _rating = 0);
+      setState(() {
+        complaintList = List<Map<String, dynamic>>.from(response);
+        isLoading = false;
+      });
     } catch (e) {
-      print("Error: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${e.toString()}')),
-      );
+      print("Error fetching complaints: $e");
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Complaints')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('Title:',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            TextField(
-              controller: _titleController,
-              maxLines: 2,
-              decoration: const InputDecoration(
-                hintText: 'Add Complaint Title...',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 20),
-            const Text('Write a Complaint:',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            TextField(
-              controller: _complaintController,
-              maxLines: 4,
-              decoration: const InputDecoration(
-                hintText: 'Describe your complaint...',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 30),
-            ElevatedButton(
-              onPressed: submitReviewAndComplaint,
-              style: ElevatedButton.styleFrom(
-                backgroundColor:
-                    const Color.fromARGB(255, 2, 0, 108), // Dark blue color
-                foregroundColor: Colors.white, // Text color
-                minimumSize:
-                    const Size(double.infinity, 50), // Full-width button
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20), // Rounded corners
+      backgroundColor: Colors.white,
+      appBar: AppBar(title: Text("Manage Complaints"), backgroundColor: Colors.white),
+      body: isLoading
+          ? Center(child: CircularProgressIndicator())
+          : Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.black, width: 1),
+                  borderRadius: BorderRadius.circular(10),
+                  color: Colors.white,
                 ),
-              ),
-              child: const Text(
-                'Submit Report',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16, // Matching text size
-                ),
-              ),
-            ),
+                padding: EdgeInsets.all(10),
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: DataTable(
+                    columns: [
+                      DataColumn(label: Text('User Name')),
+                      DataColumn(label: Text('Event Name')),
+                      DataColumn(label: Text('Organiser')),
+                      DataColumn(label: Text('Email')),
+                      DataColumn(label: Text('Photo')),
+                      DataColumn(label: Text('Subject')),
+                      DataColumn(label: Text('Description')),
+                      DataColumn(label: Text('Reply')),
+                      DataColumn(label: Text('Date')),
+                      // DataColumn(label: Text('Status')),
+                    ],
+                    rows: complaintList.map((complaint) {
+                      return DataRow(cells: [
+                        DataCell(Text(complaint['tbl_user']["user_name"] ?? 'N/A')),
+                        DataCell(Text(complaint['tbl_event']["event_name"] ?? 'N/A')),
+                        DataCell(Text(complaint['tbl_event']['tbl_eventorganisers']["organisers_name"] ?? 'N/A')),
+                        DataCell(Text(complaint['tbl_event']['tbl_eventorganisers']["organisers_email"] ?? 'N/A')),
+                        DataCell(
+                          complaint['tbl_event']["event_photo"] != null
+                              ? Image.network(
+                                  complaint['tbl_event']["event_photo"],
+                                  width: 50,
+                                  height: 50,
+                                )
+                              : Text('N/A'),
+                        ),
+                        DataCell(Text(complaint["complaint_title"] ?? 'N/A')),
+                        DataCell(Text(complaint["complaint_content"] ?? 'N/A')),
+                        DataCell(Text(complaint["complaint_reply"] ?? 'N/A')),
+                        DataCell(Text(complaint["complaint_date"] ?? 'N/A')),
 
-            const SizedBox(height: 20),
-            // You can also add any additional UI elements, like a status or info section
-          ],
-        ),
-      ),
+                        // Status
+                        // DataCell(
+                        //   complaint["status"] == 'Resolved'
+                        //       ? Container(
+                        //           color: Colors.green,
+                        //           padding: EdgeInsets.symmetric(
+                        //               horizontal: 8, vertical: 4),
+                        //           child: Text("Resolved",
+                        //               style: TextStyle(color: Colors.white)),
+                        //         )
+                        //       : Container(
+                        //           color: Colors.orange,
+                        //           padding: EdgeInsets.symmetric(
+                        //               horizontal: 8, vertical: 4),
+                        //           child: Text("Pending",
+                        //               style: TextStyle(color: Colors.white)),
+                        //         ),
+                        // ),
+                      ]);
+                    }).toList(),
+                  ),
+                ),
+              ),
+            ),
     );
   }
 }

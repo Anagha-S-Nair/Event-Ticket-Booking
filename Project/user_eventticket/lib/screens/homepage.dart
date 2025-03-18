@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:user_eventticket/main.dart';
+import 'package:user_eventticket/screens/changepassword.dart';
+import 'package:user_eventticket/screens/complaints.dart';
+import 'package:user_eventticket/screens/editprofile.dart';
 import 'package:user_eventticket/screens/eventdetails.dart';
 import 'package:user_eventticket/screens/explore.dart';
-import 'package:user_eventticket/screens/favorite.dart';import 'package:user_eventticket/screens/mybookings.dart';
+import 'package:user_eventticket/screens/favorite.dart';
+import 'package:user_eventticket/screens/login.dart';
+import 'package:user_eventticket/screens/mybookings.dart';
+import 'package:user_eventticket/screens/mycomplaints.dart';
 import 'package:user_eventticket/screens/myprofile.dart';
 
 class HomePage extends StatefulWidget {
@@ -13,7 +19,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
   List<Widget> pages = [
     HomeContent(),
     ExploreScreen(),
@@ -27,7 +32,7 @@ class _HomePageState extends State<HomePage> {
   String name = '';
   String image = '';
 
-    Future<void> fetchUser() async {
+  Future<void> fetchUser() async {
     try {
       final response = await supabase
           .from('tbl_user')
@@ -51,45 +56,156 @@ class _HomePageState extends State<HomePage> {
     fetchUser();
   }
 
+  Future<void> confirmLogout(BuildContext context) async {
+    final shouldLogout = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Confirm Logout"),
+          content: const Text("Are you sure you want to log out?"),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false), // Cancel
+              child: const Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true), // Confirm
+              child: const Text("Logout"),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (shouldLogout == true) {
+      await supabase.auth.signOut();
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => LoginPage()),
+        (route) => false, // Clears all previous routes
+      ); // Redirect to login page
+    }
+  }
+
+  String title = "";
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: selectedIndex == 0 ? AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        title: Row(
-          children: [
-            CircleAvatar(
-              backgroundImage: NetworkImage(image),
-            ),
-            const SizedBox(width: 10),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("Hellooo ",
-                    style: TextStyle(color: Colors.grey, fontSize: 12)),
-                Text(name,
-                    style:
-                        TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+      appBar: selectedIndex != 1
+          ? AppBar(
+              backgroundColor: Colors.white,
+              elevation: 0,
+              title: selectedIndex == 0
+                  ? Row(
+                      children: [
+                        CircleAvatar(
+                          backgroundImage: NetworkImage(image),
+                        ),
+                        const SizedBox(width: 10),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text("Hellooo ",
+                                style: TextStyle(
+                                    color: Colors.grey, fontSize: 12)),
+                            Text(name,
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 16)),
+                          ],
+                        ),
+                      ],
+                    )
+                  : Text(title),
+              actions: [
+                selectedIndex == 4
+                    ? PopupMenuButton<String>(
+                        icon: const Icon(Icons.more_vert_rounded,
+                            color: Colors.black),
+                        onSelected: (String result) {
+                          switch (result) {
+                            case 'edit_profile':
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => EditProfile(),));
+                              break;
+                            case 'change_password':
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => ChangePassword(),));
+                              break;
+                            case 'my_complaint':
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => MyComplaintsPage(),));
+                              break;
+                            case 'log_out':
+                              confirmLogout(context);
+                              // Add your logout logic here (e.g., clear auth token, navigate to login screen)
+                              break;
+                          }
+                        },
+                        itemBuilder: (BuildContext context) =>
+                            <PopupMenuEntry<String>>[
+                          PopupMenuItem<String>(
+                            value: 'edit_profile',
+                            child: Row(
+                              children: [
+                                Icon(Icons.edit, size: 20, color: Colors.black),
+                                SizedBox(width: 10),
+                                Text('Edit Profile'),
+                              ],
+                            ),
+                          ),
+                          PopupMenuItem<String>(
+                            value: 'change_password',
+                            child: Row(
+                              children: [
+                                Icon(Icons.lock, size: 20, color: Colors.black),
+                                SizedBox(width: 10),
+                                Text('Change Password'),
+                              ],
+                            ),
+                          ),
+                          PopupMenuItem<String>(
+                            value: 'my_complaint',
+                            child: Row(
+                              children: [
+                                Icon(Icons.report,
+                                    size: 20, color: Colors.black),
+                                SizedBox(width: 10),
+                                Text('My Complaint'),
+                              ],
+                            ),
+                          ),
+                          PopupMenuItem<String>(
+                            value: 'log_out',
+                            child: Row(
+                              children: [
+                                Icon(Icons.logout,
+                                    size: 20,
+                                    color: Colors.black), // Logout icon
+                                SizedBox(width: 10),
+                                Text('Log Out'),
+                              ],
+                            ),
+                          ),
+                        ],
+                      )
+                    : Container(),
               ],
-            ),
-          ],
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications, color: Colors.black),
-            onPressed: () {},
-          ),
-        ],
-      ) : null,
+            )
+          : null,
       body: SafeArea(child: pages[selectedIndex]),
       bottomNavigationBar: BottomNavigationBar(
-         backgroundColor: Colors.white, 
+        backgroundColor: Colors.white,
         currentIndex: selectedIndex,
         onTap: (index) {
+          print(index);
           setState(() {
             selectedIndex = index;
+            if (index == 2) {
+              title = "Favorites";
+            } else if (index == 3) {
+              title = "My Bookings";
+            } else if (index == 4) {
+              title = "My Profile";
+            }
           });
         },
         selectedItemColor: Color.fromARGB(255, 2, 0, 108),

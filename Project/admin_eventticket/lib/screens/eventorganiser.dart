@@ -19,8 +19,9 @@ class _ManageOrganizersState extends State<ManageOrganizers> {
   // Fetch Organizers from Supabase
   Future<void> fetchOrganizers() async {
     try {
-      final response =
-          await supabase.from("tbl_eventorganisers").select("*,tbl_place(*,tbl_district(*))")
+      final response = await supabase
+          .from("tbl_eventorganisers")
+          .select("*,tbl_place(*,tbl_district(*))")
           .eq('organisers_status', 0);
 
       print("Fetched Organizers Data: $response"); // Debugging output
@@ -108,8 +109,9 @@ class _ManageOrganizersState extends State<ManageOrganizers> {
                       return DataRow(cells: [
                         DataCell(Text(organizer["organisers_name"] ?? 'N/A')),
                         DataCell(Text(organizer["organisers_email"] ?? 'N/A')),
-                        DataCell(
-                            Text(organizer['tbl_place']['tbl_district']["district_name"] ?? 'N/A')),
+                        DataCell(Text(organizer['tbl_place']['tbl_district']
+                                ["district_name"] ??
+                            'N/A')),
                         DataCell(
                             Text(organizer["organisers_address"] ?? 'N/A')),
                         DataCell(
@@ -127,17 +129,51 @@ class _ManageOrganizersState extends State<ManageOrganizers> {
                             : Icon(Icons.image, color: Colors.grey)),
 
                         // Display Proof (Assuming it's a URL to a document)
-                        DataCell(organizer["organiser_proof"] != null &&
-                                organizer["organiser_proof"].isNotEmpty
-                            ? IconButton(
-                                icon: Icon(Icons.file_present,
-                                    color: Colors.blue),
-                                onPressed: () {
-                                  print(
-                                      "Opening Proof: ${organizer["organiser_proof"]}");
-                                },
-                              )
-                            : Icon(Icons.file_present, color: Colors.grey)),
+                        DataCell(
+                          organizer["organiser_proof"] != null &&
+                                  organizer["organiser_proof"].isNotEmpty
+                              ? GestureDetector(
+                                  onTap: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return Dialog(
+                                          child: Container(
+                                            width:
+                                                300, // Adjust width as needed
+                                            height:
+                                                300, // Adjust height as needed
+                                            child: Image.network(
+                                              organizer["organiser_proof"],
+                                              fit: BoxFit.contain,
+                                              errorBuilder:
+                                                  (context, error, stackTrace) {
+                                                return Center(
+                                                  child: Icon(
+                                                    Icons.error,
+                                                    color: Colors.red,
+                                                    size: 50,
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  },
+                                  child: Image.network(
+                                    organizer["organiser_proof"],
+                                    width: 50,
+                                    height: 50,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return Icon(Icons.file_download,
+                                          color: Colors.grey);
+                                    },
+                                  ),
+                                )
+                              : Icon(Icons.image, color: Colors.grey),
+                        ),
 
                         // Action Buttons
                         DataCell(

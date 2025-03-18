@@ -1,4 +1,3 @@
-
 import 'package:admin_eventticket/screens/rejectedorganiser.dart';
 import 'package:admin_eventticket/screens/rejectedstall.dart';
 import 'package:admin_eventticket/screens/stallmanager.dart';
@@ -34,7 +33,7 @@ class _HomePageState extends State<HomePage> {
     'Stall Type',
     'Event Organiser',
     'Verified Organiser',
-    'Rejectied Organiser',
+    'Rejected Organiser',
     'Stall Manager',
     'Verified Stall',
     'Rejected Stall',
@@ -70,7 +69,7 @@ class _HomePageState extends State<HomePage> {
     ManageStall(),
     VerifiedStall(),
     RejectedStall(),
-    ComplaintPage( eventId: 0),
+    ManageComplaints(),
   ];
 
   @override
@@ -152,7 +151,8 @@ class _HomePageState extends State<HomePage> {
               color: Colors.white,
               child: Card(
                 elevation: 5,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                color: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12),),
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: pageContent[selectedIndex],
