@@ -268,7 +268,7 @@ class _OrgansierregistrationState extends State<Organsierregistration> {
 
                             TextFormField(
                               style: const TextStyle(color: Colors.white),
-                              controller: _name,
+                              controller: _email,
                               decoration: InputDecoration(
                                 labelText: ' Email',
                                 prefixIcon: Icon(Icons.email_outlined),

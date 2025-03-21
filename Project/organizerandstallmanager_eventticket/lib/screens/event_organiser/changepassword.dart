@@ -50,14 +50,14 @@ class _OrganiserPasswordState extends State<OrganiserPassword> {
 
       if (currentPasswordController.text != oldPassword) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Current password is incorrect!")),
+          const SnackBar(content: Text("Current password is incorrect!")),
         );
         return;
       }
 
       if (newPasswordController.text != confirmPasswordController.text) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("New passwords do not match!")),
+          const SnackBar(content: Text("New passwords do not match!")),
         );
         return;
       }
@@ -72,7 +72,7 @@ class _OrganiserPasswordState extends State<OrganiserPassword> {
           .eq('id', userId);
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Password updated successfully!")),
+        const SnackBar(content: Text("Password updated successfully!")),
       );
     } catch (e) {
       print("Error updating password: $e");
@@ -82,50 +82,76 @@ class _OrganiserPasswordState extends State<OrganiserPassword> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[100],
       body: Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 40.0),
           child: Container(
-            height: 400,
-            width: 500,
+            height: 500,
+            width: 600,
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 15,
+                  offset: const Offset(0, 6),
+                ),
+              ],
             ),
-            padding: EdgeInsets.all(20),
+            padding: const EdgeInsets.all(20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: 20),
-                Text(
-                  "Change Password",
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                const Center(
+                  child: Text(
+                    "Change Password",
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.deepPurple,
+                    ),
+                  ),
                 ),
-                SizedBox(height: 30),
-                _passwordField("Current Password", currentPasswordController, currentPassVisible, () {
+                const SizedBox(height: 30),
+                _passwordField("Current Password", currentPasswordController,
+                    currentPassVisible, () {
                   setState(() => currentPassVisible = !currentPassVisible);
                 }),
-                SizedBox(height: 20),
-                _passwordField("New Password", newPasswordController, newPassVisible, () {
+                const SizedBox(height: 20),
+                _passwordField("New Password", newPasswordController,
+                    newPassVisible, () {
                   setState(() => newPassVisible = !newPassVisible);
                 }),
-                SizedBox(height: 20),
-                _passwordField("Confirm Password", confirmPasswordController, confirmPassVisible, () {
+                const SizedBox(height: 20),
+                _passwordField("Confirm Password", confirmPasswordController,
+                    confirmPassVisible, () {
                   setState(() => confirmPassVisible = !confirmPassVisible);
                 }),
-                SizedBox(height: 30),
-                Align(
-                  alignment: Alignment.centerRight,
+                const SizedBox(height: 30),
+
+                // Save Button
+                Center(
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-                      backgroundColor: Colors.pinkAccent,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 40, vertical: 15),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      backgroundColor: Colors.deepPurple,
+                      foregroundColor: Colors.white,
+                      elevation: 5,
+                      shadowColor: Colors.deepPurple.withOpacity(0.4),
                     ),
                     onPressed: updatePassword,
-                    child: Text(
+                    child: const Text(
                       "Save",
-                      style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),
@@ -137,15 +163,18 @@ class _OrganiserPasswordState extends State<OrganiserPassword> {
     );
   }
 
-  Widget _passwordField(String hintText, TextEditingController controller, bool obscureText, VoidCallback toggleVisibility) {
+  Widget _passwordField(String hintText, TextEditingController controller,
+      bool obscureText, VoidCallback toggleVisibility) {
     return TextField(
       controller: controller,
       obscureText: obscureText,
       decoration: InputDecoration(
-        hintText: hintText,
-        border: UnderlineInputBorder(),
+        labelText: hintText,
+        labelStyle: const TextStyle(fontSize: 16, color: Colors.deepPurple),
+        border: const UnderlineInputBorder(),
         suffixIcon: IconButton(
           icon: Icon(obscureText ? Icons.visibility_off : Icons.visibility),
+          color: Colors.deepPurple,
           onPressed: toggleVisibility,
         ),
       ),

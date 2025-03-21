@@ -15,7 +15,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  void signin() {}
+
   Future<void> signIn() async {
     try {
       String email = _emailController.text;
@@ -42,76 +42,81 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor:  Colors.white,
-        title: Center(child: Text(" LOGIN")),
+        backgroundColor: Colors.white,
+        title: const Center(
+          child: Text("LOGIN", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+        ),
       ),
       body: Form(
         child: ListView(
-          padding: EdgeInsets.symmetric(vertical: 20, horizontal: 30),
+          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 30),
           children: [
-            SizedBox(
-              height: 100,
-            ),
+            const SizedBox(height: 100),
             Image.asset(
               'assets/log1.jpeg',
               height: 200,
             ),
-            SizedBox(
-              height: 10,
-            ),
-            SizedBox(
-              height: 10,
-            ),
+            const SizedBox(height: 20),
             TextFormField(
               controller: _emailController,
               validator: (value) => FormValidation.validateEmail(value),
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 border: OutlineInputBorder(
-                    borderSide: BorderSide.none,
-                    borderRadius: BorderRadius.all(Radius.circular(25))),
+                  borderRadius: BorderRadius.circular(25),
+                  borderSide: const BorderSide(color: Color.fromARGB(255, 2, 0, 108), width: 1),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(25),
+                  borderSide: const BorderSide(color: Color.fromARGB(255, 2, 0, 108), width: 1),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(25),
+                  borderSide: const BorderSide(color: Color.fromARGB(255, 2, 0, 108), width: 1),
+                ),
                 filled: true,
-                fillColor: Color.fromARGB(255, 236, 236, 236),
+                fillColor:  Colors.white,
                 labelText: "Email",
-                prefixIcon: Icon(Icons.email_outlined),
+                prefixIcon: const Icon(Icons.email_outlined, color: Color.fromARGB(255, 2, 0, 108)),
               ),
             ),
-            SizedBox(
-              height: 30,
-            ),
+            const SizedBox(height: 30),
             TextFormField(
               controller: _passwordController,
               validator: (value) => FormValidation.validatePassword(value),
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 border: OutlineInputBorder(
-                    borderSide: BorderSide.none,
-                    borderRadius: BorderRadius.all(Radius.circular(25))),
+                  borderRadius: BorderRadius.circular(25),
+                  borderSide: const BorderSide(color: Color.fromARGB(255, 2, 0, 108), width: 1),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(25),
+                  borderSide: const BorderSide(color: Color.fromARGB(255, 2, 0, 108), width: 1),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(25),
+                  borderSide: const BorderSide(color: Color.fromARGB(255, 2, 0, 108), width: 1),
+                ),
                 filled: true,
-                fillColor: Color.fromARGB(255, 236, 236, 236),
+                fillColor:  Colors.white,
                 labelText: "Password",
-                prefixIcon: Icon(Icons.lock),
+                prefixIcon: const Icon(Icons.lock, color: Color.fromARGB(255, 2, 0, 108)),
               ),
             ),
-            SizedBox(
-              height: 30,
-            ),
+            const SizedBox(height: 30),
             ElevatedButton(
-              onPressed: () {
-                signIn();
-              },
+              onPressed: signIn,
               style: ElevatedButton.styleFrom(
-                backgroundColor:
-                    Color.fromARGB(255, 2, 0, 108), // Dark blue background
-                foregroundColor: Colors.white, // White text color
+                backgroundColor: const Color.fromARGB(255, 2, 0, 108),
+                foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(25), // Rounded corners
+                  borderRadius: BorderRadius.circular(25),
                 ),
-                padding: EdgeInsets.symmetric(
-                    vertical: 16, horizontal: 32), // Custom padding
-                elevation: 5, // Shadow effect
-                shadowColor: Colors.black.withOpacity(0.3), // Soft shadow color
-                textStyle: TextStyle(
-                  fontSize: 16, // Text size
-                  fontWeight: FontWeight.bold, // Bold text
+                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+                elevation: 5,
+                shadowColor: Colors.black.withOpacity(0.3),
+                textStyle: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
               child: const Text("LOG IN"),
@@ -124,18 +129,14 @@ class _LoginPageState extends State<LoginPage> {
                 TextButton(
                   onPressed: () {
                     Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => RegistrationPage(),
-                        ));
-
-                    // Navigate to sign-in screen
+                      context,
+                      MaterialPageRoute(builder: (context) => const RegistrationPage()),
+                    );
                   },
-                  child: const Text("Register",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.blue,
-                      )),
+                  child: const Text(
+                    "Register",
+                    style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
+                  ),
                 ),
               ],
             ),

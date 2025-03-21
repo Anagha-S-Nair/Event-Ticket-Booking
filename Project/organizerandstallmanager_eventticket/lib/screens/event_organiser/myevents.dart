@@ -66,7 +66,7 @@ class _EventsPageState extends State<EventsPage> {
             crossAxisCount: 4,
             crossAxisSpacing: 8,
             mainAxisSpacing: 8,
-            childAspectRatio: 1.15,
+            childAspectRatio: 1.2,
           ),
           itemCount: eventList.length,
           itemBuilder: (context, index) {
