@@ -13,13 +13,31 @@ class EventDetails extends StatefulWidget {
 }
 
 class _EventDetailsState extends State<EventDetails> {
-  String btn = "Book Event"
+  String btn = "Book Event";
 
-  ;
-  
   int? remTocket;
   Future<void> insertFavorite() async {
     try {
+      print("event_id: ${widget.data['id']}");
+      final response = await supabase
+          .from('tbl_favorite')
+          .select()
+          .eq('event_id', widget.data['id'])
+          .eq('user_id',
+              supabase.auth.currentUser!.id) // Use null-aware operator
+          .maybeSingle();
+      if (response != null) {
+        await supabase
+            .from('tbl_favorite')
+            .delete()
+            .eq('id', response['id']);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Event removed from favorites!'),
+          ),
+        );
+      }
+      else{
       await supabase.from('tbl_favorite').insert({
         'event_id': widget.data['id'],
       });
@@ -28,12 +46,33 @@ class _EventDetailsState extends State<EventDetails> {
           content: Text('Event added to favorites!'),
         ),
       );
+      }
     } catch (e) {
+      print("Error fav: $e");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error adding to favorites: $e'),
         ),
       );
+    }
+  }
+
+  bool isFavorite = false; // Track favorite status
+
+  Future<void> checkIfFavorite() async {
+    try {
+      final response = await supabase
+          .from('tbl_favorite')
+          .select()
+          .eq('event_id', widget.data['id'])
+          .eq('user_id', supabase.auth.currentUser!.id)
+          .maybeSingle();
+
+      setState(() {
+        isFavorite = response != null; // If response exists, it's a favorite
+      });
+    } catch (e) {
+      print("Error checking favorite: $e");
     }
   }
 
@@ -69,6 +108,7 @@ class _EventDetailsState extends State<EventDetails> {
   void initState() {
     super.initState();
     checkTicket();
+    checkIfFavorite();
   }
 
   void _showTicketBookingDialog() {
@@ -211,7 +251,10 @@ class _EventDetailsState extends State<EventDetails> {
         elevation: 0,
         actions: [
           IconButton(
-            icon: Icon(Icons.favorite_border, color: Colors.black),
+            icon: Icon(
+              isFavorite ? Icons.favorite : Icons.favorite_border,
+              color: isFavorite ? Colors.red : Colors.black,
+            ),
             onPressed: insertFavorite,
           ),
           SizedBox(width: 16),
@@ -252,7 +295,8 @@ class _EventDetailsState extends State<EventDetails> {
                       color: Colors.grey[300],
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(Icons.calendar_today, color: const Color.fromARGB(255, 2, 0, 108)),
+                    child: Icon(Icons.calendar_today,
+                        color: const Color.fromARGB(255, 2, 0, 108)),
                   ),
                   SizedBox(width: 16),
                   Text(formattedDate),
@@ -267,7 +311,8 @@ class _EventDetailsState extends State<EventDetails> {
                       color: Colors.grey[300],
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(Icons.access_time, color: const Color.fromARGB(255, 2, 0, 108)),
+                    child: Icon(Icons.access_time,
+                        color: const Color.fromARGB(255, 2, 0, 108)),
                   ),
                   SizedBox(width: 16),
                   Text("Time: $formattedTime"),
@@ -282,7 +327,8 @@ class _EventDetailsState extends State<EventDetails> {
                       color: Colors.grey[300],
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(Icons.location_on, color:  const Color.fromARGB(255, 2, 0, 108)),
+                    child: Icon(Icons.location_on,
+                        color: const Color.fromARGB(255, 2, 0, 108)),
                   ),
                   SizedBox(width: 16),
                   Expanded(
@@ -302,7 +348,8 @@ class _EventDetailsState extends State<EventDetails> {
                       color: Colors.grey[300],
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(Icons.attach_money, color: const Color.fromARGB(255, 2, 0, 108)),
+                    child: Icon(Icons.attach_money,
+                        color: const Color.fromARGB(255, 2, 0, 108)),
                   ),
                   SizedBox(width: 16),
                   Text("\₹ ${widget.data['event_ticketprice'].toString()}"),
@@ -335,8 +382,9 @@ class _EventDetailsState extends State<EventDetails> {
                     _showTicketBookingDialog();
                   },
             style: ElevatedButton.styleFrom(
-              backgroundColor: btn == "Sold Out" ? Colors.grey : const Color.fromARGB(255, 2, 0, 108)
-,
+              backgroundColor: btn == "Sold Out"
+                  ? Colors.grey
+                  : const Color.fromARGB(255, 2, 0, 108),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(30),
               ),

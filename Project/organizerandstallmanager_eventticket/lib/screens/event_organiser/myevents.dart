@@ -38,9 +38,10 @@ class _EventsPageState extends State<EventsPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
         title: Text("My Events",
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
-        backgroundColor: Colors.white,
+        
         elevation: 4,
         actions: [
           TextButton.icon(

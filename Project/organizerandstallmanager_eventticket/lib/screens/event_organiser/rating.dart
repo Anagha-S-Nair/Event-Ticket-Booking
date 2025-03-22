@@ -24,7 +24,7 @@ class _OrganizerRatingsPageState extends State<OrganizerRatingsPage> {
     try {
       final response = await supabase
           .from('tbl_rating')
-          .select('rating_value, rating_content, tbl_user(user_name)')
+          .select('rating_value, rating_content, tbl_user(user_name, user_photo)')
           .eq('organiser_id', widget.organizerId);
 
       setState(() {
@@ -62,12 +62,15 @@ class _OrganizerRatingsPageState extends State<OrganizerRatingsPage> {
           : ratings.isEmpty
               ? const Center(child: Text('No ratings available'))
               : Center(
-                child: SizedBox(
-                  width: 800,
-                  child: ListView.builder(
+                  child: SizedBox(
+                    width: 800,
+                    child: ListView.builder(
                       itemCount: ratings.length,
                       itemBuilder: (context, index) {
                         final rating = ratings[index];
+                        final userName = rating['tbl_user']['user_name'];
+                        final userPhoto = rating['tbl_user']['user_photo'];
+
                         return Card(
                           margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                           shape: RoundedRectangleBorder(
@@ -81,10 +84,15 @@ class _OrganizerRatingsPageState extends State<OrganizerRatingsPage> {
                               children: [
                                 Row(
                                   children: [
-                                    const Icon(Icons.person, size: 30, color: Colors.blue),
+                                    CircleAvatar(
+                                      radius: 30,
+                                      backgroundImage: userPhoto != null
+                                          ? NetworkImage(userPhoto)
+                                          : const AssetImage('assets/default_user.png') as ImageProvider,
+                                    ),
                                     const SizedBox(width: 8),
                                     Text(
-                                      rating['tbl_user']['user_name'],
+                                      userName,
                                       style: const TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 16,
@@ -105,8 +113,8 @@ class _OrganizerRatingsPageState extends State<OrganizerRatingsPage> {
                         );
                       },
                     ),
+                  ),
                 ),
-              ),
     );
   }
 }
