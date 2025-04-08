@@ -73,125 +73,169 @@ class _MyRequestsState extends State<MyRequests> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('My Requests'),
-        backgroundColor: Colors.deepPurple,
+        title: Text(
+          'My Requests',
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 22,
+            color: Colors.black,
+          ),
+        ),
+        backgroundColor: Colors.white, // Professional dark tone
+        elevation: 2,
         centerTitle: true,
       ),
+      backgroundColor: Colors.white, // Subtle background for webpage feel
       body: ListView.builder(
         itemCount: eventList.length,
-        padding: EdgeInsets.symmetric(vertical: 50, horizontal: 15),
+        padding: EdgeInsets.symmetric(vertical: 30, horizontal: 20),
         itemBuilder: (context, index) {
           final stall = eventList[index];
           print(stall['tbl_event']['event_photo']);
           return Card(
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(2),
+              borderRadius: BorderRadius.circular(12), // Softer corners
             ),
-            elevation: 3,
-            margin: EdgeInsets.symmetric(vertical: 8, horizontal: 20), // Reduced margin
+            elevation: 5, // Slight shadow for depth
+            margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+            color: Colors.white,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  width: 200,
+                  width: 220,
+                  height: 150, // Fixed height for consistency
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Colors.grey[200],
                     borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(10),
-                      bottomLeft: Radius.circular(10),
+                      topLeft: Radius.circular(12),
+                      bottomLeft: Radius.circular(12),
                     ),
                   ),
-                  child: Image.network(stall['tbl_event']['event_photo'], fit: BoxFit.cover,),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(12),
+                      bottomLeft: Radius.circular(12),
+                    ),
+                    child: Image.network(
+                      stall['tbl_event']['event_photo'],
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => Icon(
+                        Icons.broken_image,
+                        size: 50,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
                 ),
                 Expanded(
                   child: Padding(
-                    padding: EdgeInsets.all(12),
+                    padding: EdgeInsets.all(16), // Consistent padding
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           stall['tbl_event']['event_name'] ?? 'Unknown Event',
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blueGrey[800],
+                          ),
                         ),
-                        SizedBox(height: 5),
+                        SizedBox(height: 8),
                         Row(
                           children: [
-                            Icon(Icons.store, size: 16, color: Colors.grey),
-                            SizedBox(width: 4),
+                            Icon(Icons.store, size: 16, color: Colors.blueGrey[400]),
+                            SizedBox(width: 6),
                             Expanded(
                               child: Text(
                                 "Stall Type: ${stall['tbl_stalltype']['stalltype_name'] ?? 'N/A'}",
-                                style: TextStyle(fontSize: 14, color: Colors.grey),
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.blueGrey[600],
+                                ),
                               ),
                             ),
                           ],
                         ),
-                        SizedBox(height: 5),
+                        SizedBox(height: 8),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
                               children: [
-                                Icon(Icons.store, size: 16, color: Colors.grey),
-                                SizedBox(width: 4),
+                                Icon(Icons.store, size: 16, color: Colors.blueGrey[400]),
+                                SizedBox(width: 6),
                                 Text(
                                   "Event Venue:",
                                   style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.grey,
-                                      fontWeight: FontWeight.bold),
+                                    fontSize: 14,
+                                    color: Colors.blueGrey[700],
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
                               ],
                             ),
                             Text(
                               "${stall['tbl_event']['tbl_place']['place_name'] ?? 'N/A'}, ${stall['tbl_event']['tbl_place']['tbl_district']['district_name'] ?? 'N/A'}",
-                              style: TextStyle(fontSize: 14, color: Colors.grey),
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.blueGrey[600],
+                              ),
                             ),
                           ],
                         ),
-                        SizedBox(height: 5),
+                        SizedBox(height: 8),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
                               children: [
-                                Icon(Icons.location_on, size: 16, color: Colors.grey),
-                                SizedBox(width: 4),
+                                Icon(Icons.location_on, size: 16, color: Colors.blueGrey[400]),
+                                SizedBox(width: 6),
                                 Text(
                                   "Stall Details:",
                                   style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.grey,
-                                      fontWeight: FontWeight.bold),
+                                    fontSize: 14,
+                                    color: Colors.blueGrey[700],
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
                               ],
                             ),
                             Text(
                               stall['request_message'] ?? 'N/A',
-                              style: TextStyle(fontSize: 14, color: Colors.grey),
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.blueGrey[600],
+                              ),
                             ),
                           ],
                         ),
-                        SizedBox(height: 5),
+                        SizedBox(height: 8),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
                               children: [
-                                Icon(Icons.info, size: 16, color: Colors.grey),
-                                SizedBox(width: 4),
+                                Icon(Icons.info, size: 16, color: Colors.blueGrey[400]),
+                                SizedBox(width: 6),
                                 Text(
                                   "Event Details:",
                                   style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.grey,
-                                      fontWeight: FontWeight.bold),
+                                    fontSize: 14,
+                                    color: Colors.blueGrey[700],
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
                               ],
                             ),
                             Text(
                               stall['tbl_event']['event_details'] ?? 'N/A',
-                              style: TextStyle(fontSize: 14, color: Colors.grey),
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.blueGrey[600],
+                              ),
                             ),
                           ],
                         ),
@@ -199,50 +243,50 @@ class _MyRequestsState extends State<MyRequests> {
                     ),
                   ),
                 ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Container(
-                      width: 150,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(10),
+                Container(
+                  width: 140,
+                  height: 150, // Match image height
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(12),
+                      bottomRight: Radius.circular(12),
+                    ),
+                    color: Colors.white,
+                    border: Border(
+                      left: BorderSide(color: Colors.grey[200]!, width: 1),
+                    ),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: 100,
+                        padding: EdgeInsets.symmetric(vertical: 8),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: stall['request_status'] == 0
+                              ? Colors.amber[700]
+                              : stall['request_status'] == 1
+                                  ? Colors.green[600]
+                                  : Colors.red[600],
                         ),
-                        border: Border(
-                          left: BorderSide(color: Colors.grey[300]!, width: 1),
+                        child: Center(
+                          child: Text(
+                            stall['request_status'] == 0
+                                ? "Pending"
+                                : stall['request_status'] == 1
+                                    ? "Approved"
+                                    : "Rejected",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w500,
+                              fontSize: 14,
+                            ),
+                          ),
                         ),
                       ),
-                      child: stall['request_status'] == 0
-                          ? Container(
-                              padding: EdgeInsets.all(10),
-                              color: Colors.yellow,
-                              child: Center(
-                                child: Text("Pending",
-                                    style: TextStyle(color: Colors.white),
-                                    textAlign: TextAlign.center),
-                              ),
-                            )
-                          : stall['request_status'] == 1
-                              ? Container(
-                                  padding: EdgeInsets.all(10),
-                                  color: Colors.green,
-                                  child: Center(
-                                    child: Text("Approved",
-                                        style: TextStyle(color: Colors.white),
-                                        textAlign: TextAlign.center),
-                                  ),
-                                )
-                              : Container(
-                                  padding: EdgeInsets.all(10),
-                                  color: Colors.red,
-                                  child: Center(
-                                    child: Text("Rejected",
-                                        style: TextStyle(color: Colors.white),
-                                        textAlign: TextAlign.center),
-                                  ),
-                                ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),

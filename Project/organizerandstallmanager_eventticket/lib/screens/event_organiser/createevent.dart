@@ -35,7 +35,7 @@ class _CreateeventState extends State<Createevent> {
 
   Future<void> handleImagePick() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
-      allowMultiple: false, // Only single file upload
+      allowMultiple: false,
     );
     if (result != null) {
       setState(() {
@@ -46,15 +46,14 @@ class _CreateeventState extends State<Createevent> {
 
   Future<String?> photoUpload(String uid) async {
     try {
-      final bucketName = 'organisers'; // Replace with your bucket name
+      final bucketName = 'organisers';
       final filePath = "$uid-event-${pickedImage!.name}";
       await supabase.storage.from(bucketName).uploadBinary(
             filePath,
-            pickedImage!.bytes!, // Use file.bytes for Flutter Web
+            pickedImage!.bytes!,
           );
       final publicUrl =
           supabase.storage.from(bucketName).getPublicUrl(filePath);
-      // await updateImage(uid, publicUrl);
       return publicUrl;
     } catch (e) {
       print("Error photo upload: $e");
@@ -79,7 +78,7 @@ class _CreateeventState extends State<Createevent> {
           await supabase.from("tbl_place").select().eq("district_id", id);
       setState(() {
         placeList = response;
-        selectedPlace = null; // Reset the selected place when district changes
+        selectedPlace = null;
       });
     } catch (e) {
       print("Error fetching places: $e");
@@ -91,7 +90,6 @@ class _CreateeventState extends State<Createevent> {
       final response = await supabase.from("tbl_eventtype").select();
       setState(() {
         eventtypeList = response;
-        // Reset the selected place when district changes
       });
     } catch (e) {
       print("Error fetching eventtype: $e");
@@ -180,457 +178,380 @@ class _CreateeventState extends State<Createevent> {
     super.initState();
     fetchdistrict();
     fetcheventtype();
-    // fetchplace();
   }
 
   @override
   Widget build(BuildContext context) {
+    const Color primaryColor = Color.fromARGB(255, 19, 37, 82);
+
     return Scaffold(
-      backgroundColor: const Color(0xFF1E1E2E),
+      backgroundColor: Colors.grey[50],
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        
+        elevation: 0,
+        title: Text(
+          'Create New Event',
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 22,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.5,
+          ),
+        ),
+        centerTitle: true,
+      ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 24.0),
         child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(
-              maxWidth: 700,
-              minHeight: 500,
-              maxHeight: 1000,
-            ),
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    width: 700,
-                    height: 200,
-                    decoration: BoxDecoration(color: Color(0xFF1E1E2E)),
-                    child: pickedImage == null
-                        ? GestureDetector(
-                            onTap: handleImagePick,
-                            child: Icon(
-                              Icons.image_outlined,
-                              color: Color(0xFF0277BD),
-                              size: 50,
-                            ),
-                          )
-                        : GestureDetector(
-                            onTap: handleImagePick,
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
-                              child: pickedImage!.bytes != null
-                                  ? Image.memory(
-                                      Uint8List.fromList(
-                                          pickedImage!.bytes!), // For web
-                                      fit: BoxFit.cover,
-                                    )
-                                  : Image.file(
-                                      File(pickedImage!
-                                          .path!), // For mobile/desktop
-                                      fit: BoxFit.cover,
-                                    ),
-                            ),
-                          ),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Row(
+          child: Container(
+            constraints: BoxConstraints(maxWidth: 800),
+            child: Card(
+              elevation: 6,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(28.0),
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(
-                        flex: 2,
-                        child: TextField(
-                          style: const TextStyle(color: Colors.white),
-                          controller: _nameController,
-                          decoration: InputDecoration(
-                            labelText: 'Event Name',
-                            labelStyle: const TextStyle(color: Colors.white),
-                            border: OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: Colors.grey.shade600),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: Colors.grey.shade600),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                  color: Colors.blueAccent, width: 2),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            fillColor: const Color(0xFF2E2E3E),
-                            filled: true,
-                          ),
+                      // Image Upload Section
+                      Container(
+                        width: double.infinity,
+                        height: 220,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[100],
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.grey[300]!),
                         ),
+                        child: pickedImage == null
+                            ? GestureDetector(
+                                onTap: handleImagePick,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.cloud_upload_outlined,
+                                      color: primaryColor,
+                                      size: 48,
+                                    ),
+                                    SizedBox(height: 12),
+                                    Text(
+                                      'Upload Event Image',
+                                      style: TextStyle(
+                                        color: primaryColor,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    SizedBox(height: 4),
+                                    Text(
+                                      'Supports JPG, PNG (Max 5MB)',
+                                      style: TextStyle(
+                                        color: Colors.grey[600],
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            : GestureDetector(
+                                onTap: handleImagePick,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: pickedImage!.bytes != null
+                                      ? Image.memory(
+                                          Uint8List.fromList(pickedImage!.bytes!),
+                                          fit: BoxFit.cover,
+                                          width: double.infinity,
+                                          height: double.infinity,
+                                        )
+                                      : Image.file(
+                                          File(pickedImage!.path!),
+                                          fit: BoxFit.cover,
+                                          width: double.infinity,
+                                          height: double.infinity,
+                                        ),
+                                ),
+                              ),
                       ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        flex: 1,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF2E2E3E),
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: Colors.grey.shade600),
+                      SizedBox(height: 32),
+
+                      // Event Name and Type
+                      Row(
+                        children: [
+                          Expanded(
+                            flex: 2,
+                            child: _buildTextField(
+                              controller: _nameController,
+                              label: 'Event Name',
+                              primaryColor: primaryColor,
+                            ),
                           ),
-                          child: DropdownButtonHideUnderline(
-                            child: DropdownButton<String>(
+                          SizedBox(width: 20),
+                          Expanded(
+                            flex: 1,
+                            child: _buildDropdown(
+                              value: selectedEventtype,
                               items: eventtypeList.map((eventtype) {
                                 return DropdownMenuItem(
                                   value: eventtype["id"].toString(),
                                   child: Text(eventtype["eventtype_name"]),
                                 );
                               }).toList(),
-                              value: selectedEventtype,
+                              hint: 'Event Type',
                               onChanged: (newValue) {
                                 setState(() {
                                   selectedEventtype = newValue;
-                                  // fetchplace(newValue!);  // Fetch places when district changes
                                 });
                               },
-                              dropdownColor: const Color(0xFF2E2E3E),
-                              style: const TextStyle(color: Colors.white),
-                              hint: const Text(' Type',
-                                  style: TextStyle(color: Colors.white70)),
-                              // items: const [],
-                              // onChanged: (value) {},
+                              primaryColor: primaryColor,
                             ),
                           ),
-                        ),
+                        ],
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: _dateController,
-                          readOnly: true,
-                          onTap: () => _selectDate(context),
-                          style: const TextStyle(color: Colors.white),
-                          decoration: InputDecoration(
-                            labelText: 'Date',
-                            hintStyle: const TextStyle(color: Colors.white70),
-                            labelStyle: const TextStyle(color: Colors.white),
-                            suffixIcon: const Icon(Icons.calendar_today,
-                                color: Colors.white70),
-                            border: OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: Colors.grey.shade600),
-                              borderRadius: BorderRadius.circular(8),
+                      SizedBox(height: 28),
+
+                      // Date, Time, Duration
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _buildTextField(
+                              controller: _dateController,
+                              label: 'Date',
+                              readOnly: true,
+                              onTap: () => _selectDate(context),
+                              suffixIcon: Icons.calendar_today,
+                              primaryColor: primaryColor,
                             ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: Colors.grey.shade600),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                  color: Colors.blueAccent, width: 2),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            filled: true,
-                            fillColor: const Color(0xFF2E2E3E),
                           ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: TextField(
-                          controller: _timeController,
-                          readOnly: true,
-                          onTap: () => _selectTime(context),
-                          style: const TextStyle(color: Colors.white),
-                          decoration: InputDecoration(
-                            labelText: 'Time',
-                            hintStyle: const TextStyle(color: Colors.white70),
-                            labelStyle: const TextStyle(color: Colors.white),
-                            suffixIcon: const Icon(Icons.access_time,
-                                color: Colors.white70),
-                            border: OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: Colors.grey.shade600),
-                              borderRadius: BorderRadius.circular(8),
+                          SizedBox(width: 20),
+                          Expanded(
+                            child: _buildTextField(
+                              controller: _timeController,
+                              label: 'Time',
+                              readOnly: true,
+                              onTap: () => _selectTime(context),
+                              suffixIcon: Icons.access_time,
+                              primaryColor: primaryColor,
                             ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: Colors.grey.shade600),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                  color: Colors.blueAccent, width: 2),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            filled: true,
-                            fillColor: const Color(0xFF2E2E3E),
                           ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: DropdownButtonFormField<String>(
-                          value: _selectedDuration,
-                          onChanged: (String? newValue) {
-                            setState(() {
-                              _selectedDuration = newValue;
-                            });
-                          },
-                          items: [
-                            '30 min',
-                            '1 hour',
-                            '2 hours',
-                            '3 hours',
-                            'Half-day',
-                            'Full-day'
-                          ]
-                              .map((duration) => DropdownMenuItem<String>(
+                          SizedBox(width: 20),
+                          Expanded(
+                            child: _buildDropdown(
+                              value: _selectedDuration,
+                              items: [
+                                '30 min',
+                                '1 hour',
+                                '2 hours',
+                                '3 hours',
+                                'Half-day',
+                                'Full-day'
+                              ].map((duration) => DropdownMenuItem<String>(
                                     value: duration,
-                                    child: Text(duration,
-                                        style: TextStyle(color: Colors.white)),
-                                  ))
-                              .toList(),
-                          decoration: InputDecoration(
-                            labelText: 'Duration',
-                            labelStyle: const TextStyle(color: Colors.white),
-                            suffixIcon:
-                                const Icon(Icons.timer, color: Colors.white70),
-                            border: OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: Colors.grey.shade600),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: Colors.grey.shade600),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                  color: Colors.blueAccent, width: 2),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            filled: true,
-                            fillColor: const Color(0xFF2E2E3E),
-                          ),
-                          dropdownColor: const Color(0xFF2E2E3E),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: DropdownButtonFormField<String>(
-                          items: districtList.map((district) {
-                            return DropdownMenuItem(
-                              value: district["id"].toString(),
-                              child: Text(district["district_name"]),
-                            );
-                          }).toList(),
-                          value: selectedDistrict,
-                          onChanged: (newValue) {
-                            setState(() {
-                              selectedDistrict = newValue;
-                              // Fetch places when district changes
-                            });
-                            fetchplace(newValue!);
-                          },
-                          decoration: InputDecoration(
-                            // labelText: 'District',
-                            labelStyle: const TextStyle(color: Colors.white),
-                            filled: true,
-                            fillColor: const Color(0xFF2E2E3E),
-                            border: OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: Colors.grey.shade600),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: Colors.grey.shade600),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                  color: Colors.blueAccent, width: 2),
-                              borderRadius: BorderRadius.circular(8),
+                                    child: Text(duration),
+                                  )).toList(),
+                              hint: 'Duration',
+                              onChanged: (newValue) {
+                                setState(() {
+                                  _selectedDuration = newValue;
+                                });
+                              },
+                              primaryColor: primaryColor,
                             ),
                           ),
-                          dropdownColor: const Color(0xFF2E2E3E),
-                          style: const TextStyle(color: Colors.white),
-                          hint: const Text(' District',
-                              style: TextStyle(color: Colors.white70)),
-                          // items: const [],
-                          // onChanged: (value) {},
-                        ),
+                        ],
                       ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: DropdownButtonFormField<String>(
-                          items: placeList.map((place) {
-                            return DropdownMenuItem(
-                              value: place["id"].toString(),
-                              child: Text(place["place_name"]),
-                            );
-                          }).toList(),
-                          value: selectedPlace,
-                          onChanged: (newValue) {
-                            setState(() {
-                              selectedPlace = newValue;
-                            });
-                          },
-                          decoration: InputDecoration(
-                            // labelText: 'Place',
-                            labelStyle: const TextStyle(color: Colors.white),
-                            filled: true,
-                            fillColor: const Color(0xFF2E2E3E),
-                            border: OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: Colors.grey.shade600),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: Colors.grey.shade600),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                  color: Colors.blueAccent, width: 2),
-                              borderRadius: BorderRadius.circular(8),
+                      SizedBox(height: 28),
+
+                      // District and Place
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _buildDropdown(
+                              value: selectedDistrict,
+                              items: districtList.map((district) {
+                                return DropdownMenuItem(
+                                  value: district["id"].toString(),
+                                  child: Text(district["district_name"]),
+                                );
+                              }).toList(),
+                              hint: 'District',
+                              onChanged: (newValue) {
+                                setState(() {
+                                  selectedDistrict = newValue;
+                                });
+                                fetchplace(newValue!);
+                              },
+                              primaryColor: primaryColor,
                             ),
                           ),
-                          dropdownColor: const Color(0xFF2E2E3E),
-                          style: const TextStyle(color: Colors.white),
-                          hint: const Text(' Place',
-                              style: TextStyle(color: Colors.white70)),
-                          // items: const [],
-                          // onChanged: (value) {},
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  TextField(
-                    style: const TextStyle(color: Colors.white),
-                    controller: _detailsController,
-                    maxLines: 3,
-                    decoration: InputDecoration(
-                      labelText: 'Details',
-                      labelStyle: const TextStyle(color: Colors.white),
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.grey.shade600),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.grey.shade600),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(
-                            color: Colors.blueAccent, width: 2),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      filled: true,
-                      fillColor: const Color(0xFF2E2E3E),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          style: const TextStyle(color: Colors.white),
-                          controller: _countController,
-                          decoration: InputDecoration(
-                            labelText: 'Count',
-                            labelStyle: const TextStyle(color: Colors.white),
-                            border: OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: Colors.grey.shade600),
-                              borderRadius: BorderRadius.circular(8),
+                          SizedBox(width: 20),
+                          Expanded(
+                            child: _buildDropdown(
+                              value: selectedPlace,
+                              items: placeList.map((place) {
+                                return DropdownMenuItem(
+                                  value: place["id"].toString(),
+                                  child: Text(place["place_name"]),
+                                );
+                              }).toList(),
+                              hint: 'Place',
+                              onChanged: (newValue) {
+                                setState(() {
+                                  selectedPlace = newValue;
+                                });
+                              },
+                              primaryColor: primaryColor,
                             ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: Colors.grey.shade600),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                  color: Colors.blueAccent, width: 2),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            filled: true,
-                            fillColor: const Color(0xFF2E2E3E),
                           ),
-                        ),
+                        ],
                       ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: TextField(
-                          style: const TextStyle(color: Colors.white),
-                          controller: _ticketpriceController,
-                          decoration: InputDecoration(
-                            labelText: 'Price',
-                            labelStyle: const TextStyle(color: Colors.white),
-                            border: OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: Colors.grey.shade600),
-                              borderRadius: BorderRadius.circular(8),
+                      SizedBox(height: 28),
+
+                      // Details
+                      _buildTextField(
+                        controller: _detailsController,
+                        label: 'Event Details',
+                        maxLines: 4,
+                        primaryColor: primaryColor,
+                      ),
+                      SizedBox(height: 28),
+
+                      // Count and Price
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _buildTextField(
+                              controller: _countController,
+                              label: 'Ticket Count',
+                              primaryColor: primaryColor,
                             ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: Colors.grey.shade600),
-                              borderRadius: BorderRadius.circular(8),
+                          ),
+                          SizedBox(width: 20),
+                          Expanded(
+                            child: _buildTextField(
+                              controller: _ticketpriceController,
+                              label: 'Ticket Price (₹)',
+                              primaryColor: primaryColor,
                             ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                  color: Colors.blueAccent, width: 2),
-                              borderRadius: BorderRadius.circular(8),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 40),
+
+                      // Submit Button
+                      Center(
+                        child: SizedBox(
+                          width: 320,
+                          height: 56,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: primaryColor,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              elevation: 4,
                             ),
-                            filled: true,
-                            fillColor: const Color(0xFF2E2E3E),
+                            onPressed: insertEvent,
+                            child: Text(
+                              'Create Event',
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
                           ),
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 30),
-                  Align(
-                    alignment: Alignment.center,
-                    child: SizedBox(
-                      width: 300,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blueAccent,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                        ),
-                        onPressed: () {
-                          insertEvent();
-                        },
-                        child: const Text(
-                          'CREATE EVENT',
-                          style: TextStyle(
-                            fontSize: 17,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                  )
-                ],
+                ),
               ),
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    int maxLines = 1,
+    bool readOnly = false,
+    VoidCallback? onTap,
+    IconData? suffixIcon,
+    required Color primaryColor,
+  }) {
+    return TextField(
+      controller: controller,
+      maxLines: maxLines,
+      readOnly: readOnly,
+      onTap: onTap,
+      style: TextStyle(color: Colors.black87, fontSize: 16),
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: TextStyle(color: Colors.grey[600], fontSize: 14),
+        suffixIcon: suffixIcon != null
+            ? Icon(suffixIcon, color: primaryColor, size: 20)
+            : null,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.grey[300]!),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.grey[300]!),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: primaryColor, width: 2),
+        ),
+        filled: true,
+        fillColor: Colors.white,
+        contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+      ),
+    );
+  }
+
+  Widget _buildDropdown({
+    required String? value,
+    required List<DropdownMenuItem<String>> items,
+    required String hint,
+    required ValueChanged<String?> onChanged,
+    required Color primaryColor,
+  }) {
+    return DropdownButtonFormField<String>(
+      value: value,
+      items: items,
+      onChanged: onChanged,
+      style: TextStyle(color: Colors.black87, fontSize: 16),
+      decoration: InputDecoration(
+        labelText: hint,
+        labelStyle: TextStyle(color: Colors.grey[600], fontSize: 14),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.grey[300]!),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.grey[300]!),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: primaryColor, width: 2),
+        ),
+        filled: true,
+        fillColor: Colors.white,
+        contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+      ),
+      dropdownColor: Colors.white,
+      icon: Icon(Icons.arrow_drop_down, color: primaryColor),
     );
   }
 }

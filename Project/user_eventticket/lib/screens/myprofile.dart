@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:user_eventticket/main.dart';
-import 'package:user_eventticket/screens/changepassword.dart';
-import 'package:user_eventticket/screens/editprofile.dart';
-import 'package:user_eventticket/screens/mycomplaints.dart';
 
 class MyProfile extends StatefulWidget {
   const MyProfile({super.key});
@@ -43,71 +40,75 @@ class _MyProfileState extends State<MyProfile> {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+                // Profile Image
                 Center(
-                  child: Stack(
-                    children: [
-                      CircleAvatar(
-                        radius: 50,
-                        backgroundImage: data["user_photo"] == null ||
-                                data["user_photo"].isEmpty
-                            ? const AssetImage('assets/Profileicon2.png')
-                                as ImageProvider
-                            : NetworkImage(data["user_photo"]),
-                      ),
-                      Positioned(
-                        bottom: 0,
-                        right: 0,
-                        child: CircleAvatar(
-                          radius: 15,
-                          backgroundColor: Colors.white,
-                          child:
-                              Icon(Icons.edit, size: 18, color: Colors.black),
-                        ),
-                      ),
-                    ],
+                  child: CircleAvatar(
+                    radius: 65,
+                    backgroundColor: Colors.grey[300],
+                    backgroundImage: data["user_photo"] == null ||
+                            data["user_photo"].isEmpty
+                        ? const AssetImage('assets/Profileicon2.png')
+                            as ImageProvider
+                        : NetworkImage(data["user_photo"]),
                   ),
                 ),
-                SizedBox(height: 20),
-                buildProfileBox(Icons.person, data["user_name"] ?? ""),
-                buildProfileBox(Icons.email_outlined, data["user_email"] ?? ""),
-                buildProfileBox(
-                    Icons.phone_android, data["user_contact"] ?? ""),
-                buildProfileBox(Icons.home, data["user_address"] ?? ""),
-                buildProfileBox(Icons.location_on, data["location"] ?? ""),
-                SizedBox(height: 20),
-                
+                const SizedBox(height: 20),
+
+                // Profile Information Boxes
+                buildProfileBox(Icons.person, "Full Name", data["user_name"]),
+                buildProfileBox(Icons.email_outlined, "Email", data["user_email"]),
+                buildProfileBox(Icons.phone_android, "Contact", data["user_contact"]),
+                buildProfileBox(Icons.home, "Address", data["user_address"]),
               ],
             ),
     );
   }
 
-  Widget buildProfileBox(IconData icon, String value) {
+  Widget buildProfileBox(IconData icon, String label, String? value) {
     return Container(
-      margin: EdgeInsets.only(bottom: 15),
-      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade300),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(12),
         color: Colors.white,
         boxShadow: [
           BoxShadow(
             color: Colors.black12,
-            blurRadius: 4,
-            offset: Offset(0, 2),
+            blurRadius: 6,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
       child: Row(
         children: [
-          Icon(icon, color: Colors.grey[700]),
-          SizedBox(width: 10),
+          Icon(icon, color: const Color.fromARGB(255, 2, 0, 108), size: 28),
+          const SizedBox(width: 14),
           Expanded(
-            child: Text(
-              value.isNotEmpty ? value : "Not available",
-              style: TextStyle(fontSize: 14, color: Colors.black87),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.grey,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  value != null && value.isNotEmpty ? value : "Not available",
+                  style: const TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black87,
+                  ),
+                ),
+              ],
             ),
           ),
         ],

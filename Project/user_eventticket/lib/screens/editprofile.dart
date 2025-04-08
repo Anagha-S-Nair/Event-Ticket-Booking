@@ -137,7 +137,7 @@ class _EditProfileState extends State<EditProfile> {
                       child: Stack(
                         children: [
                           CircleAvatar(
-                            radius: 50,
+                            radius: 65,
                             backgroundImage: pickedImage != null
                                 ? FileImage(File(pickedImage!
                                     .path!)) // Correctly loads from file
@@ -175,10 +175,10 @@ class _EditProfileState extends State<EditProfile> {
                     ElevatedButton(
                       onPressed: updateUser,
                       style: ElevatedButton.styleFrom(
-                          backgroundColor: Color.fromARGB(255, 234, 146, 88),
+                          backgroundColor:  Color.fromARGB(255, 2, 0, 108),
                           minimumSize: Size(double.infinity, 50)),
                       child: Text("SAVE CHANGES",
-                          style: TextStyle(color: Colors.black)),
+                          style: TextStyle(color: Colors.white,fontSize: 15)),
                     ),
                   ],
                 ),
@@ -206,7 +206,7 @@ class _EditProfileState extends State<EditProfile> {
       ),
       child: Row(
         children: [
-          Icon(icon, color: Colors.grey[700]),
+          Icon(icon, color: const Color.fromARGB(255, 2, 0, 108)),
           SizedBox(width: 10),
           Expanded(
             child: TextField(

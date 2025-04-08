@@ -36,85 +36,185 @@ class _EventsPageState extends State<EventsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.grey[100],
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: Text("My Events",
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
-        
-        elevation: 4,
-        actions: [
-          TextButton.icon(
-            onPressed: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => Createevent()));
-            },
-            icon: Icon(Icons.add, color: Colors.black),
-            label: Text(
-              "Create",
-              style: TextStyle(color: Colors.black, fontSize: 16),
+        elevation: 1,
+        title: Row(
+          children: [
+            Icon(Icons.event, color: Colors.blue[800], size: 22),
+            SizedBox(width: 8),
+            Text(
+              "My Events",
+              style: TextStyle(
+                color: Colors.black87,
+                fontWeight: FontWeight.w600,
+                fontSize: 18,
+                letterSpacing: 0.2,
+              ),
             ),
-            style: ButtonStyle(
-                overlayColor:
-                    MaterialStateProperty.all(Colors.white.withOpacity(0.1))),
+          ],
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: ElevatedButton.icon(
+              onPressed: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => Createevent()));
+              },
+              icon: Icon(Icons.add, size: 18, color: Colors.white),
+              label: Text(
+                "New Event",
+                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue[800],
+                foregroundColor: Colors.white,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              ),
+            ),
           ),
         ],
       ),
       body: Padding(
-        padding: EdgeInsets.all(12.0),
-        child: GridView.builder(
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 4,
-            crossAxisSpacing: 8,
-            mainAxisSpacing: 8,
-            childAspectRatio: 1.2,
-          ),
-          itemCount: eventList.length,
-          itemBuilder: (context, index) {
-            final data = eventList[index];
-            return GestureDetector(
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => EventDetails(data: data),
-                    ));
-              },
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  image: DecorationImage(
-                    image: NetworkImage(data['event_photo'] ?? ""),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    gradient: LinearGradient(
-                      begin: Alignment.bottomCenter,
-                      end: Alignment.topCenter,
-                      colors: [
-                        Colors.black.withOpacity(0.7),
-                        Colors.transparent
-                      ],
+        padding: EdgeInsets.symmetric(horizontal: 32.0, vertical: 24.0),
+        child: eventList.isEmpty
+            ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.event_busy, size: 48, color: Colors.grey[400]),
+                    SizedBox(height: 12),
+                    Text(
+                      "No Events",
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey[700],
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
-                  ),
-                  padding: const EdgeInsets.all(12),
-                  alignment: Alignment.bottomLeft,
-                  child: Text(
-                    data['event_name'] ?? "No Name",
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                    SizedBox(height: 6),
+                    Text(
+                      "Create an event to begin",
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey[600],
+                      ),
                     ),
-                  ),
+                  ],
                 ),
+              )
+            : GridView.builder(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 4,
+                  crossAxisSpacing: 20,
+                  mainAxisSpacing: 20,
+                  childAspectRatio: 0.9,
+                ),
+                itemCount: eventList.length,
+                itemBuilder: (context, index) {
+                  final data = eventList[index];
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => EventDetails(data: data),
+                        ),
+                      );
+                    },
+                    child: Card(
+                      elevation: 3,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Expanded(
+                            flex: 3,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.vertical(
+                                top: Radius.circular(8),
+                              ),
+                              child: Image.network(
+                                data['event_photo'] ?? "",
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Container(
+                                    color: Colors.grey[200],
+                                    child: Icon(
+                                      Icons.image_not_supported,
+                                      size: 30,
+                                      color: Colors.grey[400],
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 2,
+                            child: Container(
+                              padding: EdgeInsets.fromLTRB(8, 4, 8, 4),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.vertical(
+                                  bottom: Radius.circular(8),
+                                ),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    data['event_name'] ?? "No Name",
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.black87,
+                                    ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  SizedBox(height: 2), // Space between event name and button
+                                  Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Container(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 6,
+                                        vertical: 2,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: Colors.blue[50],
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                      child: Text(
+                                        "View Details",
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          color: Colors.blue[800],
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  // Removed extra spacing below "View Details" to reduce white space
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
               ),
-            );
-          },
-        ),
       ),
     );
   }

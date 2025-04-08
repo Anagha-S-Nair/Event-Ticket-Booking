@@ -39,220 +39,166 @@ class _OrganiserProfileState extends State<OrganiserProfile> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[100],
-      body: Stack(
-        children: [
-          Center(
-            child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 40.0),
-              child: Container(
-                height: 600,
-                width: 600,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 15,
-                      offset: const Offset(0, 6),
-                    ),
-                  ],
-                ),
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Center(
-                      child: Text(
-                        "My Profile",
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.deepPurple,
-                        ),
+    return Center(
+      child: Scaffold(
+        backgroundColor: Colors.grey[100],
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              // Profile Details Section with Photo on the Right
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 30),
+                child: Container(
+                  width: 800,
+                  padding: const EdgeInsets.all(30),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 20,
+                        offset: const Offset(0, 10),
                       ),
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              _profileField(Icons.person, data['organisers_name']),
-                              const SizedBox(height: 30),
-                              _profileField(Icons.email, data['organisers_email']),
-                              const SizedBox(height: 30),
-                              _profileField(Icons.phone, data['organisers_contact']),
-                              const SizedBox(height: 30),
-                              _profileField(Icons.home,
-                                  data['organisers_address'] ?? 'No address provided'),
-                              const SizedBox(height: 30),
-                              _profileField(Icons.place,
-                                  data['tbl_place']['place_name'] ?? 'No place provided'),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(width: 50),
-                        Column(
+                    ],
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Profile Details Column
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Stack(
-                              alignment: Alignment.bottomRight,
+                            const Text(
+                              "Profile Details",
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.deepPurple,
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            _profileField(Icons.person, "Name", data['organisers_name']),
+                            const SizedBox(height: 20),
+                            _profileField(Icons.email, "Email", data['organisers_email']),
+                            const SizedBox(height: 20),
+                            _profileField(Icons.phone, "Contact", data['organisers_contact']),
+                            const SizedBox(height: 20),
+                            _profileField(Icons.home, "Address", 
+                                data['organisers_address'] ?? 'No address provided'),
+                            const SizedBox(height: 20),
+                            _profileField(Icons.place, "Place", 
+                                data['tbl_place']?['place_name'] ?? 'No place provided'),
+                            const SizedBox(height: 30),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
                               children: [
-                                CircleAvatar(
-                                  radius: 100,
-                                  backgroundImage: NetworkImage(
-                                    data['organiser_photo'],
+                                _actionButton(
+                                  context: context,
+                                  label: "Edit Profile",
+                                  color: Colors.blueAccent,
+                                  onPressed: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => EditProfile()),
                                   ),
-                                  backgroundColor: Colors.grey[200],
                                 ),
-                                Positioned(
-                                  bottom: 15,
-                                  right: 15,
-                                  child: Container(
-                                    padding: const EdgeInsets.all(6),
-                                    decoration: const BoxDecoration(
-                                      color: Colors.white,
-                                      shape: BoxShape.circle,
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black12,
-                                          blurRadius: 4,
-                                          offset: Offset(0, 2),
-                                        ),
-                                      ],
-                                    ),
-                                    
+                                const SizedBox(width: 15),
+                                _actionButton(
+                                  context: context,
+                                  label: "Change Password",
+                                  color: Colors.deepPurple,
+                                  onPressed: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => OrganiserPassword()),
                                   ),
                                 ),
                               ],
                             ),
                           ],
                         ),
-                        const SizedBox(
-                          width: 100,
-                          height: 200,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 30),
-                  ],
+                      ),
+                      const SizedBox(width: 30),
+                      // Profile Photo
+                      CircleAvatar(
+                        radius: 60,
+                        backgroundImage: NetworkImage(data['organiser_photo'] ?? ''),
+                        backgroundColor: Colors.grey[300],
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
+            ],
           ),
-
-          // Change Password Button
-          Positioned(
-            top: 580,
-            left: 500,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                backgroundColor: Colors.deepPurple,
-                foregroundColor: Colors.white,
-                elevation: 5,
-                shadowColor: Colors.deepPurple.withOpacity(0.4),
-              ),
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => OrganiserPassword(),
-                    ));
-              },
-              child: const Text(
-                "Change Password",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-
-          // Edit Profile Button
-          Positioned(
-            top: 580,
-            left: 850,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                backgroundColor: Colors.blueAccent,
-                foregroundColor: Colors.white,
-                elevation: 5,
-                shadowColor: Colors.blueAccent.withOpacity(0.4),
-              ),
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => EditProfile(),
-                    ));
-              },
-              child: const Text(
-                "Edit Profile",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
 
-  Widget _profileField(IconData icon, String value) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 15),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.deepPurple.withOpacity(0.1),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              icon,
-              color: Colors.deepPurple,
-              size: 24,
-            ),
+  Widget _profileField(IconData icon, String label, String? value) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: Colors.deepPurple.withOpacity(0.05),
+            borderRadius: BorderRadius.circular(8),
           ),
-          const SizedBox(width: 15),
-          Expanded(
-            child: Container(
-              decoration: const BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                    color: Colors.black54,
-                    width: 1.0,
-                  ),
-                ),
+          child: Icon(icon, color: Colors.deepPurple, size: 24),
+        ),
+        const SizedBox(width: 20),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              style: const TextStyle(
+                fontSize: 14,
+                color: Colors.grey,
+                fontWeight: FontWeight.w500,
               ),
-              padding: const EdgeInsets.only(bottom: 5),
+            ),
+            const SizedBox(height: 5),
+            SizedBox(
+              width: 400, // Adjusted width to fit beside the photo
               child: Text(
-                value,
+                value ?? 'Not provided',
                 style: const TextStyle(
                   fontSize: 16,
+                  color: Colors.black87,
                   fontWeight: FontWeight.w500,
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _actionButton({
+    required BuildContext context,
+    required String label,
+    required Color color,
+    required VoidCallback onPressed,
+  }) {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+        backgroundColor: color,
+        foregroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        elevation: 3,
+      ),
+      onPressed: onPressed,
+      child: Text(
+        label,
+        style: const TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+        ),
       ),
     );
   }

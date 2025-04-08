@@ -37,7 +37,7 @@ class Landingpage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      "EVENT",
+                      "QICKTICK",
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,

@@ -26,7 +26,6 @@ class _HomePageState extends State<HomePage> {
 
   final List<String> pageName = [
     'Dashboard',
-    'Account',
     'District',
     'Place',
     'Event Type',
@@ -42,7 +41,6 @@ class _HomePageState extends State<HomePage> {
 
   final List<IconData> pageIcon = [
     Icons.dashboard,
-    Icons.supervised_user_circle,
     Icons.location_city,
     Icons.place,
     Icons.event,
@@ -58,7 +56,6 @@ class _HomePageState extends State<HomePage> {
 
   final List<Widget> pageContent = [
     Dashboard(),
-    Account(),
     District(),
     Place(),
     Eventtype(),

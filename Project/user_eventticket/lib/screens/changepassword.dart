@@ -106,12 +106,12 @@ class _ChangePasswordState extends State<ChangePassword> {
             ElevatedButton(
               onPressed: updatePassword,
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(255, 234, 146, 88),
+                backgroundColor: const Color.fromARGB(255, 2, 0, 108),
                 minimumSize: const Size(double.infinity, 50),
               ),
               child: const Text(
                 "SAVE CHANGES",
-                style: TextStyle(color: Colors.black),
+                style: TextStyle(color: Colors.white),
               ),
             ),
           ],
@@ -145,7 +145,7 @@ class _ChangePasswordState extends State<ChangePassword> {
     ),
     child: Row(
       children: [
-        Icon(icon, color: Colors.grey[700]),
+        Icon(icon, color: const Color.fromARGB(255, 2, 0, 108)),
         const SizedBox(width: 10),
         Expanded(
           child: TextFormField(

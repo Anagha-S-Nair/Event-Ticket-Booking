@@ -35,7 +35,6 @@ class _StallRequetsState extends State<StallRequets> {
           .from('tbl_stallrequest')
           .update({'request_status': 2}).eq('id', rid);
       fetchrequest();
-      // Refresh UI after update
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Request rejected.")),
       );
@@ -53,9 +52,8 @@ class _StallRequetsState extends State<StallRequets> {
       final response = await supabase
           .from("tbl_stallrequest")
           .select(
-              "*, tbl_event(*), tbl_stallmanager(*),tbl_stalltype(*)") // Fetching stall request along with event details
-          .eq("tbl_event.organiser_id",
-              uid); // Correct way to filter nested fields
+              "*, tbl_event(*), tbl_stallmanager(*),tbl_stalltype(*)")
+          .eq("tbl_event.organiser_id", uid);
 
       print(response);
       setState(() {
@@ -75,150 +73,235 @@ class _StallRequetsState extends State<StallRequets> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[100],
       appBar: AppBar(
-        title: Text('Stall Managers Requests'),
-        backgroundColor: Colors.deepPurple,
+        title: const Text(
+          'Stall Manager Requests',
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.5,
+          ),
+        ),
+        backgroundColor: Colors.white,
+        elevation: 1,
+        shadowColor: Colors.grey[300],
         centerTitle: true,
+        foregroundColor: Colors.black87,
       ),
-      body: ListView.builder(
-        itemCount: eventList.length,
-        padding: EdgeInsets.all(10),
-        itemBuilder: (context, index) {
-          var stall = eventList[index];
-
-          return Card(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(2),
-            ),
-            elevation: 3,
-            margin: EdgeInsets.symmetric(vertical: 8),
-            child: Row(
-              children: [
-                Container(
-                  width: 80,
-                  height: 100,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(10),
-                      bottomLeft: Radius.circular(10),
-                    ),
-                    image: DecorationImage(
-                        image: NetworkImage(
-                            stall['tbl_stallmanager']['stallmanager_photo']),
-                        fit: BoxFit.cover),
-                  ),
+      body: eventList.isEmpty
+          ? const Center(
+              child: Text(
+                'No pending requests',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.grey,
                 ),
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.all(12),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          stall['tbl_stallmanager']['stallmanager_name'] ??
-                              'Unknown Manager',
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(height: 5),
-                        Row(
-                          children: [
-                            Icon(Icons.store, size: 16, color: Colors.grey),
-                            SizedBox(width: 4),
-                            Text(
-                              "Stall Type: ${stall['tbl_stalltype']['stalltype_name'] ?? 'N/A'}",
-                              style:
-                                  TextStyle(fontSize: 14, color: Colors.grey),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            Icon(Icons.location_on,
-                                size: 16, color: Colors.grey),
-                            SizedBox(width: 4),
-                            Text(
-                              "Stall Details: ${stall['request_message'] ?? 'N/A'}",
-                              style:
-                                  TextStyle(fontSize: 14, color: Colors.grey),
-                            ),
-                          ],
-                        ),
-                        // Row(
-                        //   children: [
-                        //     Icon(Icons.phone, size: 16, color: Colors.grey),
-                        //     SizedBox(width: 4),
-                        //     Text(
-                        //       "Contact: ${stall['contact_number'] ?? 'N/A'}",
-                        //       style: TextStyle(fontSize: 14, color: Colors.grey),
-                        //     ),
-                        //   ],
-                        // ),
-                      ],
-                    ),
-                  ),
-                ),
-                Container(
-                  width: 130,
-                  height: 100,
-                  decoration: BoxDecoration(
-                    border: Border(
-                      left: BorderSide(color: Colors.grey[300]!, width: 1),
-                    ),
-                  ),
-                  child: stall['request_status'] == 0
-                      ? Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            ElevatedButton(
-                              onPressed: () {
-                                acceptrequest(stall['id']);
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.green,
-                                foregroundColor: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
+              ),
+            )
+          : SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.1),
+                            spreadRadius: 1,
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: eventList.length,
+                        itemBuilder: (context, index) {
+                          var stall = eventList[index];
+                          return Container(
+                            margin: const EdgeInsets.only(bottom: 8),
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              border: Border(
+                                bottom: BorderSide(
+                                  color: Colors.grey[200]!,
+                                  width: 1,
                                 ),
                               ),
-                              child: Text("Approve"),
                             ),
-                            SizedBox(height: 8),
-                            ElevatedButton(
-                              onPressed: () {},
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.red,
-                                foregroundColor: Colors.white,
-                                shape: RoundedRectangleBorder(
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                // Manager Photo
+                                ClipRRect(
                                   borderRadius: BorderRadius.circular(8),
+                                  child: Container(
+                                    width: 60,
+                                    height: 60,
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey[200],
+                                      image: DecorationImage(
+                                        image: NetworkImage(
+                                          stall['tbl_stallmanager']
+                                              ['stallmanager_photo'],
+                                        ),
+                                        fit: BoxFit.cover,
+                                        onError: (_, __) => const Icon(Icons.error),
+                                      ),
+                                    ),
+                                  ),
                                 ),
-                              ),
-                              child: Text("Reject"),
+                                const SizedBox(width: 16),
+                                // Details
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        stall['tbl_stallmanager']
+                                                ['stallmanager_name'] ??
+                                            'Unknown Manager',
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.black87,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Row(
+                                        children: [
+                                          Icon(
+                                            Icons.store,
+                                            size: 16,
+                                            color: Colors.grey[600],
+                                          ),
+                                          const SizedBox(width: 6),
+                                          Text(
+                                            stall['tbl_stalltype']
+                                                    ['stalltype_name'] ??
+                                                'N/A',
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              color: Colors.grey[700],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Row(
+                                        children: [
+                                          Icon(
+                                            Icons.description,
+                                            size: 16,
+                                            color: Colors.grey[600],
+                                          ),
+                                          const SizedBox(width: 6),
+                                          Expanded(
+                                            child: Text(
+                                              stall['request_message'] ?? 'N/A',
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                color: Colors.grey[700],
+                                              ),
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                // Action Buttons/Status
+                                SizedBox(
+                                  width: 120,
+                                  child: stall['request_status'] == 0
+                                      ? Column(
+                                          children: [
+                                            ElevatedButton(
+                                              onPressed: () {
+                                                acceptrequest(stall['id']);
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor: Colors.blue[600],
+                                                foregroundColor: Colors.white,
+                                                minimumSize:
+                                                    const Size(double.infinity, 36),
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                ),
+                                              ),
+                                              child: const Text(
+                                                'Approve',
+                                                style: TextStyle(fontSize: 14),
+                                              ),
+                                            ),
+                                            const SizedBox(height: 8),
+                                            OutlinedButton(
+                                              onPressed: () {
+                                                rejectrequest(stall['id']);
+                                              },
+                                              style: OutlinedButton.styleFrom(
+                                                foregroundColor: Colors.red[600],
+                                                side: BorderSide(
+                                                    color: Colors.red[600]!),
+                                                minimumSize:
+                                                    const Size(double.infinity, 36),
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                ),
+                                              ),
+                                              child: const Text(
+                                                'Reject',
+                                                style: TextStyle(fontSize: 14),
+                                              ),
+                                            ),
+                                          ],
+                                        )
+                                      : Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 8,
+                                            horizontal: 16,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: stall['request_status'] == 1
+                                                ? Colors.green[50]
+                                                : Colors.red[50],
+                                            borderRadius: BorderRadius.circular(20),
+                                          ),
+                                          child: Text(
+                                            stall['request_status'] == 1
+                                                ? 'Approved'
+                                                : 'Rejected',
+                                            style: TextStyle(
+                                              color: stall['request_status'] == 1
+                                                  ? Colors.green[700]
+                                                  : Colors.red[700],
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                        ),
+                                ),
+                              ],
                             ),
-                          ],
-                        )
-                      : stall['request_status'] == 1
-                          ? Container(
-                              color: Colors.green,
-                              child: Center(
-                                child: Text("Approved",
-                                    style: TextStyle(color: Colors.white)),
-                              ),
-                            )
-                          : Container(
-                              color: Colors.red,
-                              child: Center(
-                                child: Text("Rejected",
-                                    style: TextStyle(color: Colors.white)),
-                              ),
-                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
-          );
-        },
-      ),
     );
   }
 }

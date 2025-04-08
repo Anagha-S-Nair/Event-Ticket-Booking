@@ -16,6 +16,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  bool _obscureText = true; // Added to toggle password visibility
 
   Future<void> signIn() async {
     try {
@@ -60,116 +61,124 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          // Background
-          Container(
-            decoration: BoxDecoration(
-              color: Color(0xFF1E1E2E),
+      backgroundColor: Colors.grey[100],
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(vertical: 40.0),
+          child: SizedBox(
+            width: 400,
+            child: Card(
+              elevation: 8,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(32.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Icon(
+                        Icons.lock_open,
+                        size: 40,
+                        color: Colors.blue[900],
+                      ),
+                    ),
+                    SizedBox(height: 16),
+                    Center(
+                      child: Text(
+                        "Login",
+                        style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue[900],
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    Center(
+                      child: Text(
+                        "Sign in to your account",
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 32),
+                    TextFormField(
+                      controller: _emailController,
+                      decoration: InputDecoration(
+                        labelText: "Email Address",
+                        prefixIcon: Icon(Icons.email,
+                            color: Color.fromARGB(255, 19, 37, 82)),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: const Color.fromARGB(255, 19, 37, 82)!,
+                              width: 2),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 16),
+                    TextFormField(
+                      controller: _passwordController,
+                      obscureText: _obscureText, // Updated to use toggle
+                      decoration: InputDecoration(
+                        labelText: "Password",
+                        prefixIcon: Icon(Icons.lock,
+                            color: Color.fromARGB(255, 19, 37, 82)),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscureText ? Icons.visibility : Icons.visibility_off,
+                            color: Color.fromARGB(255, 19, 37, 82),
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _obscureText = !_obscureText;
+                            });
+                          },
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: const Color.fromARGB(255, 19, 37, 82)!,
+                              width: 2),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 32),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: signIn,
+                        style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          backgroundColor: const Color.fromARGB(255, 19, 37, 82),
+                          foregroundColor: Colors.white,
+                        ),
+                        child: Text(
+                          "LOGIN",
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
-          Center(
-            child: Container(
-              width: 500,
-              height: 350, // Increased height to accommodate the avatar
-              padding: EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Color(0xFF2E2E3E),
-                borderRadius: BorderRadius.circular(10),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.5),
-                    spreadRadius: 3,
-                    blurRadius: 10,
-                    offset: Offset(0, 5),
-                  ),
-                ],
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Circle Avatar with Login Icon
-                  CircleAvatar(
-                    radius: 35,
-                    backgroundColor: Color(0xFF0277BD),
-                    child: Icon(Icons.lock, color: Colors.white, size: 45),
-                  ),
-                  SizedBox(height: 20),
-                  // Email Field
-                  TextFormField(
-                    style: TextStyle(color: Colors.white),
-                    controller: _emailController,
-                    decoration: InputDecoration(
-                      labelText: 'Email ID',
-                      prefixIcon: Icon(Icons.email, color: Colors.white70),
-                      labelStyle: TextStyle(color: Colors.white),
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.grey.shade600),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.grey.shade600),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide:
-                            BorderSide(color: Colors.blueAccent, width: 2),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      fillColor: Color(0xFF3A3A4A),
-                      filled: true,
-                    ),
-                  ),
-                  SizedBox(height: 25),
-                  // Password Field
-                  TextFormField(
-                    style: TextStyle(color: Colors.white),
-                    controller: _passwordController,
-                    obscureText: true,
-                    decoration: InputDecoration(
-                      labelText: 'Password',
-                      prefixIcon: Icon(Icons.lock, color: Colors.white70),
-                      labelStyle: TextStyle(color: Colors.white),
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.grey.shade600),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.grey.shade600),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide:
-                            BorderSide(color: Colors.blueAccent, width: 2),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      fillColor: Color(0xFF3A3A4A),
-                      filled: true,
-                    ),
-                  ),
-                  SizedBox(height: 25),
-                  // Login Button
-                  ElevatedButton(
-                    onPressed: signIn,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF0277BD),
-                      padding:
-                          EdgeInsets.symmetric(vertical: 15, horizontal: 80),
-                    ),
-                    child: Text(
-                      "LOGIN",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

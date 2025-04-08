@@ -44,6 +44,7 @@ class _OrganizerRatingsPageState extends State<OrganizerRatingsPage> {
         return Icon(
           index < rating ? Icons.star : Icons.star_border,
           color: Colors.amber,
+          size: 20,
         );
       }),
     );
@@ -52,66 +53,138 @@ class _OrganizerRatingsPageState extends State<OrganizerRatingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('User Ratings'),
-        backgroundColor: const Color.fromARGB(255, 2, 0, 108),
-        foregroundColor: Colors.white,
+        title: const Text(
+          'User Reviews',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1.2,
+          ),
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.white,
+        elevation: 2,
+        shadowColor: Colors.black26,
+        foregroundColor: Colors.black87,
       ),
       body: isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(
+              child: Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const CircularProgressIndicator(
+                  color: Color.fromARGB(255, 2, 0, 108),
+                ),
+              ),
+            )
           : ratings.isEmpty
-              ? const Center(child: Text('No ratings available'))
-              : Center(
-                  child: SizedBox(
-                    width: 800,
-                    child: ListView.builder(
-                      itemCount: ratings.length,
-                      itemBuilder: (context, index) {
-                        final rating = ratings[index];
-                        final userName = rating['tbl_user']['user_name'];
-                        final userPhoto = rating['tbl_user']['user_photo'];
+              ? Center(
+                  child: Container(
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: const Text(
+                      'No reviews available yet',
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.grey,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                )
+              : SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
+                    child: Center(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 700),
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: ratings.length,
+                          itemBuilder: (context, index) {
+                            final rating = ratings[index];
+                            final userName = rating['tbl_user']['user_name'];
+                            final userPhoto = rating['tbl_user']['user_photo'];
 
-                        return Card(
-                          margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          elevation: 3,
-                          child: Padding(
-                            padding: const EdgeInsets.all(12),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 16),
+                              child: Container(
+                                padding: const EdgeInsets.all(20),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(color: Colors.grey[200]!),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black12,
+                                      blurRadius: 6,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     CircleAvatar(
-                                      radius: 30,
+                                      radius: 25,
+                                      backgroundColor: Colors.grey[200],
                                       backgroundImage: userPhoto != null
                                           ? NetworkImage(userPhoto)
                                           : const AssetImage('assets/default_user.png') as ImageProvider,
                                     ),
-                                    const SizedBox(width: 8),
-                                    Text(
-                                      userName,
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16,
+                                    const SizedBox(width: 16),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(
+                                                userName,
+                                                style: const TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 16,
+                                                  color: Colors.black87,
+                                                ),
+                                              ),
+                                              buildStarRating(rating['rating_value']),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Text(
+                                            rating['rating_content'] ?? 'No comment provided',
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              color: Colors.grey[800],
+                                              height: 1.5,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   ],
                                 ),
-                                const SizedBox(height: 8),
-                                buildStarRating(rating['rating_value']),
-                                const SizedBox(height: 8),
-                                Text(
-                                  rating['rating_content'] ?? 'No comment',
-                                  style: const TextStyle(fontSize: 14),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
+                              ),
+                            );
+                          },
+                        ),
+                      ),
                     ),
                   ),
                 ),
