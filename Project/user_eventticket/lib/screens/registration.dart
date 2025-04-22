@@ -19,7 +19,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _contactController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _addressController = TextEditingController();
   final TextEditingController _confirmpasswordController = TextEditingController();
 
   final formkey = GlobalKey<FormState>();
@@ -66,6 +65,14 @@ class _RegistrationPageState extends State<RegistrationPage> {
     }
     try {
       String? imageUrl = await _uploadImage();
+      print('Image URL: $imageUrl'); // Debug print
+
+      if (imageUrl == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Image upload failed. Please try again.")),
+        );
+        return;
+      }
 
       final authentication = await supabase.auth.signUp(
         password: _passwordController.text,
@@ -73,7 +80,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
       );
 
       String uid = authentication.user!.id;
-      insertUser(uid, imageUrl);
+      await insertUser(uid, imageUrl); // Await here for safety
     } catch (e) {
       print("Error registration: $e");
     }
@@ -81,14 +88,14 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
   Future<void> insertUser(String uid, String? imageUrl) async {
     try {
+      print('Inserting user with photo: $imageUrl'); // Debug print
       await supabase.from('tbl_user').insert({
         'id': uid,
         'user_name': _nameController.text,
         'user_email': _emailController.text,
         'user_contact': _contactController.text,
         'user_password': _passwordController.text,
-        'user_address': _addressController.text,
-        'user_photo': imageUrl,
+        'user_photo': imageUrl, // This should be a string URL
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -103,7 +110,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
       _contactController.clear();
       _passwordController.clear();
       _confirmpasswordController.clear();
-      _addressController.clear();
       setState(() {
         _image = null;
       });
@@ -148,7 +154,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
               const SizedBox(height: 20),
               _buildTextField(_nameController, "Name", Icons.account_circle),
               _buildTextField(_emailController, "Email", Icons.email_outlined),
-              _buildTextField(_addressController, "Address", Icons.location_on),
               _buildTextField(_contactController, "Contact", Icons.phone),
               _buildPasswordField(_passwordController, "Password", _isPasswordVisible, () {
                 setState(() {
@@ -228,9 +233,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
             if (!RegExp(r'^[0-9]{10,}$').hasMatch(value)) return "Enter a valid contact number";
           } else if (label == "Name") {
             if (value == null || value.trim().isEmpty) return "Please enter your name";
-          } else if (label == "Address") {
-            if (value == null || value.trim().isEmpty) return "Please enter your address";
-          }
+          } 
           return null;
         },
       ),

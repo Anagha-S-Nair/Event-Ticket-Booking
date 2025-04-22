@@ -78,14 +78,14 @@ class OrganiserHomePage extends StatelessWidget {
                       //   },
                       // ),
                       const SizedBox(width: 10),
-                      _buildNavButton(
-                        context,
-                        "Report",
-                        () => Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => SalesReportPage()),
-                        ),
-                      ),
+                      // _buildNavButton(
+                      //   context,
+                      //   "Report",
+                      //   () => Navigator.push(
+                      //     context,
+                      //     MaterialPageRoute(builder: (context) => SalesReportPage()),
+                      //   ),
+                      // ),
                     ],
                   ),
                 ],

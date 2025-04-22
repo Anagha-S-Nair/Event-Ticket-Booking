@@ -19,64 +19,75 @@ class _SalesReportPageState extends State<SalesReportPage> {
   bool _isDataFetched = false;
 
   Future<List<Map<String, dynamic>>> fetchSalesData() async {
-    try {
-      final user = supabase.auth.currentUser;
-      if (user == null) {
-        setState(() {
-          _errorMessage = 'User not authenticated. Please log in.';
-        });
-        return [];
-      }
-
-      final response = await supabase
-          .from('tbl_eventbooking')
-          .select(
-              'id, eventbooking_amount, eventbooking_date, eventbooking_ticket, '
-              'tbl_event(id, event_name, organiser_id, eventtype_id, '
-              'tbl_eventtype(id, eventtype_name))')
-          .eq('eventbooking_status', 1)
-          .eq('tbl_event.organiser_id', user.id)
-          .gte('eventbooking_date', _startDate.toIso8601String())
-          .lte('eventbooking_date', _endDate.toIso8601String())
-          .order('eventbooking_date', ascending: false);
-
-      if (response is! List) {
-        setState(() {
-          _errorMessage = 'Unexpected response from server.';
-        });
-        return [];
-      }
-
-      final salesData = response.map((booking) {
-        double totalAmount =
-            double.tryParse(booking['eventbooking_amount'].toString()) ?? 0.0;
-        DateTime? bookingDate =
-            DateTime.tryParse(booking['eventbooking_date'].toString());
-
-        return {
-          'booking_id': booking['id'].toString(),
-          'date': bookingDate ?? _startDate,
-          'total_amount': totalAmount,
-          'event_name':
-              booking['tbl_event']['event_name']?.toString() ?? 'Unknown Event',
-          'ticket_count': booking['eventbooking_ticket'] ?? 0,
-          'type': booking['tbl_event']['tbl_eventtype']['eventtype_name']
-                  ?.toString() ??
-              'Unknown Type',
-        };
-      }).toList();
-
+  try {
+    final user = supabase.auth.currentUser;
+    if (user == null) {
       setState(() {
-        _errorMessage = null;
-      });
-      return salesData;
-    } catch (e) {
-      setState(() {
-        _errorMessage = 'Error fetching sales data: $e';
+        _errorMessage = 'User not authenticated. Please log in.';
       });
       return [];
     }
+    print('Current User ID: ${user.id}'); // Debug: Check user ID
+
+    final response = await supabase
+        .from('tbl_eventbooking')
+        .select('''
+          id,
+          eventbooking_amount,
+          eventbooking_date,
+          eventbooking_ticket,
+          tbl_event (
+            id,
+            event_name,
+            organiser_id,
+            eventtype_id,
+            tbl_eventtype (id, eventtype_name)
+          )
+        ''')
+        .eq('eventbooking_status', 1)
+        .eq('tbl_event.organiser_id', user.id)
+        .gte('eventbooking_date', _startDate.toIso8601String())
+        .lte('eventbooking_date', _endDate.toIso8601String())
+        .order('eventbooking_date', ascending: false);
+
+    print('Response Data: $response'); // Debug: Check raw response
+    if (response is! List) {
+      setState(() {
+        _errorMessage = 'Unexpected response from server.';
+      });
+      return [];
+    }
+
+    final salesData = response.map((booking) {
+      double totalAmount =
+          double.tryParse(booking['eventbooking_amount']?.toString() ?? '0') ?? 0.0;
+      DateTime? bookingDate =
+          DateTime.tryParse(booking['eventbooking_date']?.toString() ?? '');
+
+      // Debug: Print booking data to inspect structure
+      print('Booking Data: $booking');
+
+      return {
+        'booking_id': booking['id']?.toString() ?? '',
+        'date': bookingDate ?? _startDate,
+        'total_amount': totalAmount,
+        'event_name': booking['tbl_event']?['event_name']?.toString() ?? 'Unknown Event',
+        'ticket_count': booking['eventbooking_ticket'] ?? 0,
+        'type': booking['tbl_event']?['tbl_eventtype']?['eventtype_name']?.toString() ?? 'Unknown Type',
+      };
+    }).toList();
+
+    setState(() {
+      _errorMessage = null;
+    });
+    return salesData;
+  } catch (e) {
+    setState(() {
+      _errorMessage = 'Error fetching sales data: $e';
+    });
+    return [];
   }
+}
 
   Future<void> _selectStartDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -340,7 +351,6 @@ class _SalesReportPageState extends State<SalesReportPage> {
                                   ),
                                 ),
                               ),
-                              
                             ],
                             rows: salesData.asMap().entries.map((entry) {
                               final index = entry.key + 1;
@@ -382,7 +392,6 @@ class _SalesReportPageState extends State<SalesReportPage> {
                                     ),
                                   ),
                                 ),
-                                
                                 DataCell(
                                   Text(
                                     "\₹ ${sale['total_amount'].toStringAsFixed(2)}",

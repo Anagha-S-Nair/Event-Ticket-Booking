@@ -16,7 +16,8 @@ class _StallEventsState extends State<StallEvents> {
   Future<void> fetchevent() async {
     try {
       String uid = supabase.auth.currentUser!.id;
-      final response = await supabase.from("tbl_event").select();
+      final response = await supabase.from("tbl_event")
+      .select();
       setState(() {
         eventList = response;
       });
