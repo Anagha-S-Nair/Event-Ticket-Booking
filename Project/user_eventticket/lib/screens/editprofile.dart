@@ -169,8 +169,7 @@ class _EditProfileState extends State<EditProfile> {
                         Icons.person, "Full Name", nameController),
                     buildEditableField(
                         Icons.phone_android, "Contact", contactController),
-                    buildEditableField(
-                        Icons.home, "Address", addressController),
+                    
                     SizedBox(height: 25),
                     ElevatedButton(
                       onPressed: updateUser,

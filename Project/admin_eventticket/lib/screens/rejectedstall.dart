@@ -60,7 +60,9 @@ class _RejectedStallState extends State<RejectedStall> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Rejected Stall Organizers")),
+      backgroundColor: Colors.white,
+      appBar: AppBar(title: Text("Rejected Stall Organizers"),
+      backgroundColor: Colors.white),
       body: isLoading
           ? Center(child: CircularProgressIndicator())
           : Padding(

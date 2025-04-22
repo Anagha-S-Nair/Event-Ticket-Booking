@@ -55,6 +55,15 @@ class _RegistrationPageState extends State<RegistrationPage> {
   }
 
   Future<void> register() async {
+    if (!formkey.currentState!.validate()) {
+      return;
+    }
+    if (_image == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please select a profile image.")),
+      );
+      return;
+    }
     try {
       String? imageUrl = await _uploadImage();
 
@@ -193,57 +202,80 @@ class _RegistrationPageState extends State<RegistrationPage> {
       child: TextFormField(
         controller: controller,
         decoration: InputDecoration(
-  filled: true,
-  fillColor: Colors.white,
-  border: OutlineInputBorder(
-    borderRadius: BorderRadius.circular(25),
-    borderSide: BorderSide(color: Color.fromARGB(255, 2, 0, 108), width: 1), // Add border color and width
-  ),
-  enabledBorder: OutlineInputBorder(
-    borderRadius: BorderRadius.circular(25),
-    borderSide: BorderSide(color: Color.fromARGB(255, 2, 0, 108), width: 1), // Normal state border
-  ),
-  focusedBorder: OutlineInputBorder(
-    borderRadius: BorderRadius.circular(25),
-    borderSide: BorderSide(color: Color.fromARGB(255, 2, 0, 108), width: 1), // Focused state border
-  ),
-  labelText: label,
-  prefixIcon: Icon(icon, color: Color.fromARGB(255, 2, 0, 108)),
-),
-
+          filled: true,
+          fillColor: Colors.white,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(25),
+            borderSide: const BorderSide(color: Color.fromARGB(255, 2, 0, 108), width: 1),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(25),
+            borderSide: const BorderSide(color: Color.fromARGB(255, 2, 0, 108), width: 1),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(25),
+            borderSide: const BorderSide(color: Color.fromARGB(255, 2, 0, 108), width: 1),
+          ),
+          labelText: label,
+          prefixIcon: Icon(icon, color: const Color.fromARGB(255, 2, 0, 108)),
+        ),
+        validator: (value) {
+          if (label == "Email") {
+            if (value == null || value.trim().isEmpty) return "Please enter your email";
+            if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) return "Enter a valid email";
+          } else if (label == "Contact") {
+            if (value == null || value.trim().isEmpty) return "Please enter your contact";
+            if (!RegExp(r'^[0-9]{10,}$').hasMatch(value)) return "Enter a valid contact number";
+          } else if (label == "Name") {
+            if (value == null || value.trim().isEmpty) return "Please enter your name";
+          } else if (label == "Address") {
+            if (value == null || value.trim().isEmpty) return "Please enter your address";
+          }
+          return null;
+        },
       ),
     );
   }
 
   Widget _buildPasswordField(TextEditingController controller, String label, bool isVisible, VoidCallback toggleVisibility) {
-  return Padding(
-    padding: const EdgeInsets.symmetric(vertical: 10),
-    child: TextFormField(
-      obscureText: !isVisible,
-      controller: controller,
-      decoration: InputDecoration(
-        filled: true,
-        fillColor: Colors.white,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(25),
-          borderSide: BorderSide(color: Color.fromARGB(255, 2, 0, 108), width: 1),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: TextFormField(
+        obscureText: !isVisible,
+        controller: controller,
+        decoration: InputDecoration(
+          filled: true,
+          fillColor: Colors.white,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(25),
+            borderSide: const BorderSide(color: Color.fromARGB(255, 2, 0, 108), width: 1),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(25),
+            borderSide: const BorderSide(color: Color.fromARGB(255, 2, 0, 108), width: 1),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(25),
+            borderSide: const BorderSide(color: Color.fromARGB(255, 2, 0, 108), width: 1),
+          ),
+          labelText: label,
+          prefixIcon: const Icon(Icons.lock, color: Color.fromARGB(255, 2, 0, 108)),
+          suffixIcon: IconButton(
+            icon: Icon(isVisible ? Icons.visibility : Icons.visibility_off, color: Colors.grey),
+            onPressed: toggleVisibility,
+          ),
         ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(25),
-          borderSide: BorderSide(color: Color.fromARGB(255, 2, 0, 108), width: 1),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(25),
-          borderSide: BorderSide(color: Color.fromARGB(255, 2, 0, 108), width: 1),
-        ),
-        labelText: label,
-        prefixIcon: Icon(Icons.lock, color: Color.fromARGB(255, 2, 0, 108)),
-        suffixIcon: IconButton(
-          icon: Icon(isVisible ? Icons.visibility : Icons.visibility_off, color: Colors.grey),
-          onPressed: toggleVisibility,
-        ),
+        validator: (value) {
+          if (label == "Password") {
+            if (value == null || value.isEmpty) return "Please enter a password";
+            if (value.length < 6) return "Password must be at least 6 characters";
+          } else if (label == "Confirm Password") {
+            if (value == null || value.isEmpty) return "Please confirm your password";
+            if (value != _passwordController.text) return "Passwords do not match";
+          }
+          return null;
+        },
       ),
-    ),
-  );
+    );
   }
 }

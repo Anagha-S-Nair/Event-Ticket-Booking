@@ -188,7 +188,6 @@ class _CreateeventState extends State<Createevent> {
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
         backgroundColor: Colors.white,
-        
         elevation: 0,
         title: Text(
           'Create New Event',
@@ -214,261 +213,325 @@ class _CreateeventState extends State<Createevent> {
               child: Padding(
                 padding: const EdgeInsets.all(28.0),
                 child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Image Upload Section
-                      Container(
-                        width: double.infinity,
-                        height: 220,
-                        decoration: BoxDecoration(
-                          color: Colors.grey[100],
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.grey[300]!),
-                        ),
-                        child: pickedImage == null
-                            ? GestureDetector(
-                                onTap: handleImagePick,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.cloud_upload_outlined,
-                                      color: primaryColor,
-                                      size: 48,
-                                    ),
-                                    SizedBox(height: 12),
-                                    Text(
-                                      'Upload Event Image',
-                                      style: TextStyle(
+                  child: Form(
+                    key: formkey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Image Upload Section
+                        Container(
+                          width: double.infinity,
+                          height: 220,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[100],
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.grey[300]!),
+                          ),
+                          child: pickedImage == null
+                              ? GestureDetector(
+                                  onTap: handleImagePick,
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.cloud_upload_outlined,
                                         color: primaryColor,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
+                                        size: 48,
                                       ),
-                                    ),
-                                    SizedBox(height: 4),
-                                    Text(
-                                      'Supports JPG, PNG (Max 5MB)',
-                                      style: TextStyle(
-                                        color: Colors.grey[600],
-                                        fontSize: 12,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              )
-                            : GestureDetector(
-                                onTap: handleImagePick,
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(12),
-                                  child: pickedImage!.bytes != null
-                                      ? Image.memory(
-                                          Uint8List.fromList(pickedImage!.bytes!),
-                                          fit: BoxFit.cover,
-                                          width: double.infinity,
-                                          height: double.infinity,
-                                        )
-                                      : Image.file(
-                                          File(pickedImage!.path!),
-                                          fit: BoxFit.cover,
-                                          width: double.infinity,
-                                          height: double.infinity,
+                                      SizedBox(height: 12),
+                                      Text(
+                                        'Upload Event Image',
+                                        style: TextStyle(
+                                          color: primaryColor,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
                                         ),
+                                      ),
+                                      SizedBox(height: 4),
+                                      Text(
+                                        'Supports JPG, PNG (Max 5MB)',
+                                        style: TextStyle(
+                                          color: Colors.grey[600],
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              : GestureDetector(
+                                  onTap: handleImagePick,
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: pickedImage!.bytes != null
+                                        ? Image.memory(
+                                            Uint8List.fromList(
+                                                pickedImage!.bytes!),
+                                            fit: BoxFit.cover,
+                                            width: double.infinity,
+                                            height: double.infinity,
+                                          )
+                                        : Image.file(
+                                            File(pickedImage!.path!),
+                                            fit: BoxFit.cover,
+                                            width: double.infinity,
+                                            height: double.infinity,
+                                          ),
+                                  ),
                                 ),
+                        ),
+                        SizedBox(height: 32),
+
+                        // Event Name and Type
+                        Row(
+                          children: [
+                            Expanded(
+                              flex: 2,
+                              child: _buildTextField(
+                                controller: _nameController,
+                                label: 'Event Name',
+                                primaryColor: primaryColor,
+                                validator: (value) {
+                                  if (value == null || value.trim().isEmpty)
+                                    return "Enter event name";
+                                  if (!RegExp(r"^[a-zA-Z0-9\s]+$")
+                                      .hasMatch(value)) return "Invalid characters";
+                                  if (!RegExp(r"^[A-Z]").hasMatch(value.trim()))
+                                    return "First letter must be capital";
+                                  return null;
+                                },
                               ),
-                      ),
-                      SizedBox(height: 32),
-
-                      // Event Name and Type
-                      Row(
-                        children: [
-                          Expanded(
-                            flex: 2,
-                            child: _buildTextField(
-                              controller: _nameController,
-                              label: 'Event Name',
-                              primaryColor: primaryColor,
                             ),
-                          ),
-                          SizedBox(width: 20),
-                          Expanded(
-                            flex: 1,
-                            child: _buildDropdown(
-                              value: selectedEventtype,
-                              items: eventtypeList.map((eventtype) {
-                                return DropdownMenuItem(
-                                  value: eventtype["id"].toString(),
-                                  child: Text(eventtype["eventtype_name"]),
-                                );
-                              }).toList(),
-                              hint: 'Event Type',
-                              onChanged: (newValue) {
-                                setState(() {
-                                  selectedEventtype = newValue;
-                                });
-                              },
-                              primaryColor: primaryColor,
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 28),
-
-                      // Date, Time, Duration
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _buildTextField(
-                              controller: _dateController,
-                              label: 'Date',
-                              readOnly: true,
-                              onTap: () => _selectDate(context),
-                              suffixIcon: Icons.calendar_today,
-                              primaryColor: primaryColor,
-                            ),
-                          ),
-                          SizedBox(width: 20),
-                          Expanded(
-                            child: _buildTextField(
-                              controller: _timeController,
-                              label: 'Time',
-                              readOnly: true,
-                              onTap: () => _selectTime(context),
-                              suffixIcon: Icons.access_time,
-                              primaryColor: primaryColor,
-                            ),
-                          ),
-                          SizedBox(width: 20),
-                          Expanded(
-                            child: _buildDropdown(
-                              value: _selectedDuration,
-                              items: [
-                                '30 min',
-                                '1 hour',
-                                '2 hours',
-                                '3 hours',
-                                'Half-day',
-                                'Full-day'
-                              ].map((duration) => DropdownMenuItem<String>(
-                                    value: duration,
-                                    child: Text(duration),
-                                  )).toList(),
-                              hint: 'Duration',
-                              onChanged: (newValue) {
-                                setState(() {
-                                  _selectedDuration = newValue;
-                                });
-                              },
-                              primaryColor: primaryColor,
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 28),
-
-                      // District and Place
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _buildDropdown(
-                              value: selectedDistrict,
-                              items: districtList.map((district) {
-                                return DropdownMenuItem(
-                                  value: district["id"].toString(),
-                                  child: Text(district["district_name"]),
-                                );
-                              }).toList(),
-                              hint: 'District',
-                              onChanged: (newValue) {
-                                setState(() {
-                                  selectedDistrict = newValue;
-                                });
-                                fetchplace(newValue!);
-                              },
-                              primaryColor: primaryColor,
-                            ),
-                          ),
-                          SizedBox(width: 20),
-                          Expanded(
-                            child: _buildDropdown(
-                              value: selectedPlace,
-                              items: placeList.map((place) {
-                                return DropdownMenuItem(
-                                  value: place["id"].toString(),
-                                  child: Text(place["place_name"]),
-                                );
-                              }).toList(),
-                              hint: 'Place',
-                              onChanged: (newValue) {
-                                setState(() {
-                                  selectedPlace = newValue;
-                                });
-                              },
-                              primaryColor: primaryColor,
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 28),
-
-                      // Details
-                      _buildTextField(
-                        controller: _detailsController,
-                        label: 'Event Details',
-                        maxLines: 4,
-                        primaryColor: primaryColor,
-                      ),
-                      SizedBox(height: 28),
-
-                      // Count and Price
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _buildTextField(
-                              controller: _countController,
-                              label: 'Ticket Count',
-                              primaryColor: primaryColor,
-                            ),
-                          ),
-                          SizedBox(width: 20),
-                          Expanded(
-                            child: _buildTextField(
-                              controller: _ticketpriceController,
-                              label: 'Ticket Price (₹)',
-                              primaryColor: primaryColor,
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 40),
-
-                      // Submit Button
-                      Center(
-                        child: SizedBox(
-                          width: 320,
-                          height: 56,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: primaryColor,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
+                            SizedBox(width: 20),
+                            Expanded(
+                              flex: 1,
+                              child: _buildDropdown(
+                                value: selectedEventtype,
+                                items: eventtypeList.map((eventtype) {
+                                  return DropdownMenuItem(
+                                    value: eventtype["id"].toString(),
+                                    child: Text(eventtype["eventtype_name"]),
+                                  );
+                                }).toList(),
+                                hint: 'Event Type',
+                                onChanged: (newValue) {
+                                  setState(() {
+                                    selectedEventtype = newValue;
+                                  });
+                                },
+                                primaryColor: primaryColor,
+                                validator: (value) =>
+                                    value == null ? "Select event type" : null,
                               ),
-                              elevation: 4,
                             ),
-                            onPressed: insertEvent,
-                            child: Text(
-                              'Create Event',
-                              style: TextStyle(
-                                fontSize: 18,
-                                color: Colors.white,
-                                fontWeight: FontWeight.w600,
-                                letterSpacing: 0.5,
+                          ],
+                        ),
+                        SizedBox(height: 28),
+
+                        // Date, Time, Duration
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildTextField(
+                                controller: _dateController,
+                                label: 'Date',
+                                readOnly: true,
+                                onTap: () => _selectDate(context),
+                                suffixIcon: Icons.calendar_today,
+                                primaryColor: primaryColor,
+                                validator: (value) =>
+                                    value == null || value.isEmpty
+                                        ? "Select date"
+                                        : null,
+                              ),
+                            ),
+                            SizedBox(width: 20),
+                            Expanded(
+                              child: _buildTextField(
+                                controller: _timeController,
+                                label: 'Time',
+                                readOnly: true,
+                                onTap: () => _selectTime(context),
+                                suffixIcon: Icons.access_time,
+                                primaryColor: primaryColor,
+                                validator: (value) =>
+                                    value == null || value.isEmpty
+                                        ? "Select time"
+                                        : null,
+                              ),
+                            ),
+                            SizedBox(width: 20),
+                            Expanded(
+                              child: _buildDropdown(
+                                value: _selectedDuration,
+                                items: [
+                                  '30 min',
+                                  '1 hour',
+                                  '2 hours',
+                                  '3 hours',
+                                  'Half-day',
+                                  'Full-day'
+                                ].map((duration) =>
+                                    DropdownMenuItem<String>(
+                                      value: duration,
+                                      child: Text(duration),
+                                    )).toList(),
+                                hint: 'Duration',
+                                onChanged: (newValue) {
+                                  setState(() {
+                                    _selectedDuration = newValue;
+                                  });
+                                },
+                                primaryColor: primaryColor,
+                                validator: (value) =>
+                                    value == null ? "Select duration" : null,
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 28),
+
+                        // District and Place
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildDropdown(
+                                value: selectedDistrict,
+                                items: districtList.map((district) {
+                                  return DropdownMenuItem(
+                                    value: district["id"].toString(),
+                                    child: Text(district["district_name"]),
+                                  );
+                                }).toList(),
+                                hint: 'District',
+                                onChanged: (newValue) {
+                                  setState(() {
+                                    selectedDistrict = newValue;
+                                  });
+                                  fetchplace(newValue!);
+                                },
+                                primaryColor: primaryColor,
+                                validator: (value) =>
+                                    value == null ? "Select district" : null,
+                              ),
+                            ),
+                            SizedBox(width: 20),
+                            Expanded(
+                              child: _buildDropdown(
+                                value: selectedPlace,
+                                items: placeList.map((place) {
+                                  return DropdownMenuItem(
+                                    value: place["id"].toString(),
+                                    child: Text(place["place_name"]),
+                                  );
+                                }).toList(),
+                                hint: 'Place',
+                                onChanged: (newValue) {
+                                  setState(() {
+                                    selectedPlace = newValue;
+                                  });
+                                },
+                                primaryColor: primaryColor,
+                                validator: (value) =>
+                                    value == null ? "Select place" : null,
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 28),
+
+                        // Details
+                        _buildTextField(
+                          controller: _detailsController,
+                          label: 'Event Details',
+                          maxLines: 4,
+                          primaryColor: primaryColor,
+                          validator: (value) =>
+                              value == null || value.trim().isEmpty
+                                  ? "Enter event details"
+                                  : null,
+                        ),
+                        SizedBox(height: 28),
+
+                        // Count and Price
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildTextField(
+                                controller: _countController,
+                                label: 'Ticket Count',
+                                primaryColor: primaryColor,
+                                validator: (value) {
+                                  if (value == null || value.trim().isEmpty)
+                                    return "Enter ticket count";
+                                  if (int.tryParse(value) == null ||
+                                      int.parse(value) <= 0)
+                                    return "Enter a valid number";
+                                  return null;
+                                },
+                              ),
+                            ),
+                            SizedBox(width: 20),
+                            Expanded(
+                              child: _buildTextField(
+                                controller: _ticketpriceController,
+                                label: 'Ticket Price (₹)',
+                                primaryColor: primaryColor,
+                                validator: (value) {
+                                  if (value == null || value.trim().isEmpty)
+                                    return "Enter ticket price";
+                                  if (double.tryParse(value) == null ||
+                                      double.parse(value) < 0)
+                                    return "Enter a valid price";
+                                  return null;
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 40),
+
+                        // Submit Button
+                        Center(
+                          child: SizedBox(
+                            width: 320,
+                            height: 56,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: primaryColor,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                elevation: 4,
+                              ),
+                              onPressed: () async {
+                                if (pickedImage == null) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                          "Please upload an event image"),
+                                      backgroundColor: Colors.red,
+                                    ),
+                                  );
+                                  return;
+                                }
+                                if (formkey.currentState?.validate() ?? false) {
+                                  await insertEvent();
+                                }
+                              },
+                              child: Text(
+                                'Create Event',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                  letterSpacing: 0.5,
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -487,12 +550,14 @@ class _CreateeventState extends State<Createevent> {
     VoidCallback? onTap,
     IconData? suffixIcon,
     required Color primaryColor,
+    String? Function(String?)? validator,
   }) {
-    return TextField(
+    return TextFormField(
       controller: controller,
       maxLines: maxLines,
       readOnly: readOnly,
       onTap: onTap,
+      validator: validator,
       style: TextStyle(color: Colors.black87, fontSize: 16),
       decoration: InputDecoration(
         labelText: label,
@@ -525,11 +590,13 @@ class _CreateeventState extends State<Createevent> {
     required String hint,
     required ValueChanged<String?> onChanged,
     required Color primaryColor,
+    String? Function(String?)? validator,
   }) {
     return DropdownButtonFormField<String>(
       value: value,
       items: items,
       onChanged: onChanged,
+      validator: validator,
       style: TextStyle(color: Colors.black87, fontSize: 16),
       decoration: InputDecoration(
         labelText: hint,

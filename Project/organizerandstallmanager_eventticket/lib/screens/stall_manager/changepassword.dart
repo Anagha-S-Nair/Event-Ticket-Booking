@@ -22,6 +22,8 @@ class _StallChangePasswordState extends State<StallChangePassword> {
   final TextEditingController newPasswordController = TextEditingController();
   final TextEditingController confirmPasswordController = TextEditingController();
 
+  final _formKey = GlobalKey<FormState>();
+
   String oldPassword = "";
 
   @override
@@ -98,43 +100,73 @@ class _StallChangePasswordState extends State<StallChangePassword> {
               borderRadius: BorderRadius.circular(10),
             ),
             padding: EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: 20),
-                Text(
-                  "Change Password",
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 30),
-                _passwordField("Current Password", currentPasswordController, currentPassVisible, () {
-                  setState(() => currentPassVisible = !currentPassVisible);
-                }),
-                SizedBox(height: 20),
-                _passwordField("New Password", newPasswordController, newPassVisible, () {
-                  setState(() => newPassVisible = !newPassVisible);
-                }),
-                SizedBox(height: 20),
-                _passwordField("Confirm Password", confirmPasswordController, confirmPassVisible, () {
-                  setState(() => confirmPassVisible = !confirmPassVisible);
-                }),
-                SizedBox(height: 30),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-                      backgroundColor: Colors.pinkAccent,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-                    ),
-                    onPressed: updatePassword,
-                    child: Text(
-                      "Save",
-                      style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 20),
+                  Text(
+                    "Change Password",
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 30),
+                  _passwordField(
+                    "Current Password",
+                    currentPasswordController,
+                    currentPassVisible,
+                    () => setState(() => currentPassVisible = !currentPassVisible),
+                    (value) {
+                      if (value == null || value.isEmpty) return "Enter current password";
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 20),
+                  _passwordField(
+                    "New Password",
+                    newPasswordController,
+                    newPassVisible,
+                    () => setState(() => newPassVisible = !newPassVisible),
+                    (value) {
+                      if (value == null || value.isEmpty) return "Enter new password";
+                      if (value.length < 6) return "Password must be at least 6 characters";
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 20),
+                  _passwordField(
+                    "Confirm Password",
+                    confirmPasswordController,
+                    confirmPassVisible,
+                    () => setState(() => confirmPassVisible = !confirmPassVisible),
+                    (value) {
+                      if (value == null || value.isEmpty) return "Confirm your password";
+                      if (value != newPasswordController.text) return "Passwords do not match";
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 30),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                        backgroundColor: Colors.pinkAccent,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+                      ),
+                      onPressed: () {
+                        if (_formKey.currentState?.validate() ?? false) {
+                          updatePassword();
+                        }
+                      },
+                      child: Text(
+                        "Save",
+                        style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -142,10 +174,17 @@ class _StallChangePasswordState extends State<StallChangePassword> {
     );
   }
 
-  Widget _passwordField(String hintText, TextEditingController controller, bool obscureText, VoidCallback toggleVisibility) {
-    return TextField(
+  Widget _passwordField(
+    String hintText,
+    TextEditingController controller,
+    bool obscureText,
+    VoidCallback toggleVisibility,
+    String? Function(String?)? validator,
+  ) {
+    return TextFormField(
       controller: controller,
       obscureText: obscureText,
+      validator: validator,
       decoration: InputDecoration(
         hintText: hintText,
         border: UnderlineInputBorder(),

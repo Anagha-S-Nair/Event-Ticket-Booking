@@ -3,7 +3,8 @@ import 'package:organizerandstallmanager_eventticket/screens/event_organiser/boo
 import 'package:organizerandstallmanager_eventticket/screens/event_organiser/createevent.dart';
 import 'package:organizerandstallmanager_eventticket/screens/event_organiser/myevents.dart';
 import 'package:organizerandstallmanager_eventticket/screens/event_organiser/myprofile.dart';
-import 'package:organizerandstallmanager_eventticket/screens/event_organiser/rating.dart';
+import 'package:organizerandstallmanager_eventticket/screens/event_organiser/report.dart';
+
 
 class OrganiserHomePage extends StatelessWidget {
   const OrganiserHomePage({super.key});
@@ -14,150 +15,163 @@ class OrganiserHomePage extends StatelessWidget {
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/l12.jpg'), // Replace with your image path
+            image: AssetImage('assets/l12.jpg'),
             fit: BoxFit.cover,
+            colorFilter: ColorFilter.mode(
+              Colors.black.withOpacity(0.6),
+              BlendMode.darken,
+            ),
           ),
         ),
         child: ListView(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(15.0),
-                  child: Text(
-                    "EVENT",
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "QUICKTICK",
                     style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w900,
-                        color: Colors.white),
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      letterSpacing: 1.2,
+                    ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(15.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                  Row(
                     children: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => OrganiserProfile(),
-                              ));
-                        },
-                        child: Text(
-                          "Account",
-                          style: TextStyle(
-                            decorationColor: Colors.white,
-                            fontSize: 18,
-                            color: Colors.white,
-                            decoration: TextDecoration.underline,
-                          ),
+                      _buildNavButton(
+                        context,
+                        "Account",
+                        () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => OrganiserProfile()),
                         ),
                       ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => EventsPage(),
-                              ));
-                        },
-                        child: Text(
-                          "Event",
-                          style: TextStyle(
-                            decorationColor: Colors.white,
-                            fontSize: 18,
-                            color: Colors.white,
-                            decoration: TextDecoration.underline,
-                          ),
+                      const SizedBox(width: 10),
+                      _buildNavButton(
+                        context,
+                        "Event",
+                        () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => EventsPage()),
                         ),
                       ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => BookingPage(),));
-                        },
-                        child: Text(
-                          "Booking",
-                          style: TextStyle(
-                            decorationColor: Colors.white,
-                            fontSize: 18,
-                            color: Colors.white,
-                            decoration: TextDecoration.underline,
-                          ),
+                      const SizedBox(width: 10),
+                      _buildNavButton(
+                        context,
+                        "Booking",
+                        () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => BookingPage()),
                         ),
                       ),
-                      TextButton(
-                        onPressed: () {
-                          // Navigator.push(context, MaterialPageRoute(builder: (context) => OrganizerRatingsPage(
-                          //             organizerId: widget.data['organiser_id']
-                          // ),));
-                        },
-                        child: Text(
-                          "Rating",
-                          style: TextStyle(
-                            decorationColor: Colors.white,
-                            fontSize: 18,
-                            color: Colors.white,
-                            decoration: TextDecoration.underline,
-                          ),
+                      // const SizedBox(width: 10),
+                      // _buildNavButton(
+                      //   context,
+                      //   "Rating",
+                      //   () {
+                      //     // Navigator.push(context, MaterialPageRoute(builder: (context) => OrganizerRatingsPage(
+                      //     //             organizerId: widget.data['organiser_id']
+                      //     // ),));
+                      //   },
+                      // ),
+                      const SizedBox(width: 10),
+                      _buildNavButton(
+                        context,
+                        "Report",
+                        () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => SalesReportPage()),
                         ),
                       ),
                     ],
                   ),
-                )
-              ],
-            ),
-            SizedBox(
-              height: 200,
-            ),
-            SizedBox(
-              height: 30,
-            ),
-            Center(
-              child: Text(
-                "Organize with Confidence, Sell with Ease.",
-                style: TextStyle(
-                    fontSize: 40,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.white),
+                ],
               ),
             ),
-            SizedBox(
-              height: 30,
-            ),
+            const SizedBox(height: 200),
             Center(
-              child: Text(
-                "Plan smarter, sell quicker, succeed easier",
-                style: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.white),
-              ),
-            ),
-            SizedBox(
-              height: 30,
-            ),
-            Center(
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => Createevent(),
-                      ));
-                },
-                child: Text(
-                  "CREATE EVENT",
-                  style: TextStyle(
-                    fontSize: 15,
-                    color: const Color.fromARGB(255, 43, 40, 40),
+              child: Column(
+                children: [
+                  Text(
+                    "Organize with Confidence, Sell with Ease.",
+                    style: TextStyle(
+                      fontSize: 36,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      letterSpacing: 1.5,
+                      shadows: [
+                        Shadow(
+                          blurRadius: 10.0,
+                          color: Colors.black.withOpacity(0.3),
+                          offset: const Offset(2.0, 2.0),
+                        ),
+                      ],
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                ),
+                  const SizedBox(height: 20),
+                  Text(
+                    "Plan smarter, sell quicker, succeed easier",
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white70,
+                      letterSpacing: 1.2,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 40),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Createevent()),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      backgroundColor: Colors.blueAccent,
+                      padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      elevation: 5,
+                    ),
+                    child: Text(
+                      "CREATE EVENT",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.1,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNavButton(BuildContext context, String title, VoidCallback onPressed) {
+    return TextButton(
+      onPressed: onPressed,
+      style: TextButton.styleFrom(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      ),
+      child: Text(
+        title,
+        style: const TextStyle(
+          fontSize: 16,
+          color: Colors.white,
+          fontWeight: FontWeight.w600,
+          decoration: TextDecoration.underline,
+          decorationColor: Colors.white70,
         ),
       ),
     );

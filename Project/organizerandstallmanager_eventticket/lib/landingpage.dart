@@ -147,7 +147,7 @@ class Landingpage extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => OrganiserHomePage(),
+                              builder: (context) => LoginPage(),
                             ),
                           );
                         },

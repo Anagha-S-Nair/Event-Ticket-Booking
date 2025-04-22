@@ -1,5 +1,6 @@
 import 'package:admin_eventticket/screens/rejectedorganiser.dart';
 import 'package:admin_eventticket/screens/rejectedstall.dart';
+import 'package:admin_eventticket/screens/report.dart';
 import 'package:admin_eventticket/screens/stallmanager.dart';
 import 'package:admin_eventticket/screens/verifiedorganiser.dart';
 import 'package:admin_eventticket/screens/verifiedstall.dart';
@@ -30,6 +31,7 @@ class _HomePageState extends State<HomePage> {
     'Place',
     'Event Type',
     'Stall Type',
+    'Report',
     'Event Organiser',
     'Verified Organiser',
     'Rejected Organiser',
@@ -45,6 +47,7 @@ class _HomePageState extends State<HomePage> {
     Icons.place,
     Icons.event,
     Icons.store,
+    Icons.report,
     Icons.group,
     Icons.verified_user,
     Icons.report_off,
@@ -60,6 +63,7 @@ class _HomePageState extends State<HomePage> {
     Place(),
     Eventtype(),
     Stalltype(),
+    Report(),
     ManageOrganizers(),
     VerifiedOrganiser(),
     RejectedOrganizers(),

@@ -11,6 +11,7 @@ class ComplaintPage extends StatefulWidget {
 }
 
 class _ComplaintPageState extends State<ComplaintPage> {
+  final _formKey = GlobalKey<FormState>();
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _complaintController = TextEditingController();
 
@@ -24,10 +25,8 @@ class _ComplaintPageState extends State<ComplaintPage> {
       return;
     }
 
-    if (_titleController.text.isEmpty && _complaintController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please provide a complaint.')),
-      );
+    if (!_formKey.currentState!.validate()) {
+      // If form is not valid, do not proceed
       return;
     }
 
@@ -45,6 +44,7 @@ class _ComplaintPageState extends State<ComplaintPage> {
 
       _titleController.clear();
       _complaintController.clear();
+      _formKey.currentState!.reset();
     } catch (e) {
       print("Error: $e");
       ScaffoldMessenger.of(context).showSnackBar(
@@ -67,62 +67,77 @@ class _ComplaintPageState extends State<ComplaintPage> {
         padding: const EdgeInsets.all(16.0),
         child: Padding(
           padding: const EdgeInsets.all(20.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Complaint Title',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-              ),
-              const SizedBox(height: 8),
-              TextField(
-                controller: _titleController,
-                maxLines: 2,
-                decoration: InputDecoration(
-                  hintText: 'Enter complaint title...',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Complaint Title',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 8),
+                TextFormField(
+                  controller: _titleController,
+                  maxLines: 2,
+                  decoration: InputDecoration(
+                    hintText: 'Enter complaint title...',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    filled: true,
+                    fillColor: Colors.grey[200],
                   ),
-                  filled: true,
-                  fillColor: Colors.grey[200],
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Please enter a complaint title';
+                    }
+                    return null;
+                  },
                 ),
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                'Complaint Details',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-              ),
-              const SizedBox(height: 8),
-              TextField(
-                controller: _complaintController,
-                maxLines: 4,
-                decoration: InputDecoration(
-                  hintText: 'Describe your complaint...',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+                const SizedBox(height: 20),
+                const Text(
+                  'Complaint Details',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 8),
+                TextFormField(
+                  controller: _complaintController,
+                  maxLines: 4,
+                  decoration: InputDecoration(
+                    hintText: 'Describe your complaint...',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    filled: true,
+                    fillColor: Colors.grey[200],
                   ),
-                  filled: true,
-                  fillColor: Colors.grey[200],
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Please describe your complaint';
+                    }
+                    return null;
+                  },
                 ),
-              ),
-              const SizedBox(height: 30),
-              ElevatedButton(
-                onPressed: submitReviewAndComplaint,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 2, 0, 108),
-                  foregroundColor: Colors.white,
-                  minimumSize: const Size(double.infinity, 50),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(25),
+                const SizedBox(height: 30),
+                ElevatedButton(
+                  onPressed: submitReviewAndComplaint,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromARGB(255, 2, 0, 108),
+                    foregroundColor: Colors.white,
+                    minimumSize: const Size(double.infinity, 50),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                  ),
+                  child: const Text(
+                    'Submit Complaint',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                   ),
                 ),
-                child: const Text(
-                  'Submit Complaint',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

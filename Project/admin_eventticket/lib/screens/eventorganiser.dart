@@ -80,7 +80,8 @@ class _ManageOrganizersState extends State<ManageOrganizers> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(title: Text("Manage Event Organizers")),
+      appBar: AppBar(title: Text("Manage Event Organizers"),
+      backgroundColor: Colors.white),
       body: isLoading
           ? Center(child: CircularProgressIndicator())
           : Padding(

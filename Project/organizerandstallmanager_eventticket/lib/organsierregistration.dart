@@ -73,10 +73,10 @@ class _OrgansierregistrationState extends State<Organsierregistration> {
   Future<String?> proofUpload(String uid) async {
     try {
       final bucketName = 'organisers';
-      final filePath = "$uid-proof-${pickedImage!.name}";
+      final filePath = "$uid-proof-${pickedProof!.name}";
       await supabase.storage.from(bucketName).uploadBinary(
             filePath,
-            pickedImage!.bytes!,
+            pickedProof!.bytes!,
           );
       final publicUrl =
           supabase.storage.from(bucketName).getPublicUrl(filePath);
@@ -256,7 +256,12 @@ class _OrgansierregistrationState extends State<Organsierregistration> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        validator: (value) => value!.isEmpty ? "Enter your name" : null,
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) return "Enter your name";
+                          if (!RegExp(r"^[a-zA-Z\s]+$").hasMatch(value)) return "Name can only contain letters";
+                          if (!RegExp(r"^[A-Z]").hasMatch(value.trim())) return "First letter must be capital";
+                          return null;
+                        },
                       ),
                       SizedBox(height: 16),
 
@@ -274,7 +279,11 @@ class _OrgansierregistrationState extends State<Organsierregistration> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        validator: (value) => value!.isEmpty ? "Enter your email" : null,
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) return "Enter your email";
+                          if (!RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$").hasMatch(value)) return "Enter a valid email";
+                          return null;
+                        },
                       ),
                       SizedBox(height: 16),
 
@@ -357,7 +366,11 @@ class _OrgansierregistrationState extends State<Organsierregistration> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        validator: (value) => value!.isEmpty ? "Enter your contact" : null,
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) return "Enter your contact";
+                          if (!RegExp(r"^\d{10}$").hasMatch(value)) return "Enter a valid 10-digit number";
+                          return null;
+                        },
                       ),
                       SizedBox(height: 16),
 
@@ -375,7 +388,7 @@ class _OrgansierregistrationState extends State<Organsierregistration> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        validator: (value) => value!.isEmpty ? "Enter your address" : null,
+                        validator: (value) => value == null || value.trim().isEmpty ? "Enter your address" : null,
                       ),
                       SizedBox(height: 16),
 
@@ -395,7 +408,7 @@ class _OrgansierregistrationState extends State<Organsierregistration> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        validator: (value) => value!.isEmpty ? "Upload a proof" : null,
+                        validator: (value) => value == null || value.trim().isEmpty ? "Upload a proof" : null,
                       ),
                       SizedBox(height: 16),
 
@@ -417,7 +430,11 @@ class _OrgansierregistrationState extends State<Organsierregistration> {
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                               ),
-                              validator: (value) => value!.isEmpty ? "Enter a password" : null,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) return "Enter a password";
+                                if (value.length < 6) return "Password must be at least 6 characters";
+                                return null;
+                              },
                             ),
                           ),
                           SizedBox(width: 16),
@@ -436,8 +453,10 @@ class _OrgansierregistrationState extends State<Organsierregistration> {
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                               ),
-                              validator: (value) =>
-                                  value != _password.text ? "Passwords do not match" : null,
+                              validator: (value) {
+                                if (value != _password.text) return "Passwords do not match";
+                                return null;
+                              },
                             ),
                           ),
                         ],

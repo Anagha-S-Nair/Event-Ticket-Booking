@@ -88,65 +88,41 @@ class _DashboardState extends State<Dashboard> {
 
   Future<List<FlSpot>> fetchTicketSalesChartData() async {
     try {
+      final now = DateTime.now();
+      final year = now.year;
+      final startDate = DateTime(year, 1, 1);
+      final endDate = DateTime(year, 12, 31, 23, 59, 59);
+
       final response = await supabase
           .from('tbl_eventbooking')
           .select('eventbooking_date, eventbooking_ticket')
-          .eq('eventbooking_status', 1)
-          .gte('eventbooking_date', '2024-10-01T00:00:00+00')
-          .lte('eventbooking_date', '2025-03-31T23:59:59+00');
+          .gte('eventbooking_date', startDate.toIso8601String())
+          .lte('eventbooking_date', endDate.toIso8601String());
 
-      print('Raw response from tbl_eventbooking: $response');
-
-      final monthlyTickets = List<double>.filled(6, 0.0);
+      final monthlyTickets = List<double>.filled(12, 0.0);
       for (var booking in response) {
         final bookingDateString = booking['eventbooking_date'] as String;
-        print('Processing booking: $booking');
-        print('Booking date string: $bookingDateString');
-
         final bookingDate = DateTime.parse(bookingDateString);
-        print('Parsed booking date: $bookingDate');
-
-        // Adjust monthIndex to map Oct 2024 (month 10) to index 0, Mar 2025 (month 3) to index 5
-        final year = bookingDate.year;
-        final month = bookingDate.month;
-        int monthIndex;
-
-        if (year == 2024) {
-          monthIndex = month - 10; // Oct 2024 = 0, Nov 2024 = 1, Dec 2024 = 2
-        } else if (year == 2025) {
-          monthIndex = month + 2; // Jan 2025 = 3, Feb 2025 = 4, Mar 2025 = 5
-        } else {
-          continue; // Skip dates outside our range
+        if (bookingDate.year == year) {
+          final monthIndex = bookingDate.month - 1; // Jan=0, Dec=11
+          final tickets = (booking['eventbooking_ticket'] as num?)?.toDouble() ?? 0.0;
+          monthlyTickets[monthIndex] += tickets;
         }
-
-        print('Calculated monthIndex: $monthIndex');
-
-        if (monthIndex < 0 || monthIndex > 5) continue;
-
-        final tickets = (booking['eventbooking_ticket'] as num?)?.toDouble() ?? 0.0;
-        print('Tickets for this booking: $tickets');
-        monthlyTickets[monthIndex] += tickets;
       }
 
-      print('Monthly tickets array: $monthlyTickets');
-
-      // Normalize to a 0-5 scale for the chart
+      // Normalize for chart display (optional, or use raw values)
       final maxTickets = monthlyTickets.reduce((a, b) => a > b ? a : b);
-      print('Max tickets: $maxTickets');
       final normalizedTickets = maxTickets > 0
           ? monthlyTickets.map((tickets) => (tickets / maxTickets) * 5).toList()
           : monthlyTickets;
 
-      print('Normalized tickets: $normalizedTickets');
-
-      final spots = List.generate(
-          6, (index) => FlSpot(index.toDouble(), normalizedTickets[index]));
-      print('FlSpots for chart: $spots');
-
-      return spots;
+      return List.generate(
+        12,
+        (index) => FlSpot(index.toDouble(), normalizedTickets[index]),
+      );
     } catch (e) {
       print('Error fetching ticket sales chart data: $e');
-      return List.generate(6, (index) => FlSpot(index.toDouble(), 0.0));
+      return List.generate(12, (index) => FlSpot(index.toDouble(), 0.0));
     }
   }
 
@@ -264,7 +240,7 @@ class _DashboardState extends State<Dashboard> {
                         return const Center(child: Text("Error loading chart"));
                       }
                       final spots = snapshot.data ??
-                          List.generate(6, (index) => FlSpot(index.toDouble(), 0.0));
+                          List.generate(12, (index) => FlSpot(index.toDouble(), 0.0));
 
                       return LineChart(
                         LineChartData(
@@ -279,12 +255,18 @@ class _DashboardState extends State<Dashboard> {
                                 interval: 1, // Ensure one label per month
                                 getTitlesWidget: (value, meta) {
                                   const titles = [
-                                    'Oct',
-                                    'Nov',
-                                    'Dec',
                                     'Jan',
                                     'Feb',
-                                    'Mar'
+                                    'Mar',
+                                    'Apr',
+                                    'May',
+                                    'Jun',
+                                    'Jul',
+                                    'Aug',
+                                    'Sep',
+                                    'Oct',
+                                    'Nov',
+                                    'Dec'
                                   ];
                                   final index = value.toInt();
                                   if (index < 0 || index >= titles.length) {
@@ -319,7 +301,7 @@ class _DashboardState extends State<Dashboard> {
                             ),
                           ],
                           minX: 0,
-                          maxX: 5,
+                          maxX: 11,
                           minY: 0,
                           maxY: 5,
                         ),

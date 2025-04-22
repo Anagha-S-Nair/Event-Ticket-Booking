@@ -15,8 +15,12 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
   Future<void> signIn() async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
     try {
       String email = _emailController.text;
       String password = _passwordController.text;
@@ -48,6 +52,7 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
       body: Form(
+        key: _formKey,
         child: ListView(
           padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 30),
           children: [

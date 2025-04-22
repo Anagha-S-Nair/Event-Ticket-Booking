@@ -36,6 +36,17 @@ class _EventDetailsState extends State<EventDetails> {
     }
   }
 
+  Future<void> markComplete(int id) async {
+    try {
+      await supabase
+          .from('tbl_event')
+          .update({'event_status': 1})
+          .eq('id', id);
+    } catch (e) {
+      print("Error: $e");
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -65,12 +76,9 @@ class _EventDetailsState extends State<EventDetails> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
-          // widget.data['event_name'],
           "Event Details",
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        // backgroundColor: const Color.fromARGB(255, 19, 37, 82),
-        // foregroundColor: Colors.white,
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 5,
@@ -208,6 +216,12 @@ class _EventDetailsState extends State<EventDetails> {
                         builder: (context) =>
                             ComplaintsPage(id: widget.data['id']),
                       ),
+                    );
+                  }),
+                  _buildActionButton("Finished Event", () async {
+                    markComplete(widget.data['id']);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("Event marked as finished.")),
                     );
                   }),
                 ],

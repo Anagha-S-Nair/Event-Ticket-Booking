@@ -60,7 +60,9 @@ class _VerifiedStallState extends State<VerifiedStall> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Verified Stall Organizers")),
+      backgroundColor: Colors.white,
+      appBar: AppBar(title: Text("Verified Stall Organizers"),
+      backgroundColor: Colors.white),
       body: isLoading
           ? Center(child: CircularProgressIndicator())
           : Padding(

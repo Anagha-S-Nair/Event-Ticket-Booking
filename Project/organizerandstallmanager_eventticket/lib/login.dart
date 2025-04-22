@@ -22,6 +22,16 @@ class _LoginPageState extends State<LoginPage> {
     try {
       String email = _emailController.text;
       String password = _passwordController.text;
+
+      // Validation check
+      if (email.isEmpty || password.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("Both email and password are required"),
+          duration: Duration(seconds: 2),
+        ));
+        return; // Exit the function if fields are empty
+      }
+
       final AuthResponse res = await supabase.auth.signInWithPassword(
         email: email,
         password: password,

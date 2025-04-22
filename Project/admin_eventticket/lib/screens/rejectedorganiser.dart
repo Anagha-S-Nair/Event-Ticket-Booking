@@ -56,13 +56,12 @@ class _RejectedOrganizersState extends State<RejectedOrganizers> {
     }
   }
 
- 
-  
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Rejected Event Organizers")),
+      backgroundColor: Colors.white,
+      appBar: AppBar(title: Text("Rejected Event Organizers"),
+      backgroundColor: Colors.white),
       body: isLoading
           ? Center(child: CircularProgressIndicator())
           : Padding(
@@ -110,17 +109,51 @@ class _RejectedOrganizersState extends State<RejectedOrganizers> {
                             : Icon(Icons.image, color: Colors.grey)),
 
                         // Display Proof (Assuming it's a URL to a document)
-                        DataCell(organizer["organiser_proof"] != null &&
-                                organizer["organiser_proof"].isNotEmpty
-                            ? IconButton(
-                                icon: Icon(Icons.file_present,
-                                    color: Colors.blue),
-                                onPressed: () {
-                                  print(
-                                      "Opening Proof: ${organizer["organiser_proof"]}");
-                                },
-                              )
-                            : Icon(Icons.file_present, color: Colors.grey)),
+                        DataCell(
+                          organizer["organiser_proof"] != null &&
+                                  organizer["organiser_proof"].isNotEmpty
+                              ? GestureDetector(
+                                  onTap: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return Dialog(
+                                          child: Container(
+                                            width:
+                                                300, // Adjust width as needed
+                                            height:
+                                                300, // Adjust height as needed
+                                            child: Image.network(
+                                              organizer["organiser_proof"],
+                                              fit: BoxFit.contain,
+                                              errorBuilder:
+                                                  (context, error, stackTrace) {
+                                                return Center(
+                                                  child: Icon(
+                                                    Icons.error,
+                                                    color: Colors.red,
+                                                    size: 50,
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  },
+                                  child: Image.network(
+                                    organizer["organiser_proof"],
+                                    width: 50,
+                                    height: 50,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return Icon(Icons.file_download,
+                                          color: Colors.grey);
+                                    },
+                                  ),
+                                )
+                              : Icon(Icons.image, color: Colors.grey),
+                        ),
 
                         // Action Buttons
                         DataCell(

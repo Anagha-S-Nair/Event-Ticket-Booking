@@ -62,7 +62,9 @@ class _VerifiedOrganiserState extends State<VerifiedOrganiser> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Verified Event Organizers")),
+      backgroundColor: Colors.white,
+      appBar: AppBar(title: Text("Verified Event Organizers")
+      , backgroundColor: Colors.white),
       body: isLoading
           ? Center(child: CircularProgressIndicator())
           : Padding(

@@ -9,6 +9,7 @@ class OrganiserPassword extends StatefulWidget {
 }
 
 class _OrganiserPasswordState extends State<OrganiserPassword> {
+  final _formKey = GlobalKey<FormState>();
   bool currentPassVisible = false;
   bool newPassVisible = false;
   bool confirmPassVisible = false;
@@ -101,61 +102,88 @@ class _OrganiserPasswordState extends State<OrganiserPassword> {
               ],
             ),
             padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Center(
-                  child: Text(
-                    "Change Password",
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.deepPurple,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 30),
-                _passwordField("Current Password", currentPasswordController,
-                    currentPassVisible, () {
-                  setState(() => currentPassVisible = !currentPassVisible);
-                }),
-                const SizedBox(height: 20),
-                _passwordField("New Password", newPasswordController,
-                    newPassVisible, () {
-                  setState(() => newPassVisible = !newPassVisible);
-                }),
-                const SizedBox(height: 20),
-                _passwordField("Confirm Password", confirmPasswordController,
-                    confirmPassVisible, () {
-                  setState(() => confirmPassVisible = !confirmPassVisible);
-                }),
-                const SizedBox(height: 30),
-
-                // Save Button
-                Center(
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 40, vertical: 15),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      backgroundColor: Colors.deepPurple,
-                      foregroundColor: Colors.white,
-                      elevation: 5,
-                      shadowColor: Colors.deepPurple.withOpacity(0.4),
-                    ),
-                    onPressed: updatePassword,
-                    child: const Text(
-                      "Save",
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Center(
+                    child: Text(
+                      "Change Password",
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 28,
                         fontWeight: FontWeight.bold,
+                        color: Colors.deepPurple,
                       ),
                     ),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 30),
+                  _passwordField(
+                    "Current Password",
+                    currentPasswordController,
+                    currentPassVisible,
+                    () => setState(() => currentPassVisible = !currentPassVisible),
+                    (value) {
+                      if (value == null || value.isEmpty) return "Enter current password";
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  _passwordField(
+                    "New Password",
+                    newPasswordController,
+                    newPassVisible,
+                    () => setState(() => newPassVisible = !newPassVisible),
+                    (value) {
+                      if (value == null || value.isEmpty) return "Enter new password";
+                      if (value.length < 6) return "Password must be at least 6 characters";
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  _passwordField(
+                    "Confirm Password",
+                    confirmPasswordController,
+                    confirmPassVisible,
+                    () => setState(() => confirmPassVisible = !confirmPassVisible),
+                    (value) {
+                      if (value == null || value.isEmpty) return "Confirm your password";
+                      if (value != newPasswordController.text) return "Passwords do not match";
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 30),
+
+                  // Save Button
+                  Center(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 40, vertical: 15),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        backgroundColor: Colors.deepPurple,
+                        foregroundColor: Colors.white,
+                        elevation: 5,
+                        shadowColor: Colors.deepPurple.withOpacity(0.4),
+                      ),
+                      onPressed: () {
+                        if (_formKey.currentState?.validate() ?? false) {
+                          updatePassword();
+                        }
+                      },
+                      child: const Text(
+                        "Save",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -164,10 +192,11 @@ class _OrganiserPasswordState extends State<OrganiserPassword> {
   }
 
   Widget _passwordField(String hintText, TextEditingController controller,
-      bool obscureText, VoidCallback toggleVisibility) {
-    return TextField(
+      bool obscureText, VoidCallback toggleVisibility, String? Function(String?) validator) {
+    return TextFormField(
       controller: controller,
       obscureText: obscureText,
+      validator: validator,
       decoration: InputDecoration(
         labelText: hintText,
         labelStyle: const TextStyle(fontSize: 16, color: Colors.deepPurple),

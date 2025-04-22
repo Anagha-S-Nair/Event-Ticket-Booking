@@ -73,7 +73,9 @@ class _ManageStallState extends State<ManageStall> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Manage Stall Organizers")),
+      backgroundColor: Colors.white,
+      appBar: AppBar(title: Text("Manage Stall Organizers"),
+      backgroundColor: Colors.white),
       body: isLoading
           ? Center(child: CircularProgressIndicator())
           : Padding(

@@ -216,6 +216,7 @@ class _StallEventDetailsState extends State<StallEventDetails> {
   void _showRequestDialog(BuildContext context, int id) {
     String? selectedStall;
     final TextEditingController notesController = TextEditingController();
+    final _formKey = GlobalKey<FormState>();
 
     Future<void> sendReq() async {
       try {
@@ -250,47 +251,53 @@ class _StallEventDetailsState extends State<StallEventDetails> {
               }
               return StatefulBuilder(
                 builder: (context, setState) {
-                  return Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      DropdownButtonFormField(
-                        items: stallList.map((stalltype) {
-                          return DropdownMenuItem(
-                            value: stalltype["id"].toString(),
-                            child: Text(stalltype["stalltype_name"]),
-                          );
-                        }).toList(),
-                        value: selectedStall,
-                        onChanged: (newValue) {
-                          setState(() {
-                            selectedStall = newValue;
-                          });
-                        },
-                      ),
-                      const SizedBox(height: 20),
-                      TextFormField(
-                        controller: notesController,
-                        decoration: const InputDecoration(
-                          hintText: "Additional Notes",
-                          border: OutlineInputBorder(),
-                        ),
-                        maxLines: 3,
-                      ),
-                      const SizedBox(height: 20),
-                      ElevatedButton(
-                        onPressed: () {
-                          if (selectedStall != null) {
-                            sendReq();
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text("Please select a stall!")),
+                  return Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        DropdownButtonFormField(
+                          items: stallList.map((stalltype) {
+                            return DropdownMenuItem(
+                              value: stalltype["id"].toString(),
+                              child: Text(stalltype["stalltype_name"]),
                             );
-                          }
-                        },
-                        child: const Text("Submit Request"),
-                      ),
-                    ],
+                          }).toList(),
+                          value: selectedStall,
+                          onChanged: (newValue) {
+                            setState(() {
+                              selectedStall = newValue;
+                            });
+                          },
+                          validator: (value) =>
+                              value == null ? "Please select a stall type" : null,
+                        ),
+                        const SizedBox(height: 20),
+                        TextFormField(
+                          controller: notesController,
+                          decoration: const InputDecoration(
+                            hintText: "Additional Notes",
+                            border: OutlineInputBorder(),
+                          ),
+                          maxLines: 3,
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return "Please enter a note";
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 20),
+                        ElevatedButton(
+                          onPressed: () {
+                            if (_formKey.currentState?.validate() ?? false) {
+                              sendReq();
+                            }
+                          },
+                          child: const Text("Submit Request"),
+                        ),
+                      ],
+                    ),
                   );
                 },
               );

@@ -24,7 +24,8 @@ class _ExploreScreenState extends State<ExploreScreen> {
     try {
       final response = await supabase
           .from("tbl_event")
-          .select("*, tbl_eventtype(*),tbl_place(*, tbl_district(*))");
+          .select("*, tbl_eventtype(*),tbl_place(*, tbl_district(*))")
+          .eq("event_status", "0");
       print(response);
       setState(() {
         eventList = List<Map<String, dynamic>>.from(response);
