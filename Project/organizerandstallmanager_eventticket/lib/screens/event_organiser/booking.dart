@@ -22,7 +22,11 @@ class _BookingPageState extends State<BookingPage> {
       String uid = supabase.auth.currentUser!.id;
       final response = await supabase
           .from("tbl_eventbooking")
-          .select("*, tbl_event(*), tbl_user(*)")
+          .select("""
+            *,
+            tbl_event!inner(*)
+            ,tbl_user(*)
+          """)
           .eq("tbl_event.organiser_id", uid)
           .eq("eventbooking_status", 1);
 
